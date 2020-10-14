@@ -1,28 +1,25 @@
-# -*- coding: utf-8 -*-
-"""
-Creado Vie 18 Sep 19:48:00 2020
-
-@author: Torres Barrios Cristian
-
-    Nombre función:     ik_SM13
-    
-    Retorna:            f_qp: ángulo de la articulación POLE (en radianes)
-                        f_qa: ángulo de la articulación ARM (en radianes)
-
-    Parámetros:         f_x: punto en eje X al que se desea alcanzar con la boquilla (en pulgadas)
-                        f_y: punto final en el eje Y que se desea alcanzar con la boquilla (en pulgadas)
-                        f_l1: posición en el eje X donde se instala el SM-13 (en pulgadas)
-                        f_l2: posición en el eje Y donde se instala el SM-13 (en pulgadas)
-                        f_l3: longitud del eslabón POLE (en pulgadas)
-                        f_l4: longitud del eslabón ARM (en pulgadas)
-
-    Descripción:        Esta función calcula la Cinemática Inversa (Inverse Kinematics, ik) del
-                        telemanipulador de dos GDL, SM-13.
-                        Esto es, calcula la posición de los ángulos de la articulaciones POLE y ARM que
-                        debe alcanzar el tele-manipulador para que la boquilla se posicione en un
-                        determinado punto X, Y. Para ello también tiene en cuenta
-                        las longitudes de estas articulaciones y la posición de montaje del SM-13.
-"""
+##
+# @file ik_SM13.py
+#
+# @brief Esta función calcula la Cinemática Inversa (Inverse Kinematics, ik) del
+# telemanipulador de dos GDL, SM-13. Esto es, calcula la posición de los ángulos
+# de la articulaciones POLE y ARM que debe alcanzar el tele-manipulador para que
+# la boquilla se posicione en un determinado punto X, Y. Para ello también tiene
+# en cuenta las longitudes de estas articulaciones y la posición de montaje del
+# SM-13.
+#
+# @param f_x Punto en eje X al que se desea alcanzar con la boquilla (en pulgadas)
+# @param f_y punto final en el eje Y que se desea alcanzar con la boquilla (en pulgadas)
+# @param f_l1 posición en el eje X donde se instala el SM-13 (en pulgadas)
+# @param f_l2 posición en el eje Y donde se instala el SM-13 (en pulgadas)
+# @param f_l3 longitud del eslabón POLE (en pulgadas)
+# @param f_l4 longitud del eslabón ARM (en pulgadas)
+#
+# @return f_qp Ángulo de la articulación POLE (en radianes)
+# @return f_qa Ángulo de la articulación ARM (en radianes)
+#
+# @author Cristian Torres Barrios
+# creado Vie 18 Sep 19:48:00 2020
 
 import numpy as np
 import math

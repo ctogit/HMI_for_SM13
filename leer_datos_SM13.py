@@ -1,3 +1,25 @@
+##
+# @file leer_datos_SM13.py
+#
+# @brief Esta función lee un archivo que contiene las características físicas y de
+# montaje del telemanipulador SM-13.
+#
+# @param s_fixture_file Nombre del archivo .csv con los parámetros físicos del
+# telemanipulador y sus posibles montajes
+# @param ui_montaje Posición de montaje del SM-13 respecto al HX
+#
+# @return f_Lx Distancia en pulgadas en el eje X desde el punto de referencia 0 del HX
+# hasta el centro de la base de montaje del SM-13.
+# @return f_Ly Distancia en pulgadas en el eje Y desde el punto de referencia 0 del HX
+# hasta el centro de la base de montaje del SM-13.
+# @return f_Lp Longitud en pulgadas del eslabón POLE del telemanipulador SM-13
+# @return f_La Longitud en pulgadas del eslabón ARM del telemanipulador SM-13
+# @return f_w Ancho base SM-13
+# @return f_h Alto base SM-13
+#
+# @author Cristian Torres Barrios
+# creado Vie 18 Sep 19:58:00 2020
+
 import csv
 from depurador import *
 
@@ -22,7 +44,7 @@ def leer_datos_SM13(s_fixture_file, ui_montaje = 0):
         depurador(3, "Datos_SM13", "- Montaje en X = 0 in")
         depurador(3, "Datos_SM13", "- Montaje en Y = 0 in")
         
-        return float(0.0), float(0.0), float(a_medidas[0]), float(a_medidas[1])
+        return float(0.0), float(0.0), float(a_medidas[0]), float(a_medidas[1]), float(a_medidas[2]), float(a_medidas[3])
     
     if (ui_montaje == 1):
         
@@ -32,7 +54,7 @@ def leer_datos_SM13(s_fixture_file, ui_montaje = 0):
         depurador(3, "Datos_SM13", "- Montaje en X = "+str(a_medidas[2])+" in")
         depurador(3, "Datos_SM13", "- Montaje en Y = "+str(a_medidas[3])+" in")
         
-        return float(a_medidas[2]), float(a_medidas[3]), float(a_medidas[0]), float(a_medidas[1])
+        return float(a_medidas[4]), float(a_medidas[5]), float(a_medidas[0]), float(a_medidas[1]), float(a_medidas[2]), float(a_medidas[3])
     
     if (ui_montaje == 2):
         
@@ -42,7 +64,7 @@ def leer_datos_SM13(s_fixture_file, ui_montaje = 0):
         depurador(3, "Datos_SM13", "- Montaje en X = "+str(a_medidas[4])+" in")
         depurador(3, "Datos_SM13", "- Montaje en Y = "+str(a_medidas[5])+" in")
         
-        return float(a_medidas[4]), float(a_medidas[5]), float(a_medidas[0]), float(a_medidas[1])
+        return float(a_medidas[6]), float(a_medidas[7]), float(a_medidas[0]), float(a_medidas[1]), float(a_medidas[2]), float(a_medidas[3])
     
     if (ui_montaje == 3):
         depurador(2, "Datos_SM13", "****************************************")
@@ -53,7 +75,7 @@ def leer_datos_SM13(s_fixture_file, ui_montaje = 0):
         depurador(3, "Datos_SM13", "- Montaje en Y = "+str(a_medidas[7])+" in")
         depurador(2, "Datos_SM13", " ")
         
-        return float(a_medidas[6]), float(a_medidas[7]), float(a_medidas[0]), float(a_medidas[1])
+        return float(a_medidas[8]), float(a_medidas[9]), float(a_medidas[0]), float(a_medidas[1]), float(a_medidas[2]), float(a_medidas[3])
         
     
 #if __name__ == "__main__":

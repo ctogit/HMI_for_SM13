@@ -1,26 +1,24 @@
-# -*- coding: utf-8 -*-
-"""
-Creado Vie 18 Sep 19:48:00 2020
-
-@author: Torres Barrios Cristian
-
-    Nombre función:     leer_archivo_hx
-    
-    Retorna:            f_px_output: coordenada X del punto (col, row)
-                        f_py_output: coordenada Y del punto (col, row)
-                        a_px_list: lista con todos los valores X (columnas) del hx.
-                        a_py_list: lista con todos los valores Y (filas) del hx
-                        b_error: 0-operación exitosa, 1-no se encontró X,Y para esa COL,ROW.
-
-    Parámetros:         ui_row_input: fila del hx
-                        ui_col_input: columna del hx
-                        s_hx_file: archivo de datos de intercambiador de calor (filas, columnas,
-                        coordenas xy, tubos ID, etc)
-
-    Descripción:        Esta función lee un archivo de datos de un intercambiador de calor
-                        hx determinado y devuelve una posición (X,Y) en pulgadas en base la
-                        fila y columna que se desea alcanzar. 
-"""
+##
+# @file leer_archivo_hx.py
+#
+# @brief Esta función lee un archivo de datos de un intercambiador de calor
+# hx determinado y devuelve una posición (X,Y) en pulgadas en base la
+# fila y columna que se desea alcanzar.
+#
+# @param ui_row_input Fila del hx
+# @param ui_col_input Columna del hx
+# @param s_hx_file Ruta al archivo de datos que contiene la info del
+# intercambiador de calor (filas, columnas, coordenadas xy, tubos ID, etc)
+#
+# @return f_px_output Coordenada X del punto (col, row) en pulgadas
+# @return f_py_output Coordenada Y del punto (col, row) en pulgadas
+# @return a_px_list Lista con todos los valores X (columnas) del hx en pulgadas
+# @return a_py_list Lista con todos los valores Y (filas) del hx en pulgadas
+# @return b_error 0: operación exitosa, 1: no se encontró coordenada [x,y]
+# para la entrada COL,ROW dada.
+#
+# @author Cristian Torres Barrios
+# creado Vie 18 Sep 20:35:00 2020
 
 import csv
 from depurador import *
@@ -46,7 +44,6 @@ def leer_archivo_hx(ui_col_input, ui_row_input, s_hx_file):
     depurador(3, "Archivo_hx", "- Buscando COL: "+str(ui_col_input))
     depurador(3, "Archivo_hx", "- Buscando ROW: "+str(ui_row_input))
 
-    
     with open(s_hx_file, "rt", encoding='ascii') as f:
         hx = csv.reader(f, delimiter=";")
         header = next(hx)
@@ -80,5 +77,5 @@ def leer_archivo_hx(ui_col_input, ui_row_input, s_hx_file):
         
         return f_px_output, f_py_output, a_px_list, a_py_list, b_error
     
-if __name__ == "__main__":
-    leer_archivo_hx(2,1,"ArchivosCfg/hx_3211.csv")
+#if __name__ == "__main__":
+#    leer_archivo_hx(2,1,"/home/pi/Desktop/SM-13/cfg_files/hx_3211.csv")

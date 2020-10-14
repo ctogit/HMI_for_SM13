@@ -1,29 +1,26 @@
-# -*- coding: utf-8 -*-
-"""
-Creado Vie 18 Sep 23:03:00 2020
-
-@author: Torres Barrios Cristian
-
-    Nombre función:     dk_SM13
-    
-    Retorna:            f_px_codo: posición X de la unión POLE-ARM (codo)
-                        f_py_codo: posición Y de la unión POLE-ARM (codo)
-                        f_px_sonda: posición final en eje X de la sonda
-                        f_py_sonda: posición final en eje Y de la sonda
-
-    Parámetros:         f_pole_ang: ángulo de la articulación POLE (en grados)
-                        f_arm_ang: ángulo de la articulación ARM (en grados)
-                        f_l1: posición en el eje X donde se instala el SM-13 (en pulgadas)
-                        f_l2: posición en el eje Y donde se instala el SM-13 (en pulgadas)
-                        f_l3: longitud del eslabón POLE (en pulgadas)
-                        f_l4: longitud del eslabón ARM (en pulgadas)
-
-    Descripción:        Esta función calcula la Cinemática Directa (Direct Kinematics, dk) del
-                        telemanipulador de dos GDL, SM-13.
-                        Esto es, calcula la posición final en X, Y de la boquilla en base a los
-                        ángulos de la articulaciones POLE y ARM. Para ello también tiene en cuenta
-                        las longitudes de estas articulaciones y la posición de montaje del SM-13.
-"""
+##
+# @file dk_SM13.py
+#
+# @brief Esta función calcula la Cinemática Directa (Direct Kinematics, dk) del
+# telemanipulador de dos GDL, SM-13. Esto es, calcula la posición final en X, Y
+# de la boquilla en base a los ángulos de la articulaciones POLE y ARM. Para
+# ello también tiene en cuenta las longitudes de estas articulaciones y la
+# posición de montaje del SM-13.
+#
+# @param f_pole_ang Ángulo de la articulación POLE (en grados)
+# @param f_arm_ang Ángulo de la articulación ARM (en grados)
+# @param f_l1 Posición en el eje X donde se instala el SM-13 (en pulgadas)
+# @param f_l2 Posición en el eje Y donde se instala el SM-13 (en pulgadas)
+# @param f_l3 Longitud del eslabón POLE (en pulgadas)
+# @param f_l4 Longitud del eslabón ARM (en pulgadas)
+#
+# @return f_px_codo Posición X de la unión POLE-ARM (codo)
+# @return f_py_codo: posición Y de la unión POLE-ARM (codo)
+# @return f_px_sonda: posición final en eje X de la sonda
+# @return f_py_sonda: posición final en eje Y de la sonda
+#
+# @author Cristian Torres Barrios
+# creado Vie 18 Sep 23:03:00 2020
 
 import numpy as np
 import math
@@ -40,6 +37,7 @@ def dk_SM13(f_pole_ang, f_arm_ang, f_l1, f_l2, f_l3, f_l4):
     f_Lp = f_l3
     f_La = f_l4
 
+    # Anm -> matriz de transformación del espacio n al m
     a_A01 = np.array([
         [1, 0, 0, f_Lx],
         [0, math.cos(np.deg2rad(270)), -math.sin(np.deg2rad(270)), 0],

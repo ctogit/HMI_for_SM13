@@ -1,21 +1,18 @@
-# -*- coding: utf-8 -*-
-"""
-Creado Vie 18 Sep 19:48:00 2020
-
-@author: Torres Barrios Cristian
-
-    Nombre función:     leer_plan
-    
-    Retorna:            a_row_plan: filas de los tubos que están incluidos en plan de inspección
-                        a_col_plan: columnas de los tubos que están incluidos en el plan
-                        a_tube_plan: identificación de los tubos del plan de inspección
-
-    Parámetros:         s_plan_file: archivo .csv con los datos de filas y columnas de los tubos
-                        del plan de inspección.
-
-    Descripción:        Esta función lee un archivo de plan de inspección y devuelve listas de datos
-                        de fila, columna y ID de cada tubo incluido en el plan.
-"""
+##
+# @file leer_plan.py
+#
+# @brief Esta función lee un archivo de plan de inspección y devuelve listas
+# de datos de fila, columna y ID de cada tubo incluido en el plan.
+#
+# @param s_plan_file Nombre del archivo .csv con los datos de filas y columnas
+# de los tubos del plan de inspección.
+#
+# @return a_row_plan Filas de los tubos que están incluidos en plan de inspección
+# @return a_col_plan Columnas de los tubos que están incluidos en el plan
+# @return a_tube_plan Identificación de los tubos del plan de inspección
+#
+# @author Cristian Torres Barrios
+# creado Vie 18 Sep 19:48:00 2020
 
 import csv
 from depurador import *
@@ -32,7 +29,6 @@ def leer_plan(s_plan_file):
         depurador(3, "Plan de Inspección", "- Accediendo")
         depurador(3, "Plan de Inspección", "- Archivo: "+s_plan_file)
         
-    #with open("ArchivosCfg/plan_inspeccion_3.csv", "rt", encoding='ascii') as f:
         plan = csv.reader(f, delimiter=";")
         header = next(plan)
         depurador(3, "Plan de Inspección", header)

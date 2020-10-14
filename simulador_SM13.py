@@ -8,14 +8,50 @@ import numpy as np
 import math
 import time
 
+s_pictures_path = "/home/pi/Desktop/SM-13/pictures/"
 
+##
+# Clase Simulador_SM13
+# @brief La clase que implementa el simulador SM-13
+#
 class simulador_SM13(object):
     
+    ##
+    # El destructor de la clase simulador
+    #
+    # @brief Esta función destruye el objeto simulador cuando se presiona el
+    # botón Simulator y estaba creado el mismo.
+    #
+    # @param self Puntero al objeto
+    #
+    # @return none
+    #
+    # @author Cristian Torres Barrios
+    # creado Vie 18 Sep 20:35:00 2020
     def __del__(self):
         plt.close(self.fig)
-    
+        
+    ##
+    # El constructor de la clase simulador
+    #
+    # @brief Esta función inicializa el simulador SM-13 cuando
+    # se presiona el botón Simulator
+    #
+    # @param self Puntero al objeto
+    # @param f_x Coordenada X en pulgadas
+    # @param f_y Coordenada Y en pulgadas
+    # @param a_hx_x Lista con los valores de coordenadas X del hx en pulgadas
+    # @param a_hx_y Lista con los valores de coordenadas Y del hx en pulgadas
+    # @param s_f_file Dirección del archivo que contiene el tipo de fixture
+    # @param ui_m El montaje del fixture respecto al hx
+    #
+    # @return none
+    #
+    # @author Cristian Torres Barrios
+    # creado Vie 18 Sep 20:35:00 2020
     def __init__(self, f_x, f_y, a_hx_x, a_hx_y, s_f_file, ui_m):
         
+        s_tipo_hx = "cne_new_hx_3211"
         
         plt.ion()
         self.f_x_coor = f_x
@@ -25,13 +61,11 @@ class simulador_SM13(object):
         self.ui_tipo_montaje = ui_m
         self.s_tipo_fixture = s_f_file
         
-        self.f_Lx, self.f_Ly, self.f_Lp, self.f_La = leer_datos_SM13(self.s_tipo_fixture, self.ui_tipo_montaje)
-        f_w = 8.125
-        f_h = 7.036
+        # Obtiene las dimensiones físicas del telemanipulador y su posición de montaje
+        self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, f_w, f_h = leer_datos_SM13(self.s_tipo_fixture, self.ui_tipo_montaje)
         
         # Initialize plot and line objects for target, end effector, and arm.
-        # Turn on interactive plotting and show plot.
-            
+        # Turn on interactive plotting and show plot.   
         self.fig, ax = plt.subplots(figsize=(6,6))
         self.fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
         ax.grid(False)
@@ -40,16 +74,23 @@ class simulador_SM13(object):
         self.codo, = ax.plot([], [], marker='o', c='b', lw=4)
         self.sonda, = ax.plot([], [], marker='o', markerfacecolor='w', c='b', lw=4)
         
-        f_tube_od = 0.625
-        f_y_pitch = 0.7036
-        f_x_pitch = 0.40625
-        f_calle_ancha = 12.0
+        if s_tipo_hx == "cne_new_hx_3211":
+            f_tube_od = 0.625
+            f_y_pitch = 0.7036
+            f_x_pitch = 0.40625
+            f_calle_ancha = 12.0
+            
+            #Calculo de los limites del grafico en base al hx
+            xmin = 72.0315
+            xmax = -1.7815
+            ymin = 23.4535
+            ymax = -34.047
+            print(max(self.a_lista_tubos_x))
+            
+            # Imagen de fondo para el simulador
+            background = s_pictures_path+"hx3211.png"
         
-        #Calculo de los limites del grafico en base al hx
-        xmin = 72.0315
-        xmax = -1.7815
-        ymin = 23.4535
-        ymax = -34.047
+        # Se fijan los límites del gráfico del simulador en base al hx
         ax.set_xlim(xmax, xmin)
         ax.set_ylim(ymin, ymax)
         
@@ -87,15 +128,31 @@ class simulador_SM13(object):
                 ax.add_artist(circulo_tubo_II_III)
                 
         elif img_hx == True:    
-            img = plt.imread("hx3211.png")
+            img = plt.imread(background)
             ax.imshow(img, extent=[xmin, xmax, ymax, ymin])
                    
         #    ax.plot(float(a_lista_px[x]), float(a_lista_py[x]), marker='o', c='g')
 
         
-        #plt.ion()
-        #plt.show()
+        plt.ion()
+        plt.show()
     
+    ##
+    # Método refrescar_grafico
+    #
+    # @brief Esta función permite refrescar el simulador sin tener que inicializarlo
+    # cada vez que hay una actualización del target.
+    #
+    # @param self Puntero al objeto
+    # @param f_x Coordenada X en pulgadas
+    # @param f_y Coordenada Y en pulgadas
+    # @param f_p Ángulo de la articulación POLE respecto a la base
+    # @param f_a Ángulo de la articulación ARM respecto al POLE
+    #
+    # @return none
+    #
+    # @author Cristian Torres Barrios
+    # creado Vie 18 Sep 20:35:00 2020
     def refrescar_grafico(self, f_x, f_y, f_p, f_a):
           
         self.f_pole = f_p
@@ -113,73 +170,7 @@ class simulador_SM13(object):
         plt.show()
             
         #self.fig.canvas.get_tk_widget().update()
-        self.fig.canvas.flush_events()
-
-      
-        
-        
-"""
-def simulador_SM13(a_hx_x, a_hx_y, ui_m):
-    global f_px_tubo
-    global f_py_tubo
-            
-    f_Lx, f_Ly, f_Lp, f_La = leer_datos_SM13(ui_m)
-    
-    a_lista_px = a_hx_x
-    a_lista_py = a_hx_y
-    
-    # Initialize plot and line objects for target, end effector, and arm.
-    # Turn on interactive plotting and show plot.
-        
-    fig, ax = plt.subplots(figsize=(15,5))
-    #fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
-    ax.grid(True)
-
-    xmin = 75
-    xmax = -5
-    ymin = 25
-    ymax = -5
-    
-    ax.set_xlim(xmax, xmin)
-    ax.set_ylim(ymin, ymax)
-    
-    tubo, = ax.plot([], [], marker='o', c='r')
-    codo, = ax.plot([], [], marker='o', c='b', lw=4)
-    sonda, = ax.plot([], [], marker='o', markerfacecolor='w', c='b', lw=4)
-    
-    f_tube_od = 0.625
-    # Determine maximum reach of arm.
-    f_alcance_max = f_Lp + f_La
-    f_alcance_min = f_La - f_Lp
-    
-    # Add dashed circle to plot indicating reach.
-    circulo_max = plt.Circle((f_Lx, f_Ly), f_alcance_max, ls='dashed', fill=False)
-    ax.add_artist(circulo_max)
-    # Add dashed circle to plot indicating .
-    circulo_min = plt.Circle((f_Lx, f_Ly), f_alcance_min, ls='dashed', fill=False)
-    ax.add_artist(circulo_min)
-    
-    for x in range(0,len(a_lista_px)-1):
-        circulo_tubo = plt.Circle((float(a_lista_px[x]), float(a_lista_py[x])), f_tube_od/2, ls='-', fill=False)
-        ax.add_artist(circulo_tubo)
-    #    ax.plot(float(a_lista_px[x]), float(a_lista_py[x]), marker='o', c='g')
-
-    
-    plt.ion()
-    plt.show()
-  
-    if (True):
-        f_pole, f_arm = ik_SM13(f_px_tubo, f_py_tubo, f_Lx, f_Ly, f_Lp, f_La)
-        f_px_base, f_py_base, f_px_codo, f_py_codo, f_px_sonda, f_py_sonda = dk_SM13(f_pole, f_arm, f_Lx, f_Ly, f_Lp, f_La)
-        
-        tubo.set_data(f_px_tubo, f_py_tubo)
-        codo.set_data([f_px_base, f_px_codo], [f_py_base, f_py_codo])
-        sonda.set_data([f_px_codo, f_px_sonda], [f_py_codo, f_py_sonda])
-        
-        #fig.canvas.get_tk_widget().update()
-        fig.canvas.flush_events()
-"""
-    
+        self.fig.canvas.flush_events()   
     
 #if __name__ == "__main__":
 #    main()
