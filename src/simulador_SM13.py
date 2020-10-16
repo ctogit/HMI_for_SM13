@@ -2,13 +2,13 @@ from dk_SM13 import *
 from ik_SM13 import *
 from leer_archivo_hx import *
 from leer_datos_SM13 import *
+from leer_specs_tubos import *
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import numpy as np
 import math
 import time
-
-s_pictures_path = "/home/pi/Desktop/SM-13/pictures/"
+from depurador import *
 
 ##
 # Clase Simulador_SM13
@@ -40,33 +40,33 @@ class simulador_SM13(object):
     # @param self Puntero al objeto
     # @param f_x Coordenada X en pulgadas
     # @param f_y Coordenada Y en pulgadas
-    # @param a_hx_x Lista con los valores de coordenadas X del hx en pulgadas
-    # @param a_hx_y Lista con los valores de coordenadas Y del hx en pulgadas
     # @param s_f_file Dirección del archivo que contiene el tipo de fixture
     # @param ui_m El montaje del fixture respecto al hx
+    # @param s_hx_file Dirección del archivo que contiene los datos de los tubos del hx
     #
     # @return none
     #
     # @author Cristian Torres Barrios
     # creado Vie 18 Sep 20:35:00 2020
-    def __init__(self, f_x, f_y, a_hx_x, a_hx_y, s_f_file, ui_m):
-        
-        s_tipo_hx = "cne_new_hx_3211"
+    def __init__(self, f_x, f_y, s_f_file, ui_m, s_hx_file):        
         
         plt.ion()
         self.f_x_coor = f_x
         self.f_y_coor = f_y
-        self.a_lista_tubos_x = a_hx_x
-        self.a_lista_tubos_y = a_hx_y
+        #self.a_lista_tubos_x = a_hx_x
+        #self.a_lista_tubos_y = a_hx_y
         self.ui_tipo_montaje = ui_m
         self.s_tipo_fixture = s_f_file
+ 
+        # Si se cambia el path, procurar que tenga la misma cantidad de carpetas
+        trash, s_folder1, s_folder2, s_folder3, s_folder4, s_folder5, s_folder6, s_folder7, s_folder8, trash = s_hx_file.split("/")
         
         # Obtiene las dimensiones físicas del telemanipulador y su posición de montaje
         self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, f_w, f_h = leer_datos_SM13(self.s_tipo_fixture, self.ui_tipo_montaje)
         
         # Initialize plot and line objects for target, end effector, and arm.
         # Turn on interactive plotting and show plot.   
-        self.fig, ax = plt.subplots(figsize=(6,6))
+        self.fig, ax = plt.subplots(figsize=(6,4.7))
         self.fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
         ax.grid(False)
         
@@ -74,25 +74,27 @@ class simulador_SM13(object):
         self.codo, = ax.plot([], [], marker='o', c='b', lw=4)
         self.sonda, = ax.plot([], [], marker='o', markerfacecolor='w', c='b', lw=4)
         
-        if s_tipo_hx == "cne_new_hx_3211":
-            f_tube_od = 0.625
-            f_y_pitch = 0.7036
-            f_x_pitch = 0.40625
-            f_calle_ancha = 12.0
+        # Lee archivo de especificaciones de los tubos del hx seleccionado
+        s_tube_specs_path = "/"+s_folder1+"/"+s_folder2+"/"+s_folder3+"/"+s_folder4+"/"+s_folder5+"/"+s_folder6+"/"+s_folder7+"/"+s_folder8+"/tube_specs.csv"
+        a_specs_tube = leer_specs_tubos(s_tube_specs_path)
+        f_tube_od = float(a_specs_tube[0])
+        f_y_pitch = float(a_specs_tube[1])
+        f_x_pitch = float(a_specs_tube[2])
+        f_calle_ancha = float(a_specs_tube[4])
             
-            #Calculo de los limites del grafico en base al hx
-            xmin = 72.0315
-            xmax = -1.7815
-            ymin = 23.4535
-            ymax = -34.047
-            print(max(self.a_lista_tubos_x))
+        # Limites físicos del intercambiador para incorporárlos al simulador
+        # (a la imagen se le da medio tubo_od para cada lado por eso se suma un tube_od)
+        f_xmin = float(a_specs_tube[8]) + f_tube_od
+        f_xmax = float(a_specs_tube[9]) - f_tube_od 
+        f_ymin = float(a_specs_tube[10]) + f_tube_od
+        f_ymax = float(a_specs_tube[11]) - f_tube_od
             
-            # Imagen de fondo para el simulador
-            background = s_pictures_path+"hx3211.png"
+        # Imagen de fondo para el simulador
+        background = "/"+s_folder1+"/"+s_folder2+"/"+s_folder3+"/"+s_folder4+"/"+s_folder5+"/"+s_folder6+"/"+s_folder7+"/"+s_folder8+"/tubesheet_image.png"
         
         # Se fijan los límites del gráfico del simulador en base al hx
-        ax.set_xlim(xmax, xmin)
-        ax.set_ylim(ymin, ymax)
+        ax.set_xlim(f_xmax, f_xmin)
+        ax.set_ylim(f_ymin, f_ymax)
         
         # Add SM-13 base plate
         ax.add_patch(Rectangle((self.f_Lx-f_w/2, self.f_Ly-f_h/2), width=f_w, height=f_h, facecolor='c', alpha=1))
@@ -114,7 +116,7 @@ class simulador_SM13(object):
 
         circulo_min = plt.Circle((self.f_Lx, self.f_Ly), f_alcance_min, ls='dashed', fill=False, color='r')
         ax.add_artist(circulo_min)
-               
+        """       
         img_hx = True
         if img_hx == False:
             j = 0
@@ -127,9 +129,16 @@ class simulador_SM13(object):
                 ax.add_artist(circulo_tubo_I_IV)
                 ax.add_artist(circulo_tubo_II_III)
                 
-        elif img_hx == True:    
+        elif img_hx == True:
+        """
+        try:
             img = plt.imread(background)
-            ax.imshow(img, extent=[xmin, xmax, ymax, ymin])
+            ax.imshow(img, extent=[f_xmin, f_xmax, f_ymax, f_ymin])
+        except:
+            depurador(1, "Simulador", "****************************************")
+            depurador(1, "Simulador", "- Error al cargar imagen del HX")
+            depurador(1, "Simulador", " ")
+            pass
                    
         #    ax.plot(float(a_lista_px[x]), float(a_lista_py[x]), marker='o', c='g')
 
