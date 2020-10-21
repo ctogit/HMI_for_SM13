@@ -16,5 +16,7 @@ var searchData=
   ['f_5fx_5fpitch',['f_x_pitch',['../classhmi__SM13_1_1hmi__SM13.html#ac5e9bbe6428fbe1971065aeb3cb4a18b',1,'hmi_SM13::hmi_SM13']]],
   ['f_5fy_5fcoor',['f_y_coor',['../classsimulador__SM13_1_1simulador__SM13.html#aba6e84e218dd961f09d85a80a8f34243',1,'simulador_SM13::simulador_SM13']]],
   ['f_5fy_5fpitch',['f_y_pitch',['../classhmi__SM13_1_1hmi__SM13.html#a4efef75e4c7dccf637c30a4fb278df25',1,'hmi_SM13::hmi_SM13']]],
-  ['fila_5fplan_5finspeccion',['fila_plan_inspeccion',['../classhmi__SM13_1_1hmi__SM13.html#aac97848c51f57544626f22e4b66c4424',1,'hmi_SM13::hmi_SM13']]]
+  ['fila_5fplan_5finspeccion',['fila_plan_inspeccion',['../classhmi__SM13_1_1hmi__SM13.html#aac97848c51f57544626f22e4b66c4424',1,'hmi_SM13::hmi_SM13']]],
+  ['fixture_5fcontrol',['fixture_control',['../classhmi__SM13_1_1hmi__SM13.html#a8e54a88c4f91b157e8a58fe90f4568a3',1,'hmi_SM13::hmi_SM13']]],
+  ['fr_5fetiqueta_5fmsg',['fr_etiqueta_msg',['../classhmi__SM13_1_1hmi__SM13.html#a8836eada72bce7b6ab47d720a6ba918a',1,'hmi_SM13::hmi_SM13']]]
 ];

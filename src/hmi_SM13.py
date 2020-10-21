@@ -17,7 +17,7 @@
 # from control_proceso import *
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import GLib, Gtk, GObject
+from gi.repository import GLib, Gtk, Gdk, GObject
 import os
 import time
 from simulador_SM13 import *
@@ -28,6 +28,7 @@ from depurador import *
 from gi.repository import Pango
 import sys
 import numpy as np
+import time
 
 class hmi_SM13():   
     global simu
@@ -73,21 +74,14 @@ class hmi_SM13():
         # 2: plan de inspección 2,
         # 3: plan de inspección 3.
         self.ui_montaje = 0
-        ## Modo de operación HMI.
-        # 1: Free Run
-        # 2: Manual
-        # 3: Inspection
-        self.ui_modo = 3
+        ## Variable indica se activa si el motor se mueve pero no la lectura de enconder
+        # False: sin alarmas de stall
+        # True: alarma de stall
+        self.b_stallAlm = False
         ## Contiene el estado del simulador
         # 0: simulador inactivo
         # 1: simulador activo
         self.b_simulador = 0
-        ## Contiene la ruta al archivo con datos del telemanipulador
-        self.s_archivo_fixture = "none"
-        ## Contiene la ruta al archivo con datos del intercambiador de calor
-        self.s_archivo_hx = "none"
-        ## Contiene la ruta al archivo que contiene el plan del inspección
-        self.s_archivo_plan = "none"
         ## Contiene la columna elegida en el mazo de tubos del hx
         self.ui_plan_col = 0
         ## Contiene la fila elegida en el mazo de tubos del hx
@@ -106,12 +100,26 @@ class hmi_SM13():
         self.a_lista_px = [0]
         ## Carga la lista de puntos y en pulgadas del hx seleccionado
         self.a_lista_py = [0]
+        ## Variable que habilita/deshabilita el control del telemanipulador
+        self.s_ctrlEn = "DISABLE_CONTROL"
+        ## Variable que habilita/deshabilita la función stall del sistema
+        self.s_stallEn = "STALL_ENABLE"
+        ## Variable que indica el modo de operación del HMI
+        # [STOP, FREE_RUN, LIFT, AUTOMATIC]
+        self.s_mode = "STOP"
         ## Contiene la ruta al archivo xml de la interfaz
         self.s_gui_path = "/home/pi/Desktop/SM-13/hmi/gui/hmi_SM-13.glade"
         ## Contiene la ruta a la carpeta de archivos de configuración del sistema
         self.s_cfg_files_robots_path = "/home/pi/Desktop/SM-13/hmi/cfg_files/Robots/"
         ## Contiene la ruta a la carpeta de archivos de configuración del sistema
         self.s_cfg_files_hx_path = "/home/pi/Desktop/SM-13/hmi/cfg_files/Heat_exchangers/"
+        ## Contiene la ruta al archivo con datos del telemanipulador.
+        # por defecto se selecciona SM-13
+        self.s_archivo_fixture = self.s_cfg_files_robots_path + "Zetec/SM-13.csv"
+        ## Contiene la ruta al archivo con datos del intercambiador de calor
+        self.s_archivo_hx = "none"
+        ## Contiene la ruta al archivo que contiene el plan del inspección
+        self.s_archivo_plan = "none"
         ## Crea el objeto Gtk para levantar la interfáz gráfica
         self.builder = Gtk.Builder()
         # Levanta la interfáz gráfica desde el archivo especificado
@@ -139,14 +147,25 @@ class hmi_SM13():
             "evento_jog_right": self.jog_control,
             "evento_jog_left": self.jog_control,
             "evento_jog_up": self.jog_control,
-            "evento_jog_down": self.jog_control
+            "evento_jog_down": self.jog_control,
+            "evento_control_principal": self.fixture_control,
+            "evento_stall": self.fixture_control,
+            "evento_stop": self.detener_movimiento,
+            "evento_red": self.ventana_red,
+            "evento_cerrar_ventana_red": self.cerrar_ventana_red,
+            "evento_modificar_red": self.modificar_red
         }
         self.builder.connect_signals(señales)
         
+        ## Etiqueta pública de mensajes de la solapa Inicio
+        self.inicio_etiqueta_msg = self.builder.get_object("inicio_etiqueta_msg")
+        ## Etiqueta pública de mensajes de la solapa Free Run
+        self.fr_etiqueta_msg = self.builder.get_object("fr_etiqueta_msg")
+        ## Etiqueta pública de mensajes de la solapa Manual
+        # TODO:self.manual_etiqueta_msg = self.builder.get_object("inspection_etiqueta_msg")
         ## Etiqueta pública de mensajes de la solapa Inspection
         self.inspection_etiqueta_msg = self.builder.get_object("inspection_etiqueta_msg")
-        if (self.s_archivo_fixture == "none" or self.s_archivo_hx == "none" or self.s_archivo_plan == "none"):
-            self.inspection_etiqueta_msg.set_text("Please load configuration files to start...")
+     
         
         ## Etiqueta dinámica que se muestra en el botón tipo toggle del simulador
         self.inspection_etiqueta_boton_simulador = self.builder.get_object("inspection_etiqueta_boton_simulador")
@@ -159,19 +178,39 @@ class hmi_SM13():
         self.inspection_etiqueta_valor_jog_col = self.builder.get_object("inspection_etiqueta_valor_jog_col")
         self.inspection_etiqueta_valor_jog_col.set_text(str(float(self.f_incremento_acumulado_jog_col)))
         
+        ## Etiqueta dinámica que muestra el estado del control principal del telemanipulador
+        self.inicio_etiqueta_estado_main_control = self.builder.get_object("inicio_etiqueta_estado_main_control")
+        
+        ## Etiqueta dinámica que muestra el estado de la función stall del telemanipulador
+        self.inicio_etiqueta_estado_stall = self.builder.get_object("inicio_etiqueta_estado_stall")
+        
         ## Ventana principal del HMI
         self.window = self.builder.get_object("ventana_principal")
         
         ## Ventana secundaria de selección de archivos del sistema
-        self.window2 = self.builder.get_object("ventana_cfg")
+        self.window2 = self.builder.get_object("ventana_secundaria_archivos")
+        
+        ## Ventana secundaria para visualización o modificación de dirección de red
+        self.window3 = self.builder.get_object("ventana_secundaria_red")
         
         ## Vista de arbol para el modo Inspection
         self.inspection_tree_view = self.builder.get_object("inspection_tree_view")
         
-        self.window.show()
+        ## Widget del interrupor de control principal (nos aseguramos que inicie desactivado)
+        self.inicio_switch_fixture_control = self.builder.get_object("inicio_switch_fixture_control")
+        self.inicio_switch_fixture_control.set_active(False)
+
+        # Warning: deprecated!
+        #self.window2.override_background_color(0, Gdk.RGBA(0.9,0.0,0.0,1.0))
+        
+        # Mensaje de bienvenida
+        self.inicio_etiqueta_msg.set_text("Welcome to the NFC Human-Machine Interface!")
+        self.window.show()      
+        
     
     ##
     # @brief Función que implementa el botón "Apagar" en solapa Inicio
+    # @param self Puntero al objeto HMI
     # @param button Botón Apagar
     # @return none
     def apagar(self, button):
@@ -183,6 +222,7 @@ class hmi_SM13():
     
     ##
     # @brief Función que implementa el botón "Reiniciar" en solapa Inicio
+    # @param self Puntero al objeto HMI
     # @param button Botón Reiniciar
     # @return none
     def reiniciar(self, button):
@@ -191,7 +231,76 @@ class hmi_SM13():
         Gtk.main_quit()
         os.system('sudo reboot')
         return
+    
+    
+    ##
+    # @brief Función que implementa los interruptores "Main control" y "Stall"
+    # @param self Puntero al objeto HMI
+    # @param switch "Main control" o "Stall Function"
+    # @param state Estado del switch en cuestión
+    # @return none
+    def fixture_control(self, switch, state):
+        
+        # Obtiene el nombre del widget switch presionado
+        s_name = switch.get_name()
+
+        if (s_name == "fixture_control_switch"):    
+            if switch.get_active():
+                self.s_ctrlEn = "CONTROL_ENABLE"
+                self.inicio_etiqueta_estado_main_control.set_text("Enabled")
+                # Se indica en todas las etiquetas de msg del hmi
+                self.actualizar_etiquetas_msg("Fixture harness main control enabled...")
+            else:
+                self.s_ctrlEn = "DISABLE_CONTROL"
+                self.inicio_etiqueta_estado_main_control.set_text("Disabled")
+                # Se indica en todas las etiquetas de msg del hmi
+                self.actualizar_etiquetas_msg("Fixture harness main control disabled...")
+
+            depurador(1, "HMI", "****************************************")
+            depurador(1, "HMI", "- Fixture status = " + self.s_ctrlEn)
+            depurador(1, "HMI", " ")
             
+        elif (s_name == "fixture_stall_switch"):
+            if switch.get_active():
+                self.s_stallEn = "STALL_ENABLE"
+                self.inicio_etiqueta_estado_stall.set_text("Enabled")
+                # Se indica en todas las etiquetas de msg del hmi
+                self.actualizar_etiquetas_msg(msg="Fixture harness stall function enabled...")
+            else:
+                self.s_stallEn = "DISABLE_STALL"
+                self.inicio_etiqueta_estado_stall.set_text("Disabled")
+                self.actualizar_etiquetas_msg(msg="Fixture harness stall function disabled...")
+
+            depurador(1, "HMI", "****************************************")
+            depurador(1, "HMI", "- Fixture status = " + self.s_stallEn)
+            depurador(1, "HMI", " ")
+        
+        return True
+    
+    ##
+    # @brief Función que implementa todos los botones de STOP del HMI
+    # @param self Puntero al objeto HMI
+    # @param button "STOP"
+    # @return none
+    def detener_movimiento(self, button):
+        # Desenergiza relé principal en NFC
+        self.s_ctrlEn = "DISABLE_CONTROL"
+        # Actualiza la variable modo
+        self.s_mode = "STOP"
+        # Cambia a OFF el widget del interruptor principal
+        self.inicio_switch_fixture_control.set_active(False)
+        # Cambia el mensaje de la etiqueta del interruptor
+        self.inicio_etiqueta_estado_main_control.set_text("Disabled")
+        ## Se indica la acción en las etiquetas principales de msg.
+        self.actualizar_etiquetas_msg(msg="Stop, fixture harness main control disabled...")   
+        
+        depurador(1, "HMI", "****************************************")
+        depurador(1, "HMI", "- STOP TOTAL")
+        depurador(1, "HMI", "- Fixture status = " + self.s_ctrlEn)
+        depurador(1, "HMI", " ")
+            
+        return True
+        
     ##
     # @brief Detecta la fila seleccionada en el TreeView de solapa Inspection,
     # extrae la columna y fila deseada y usa el scrip leer_archivo_hx.py para
@@ -247,6 +356,23 @@ class hmi_SM13():
     def mover_a_seleccion(self, button):
         global simu
         
+        # Verificaciones previas al movimiento
+        # no  si no se han elegido todos los archivos de configuración no se avanza
+        if not self.archivos():
+            return True
+        
+        # Antes de mover verifica si está activado el control principal
+        if (self.s_ctrlEn == "DISABLE_CONTROL"):
+            self.actualizar_etiquetas_msg("Fixture control is disabled...")
+            return True
+        
+        # Antes de mover verifica si no está atascado el telemanipulador
+        if (self.b_stallAlm):
+            self.actualizar_etiquetas_msg("Fixture harness is stalled...")
+            return True
+        
+        # TODO chequear ZS también
+        
         depurador(1, "HMI", "****************************************")
         depurador(1, "HMI", "- Moviendo hacia "+ self.s_tubo_id + " (COL : "+ str(self.ui_plan_col) + ", ROW : "+str(self.ui_plan_row) + ")")
         depurador(1, "HMI", " ")
@@ -274,6 +400,23 @@ class hmi_SM13():
     # @return none
     def siguiente_tubo(self, button):
         global simu
+        
+        # Verificaciones previas al movimiento
+        # no  si no se han elegido todos los archivos de configuración no se avanza
+        if not self.archivos():
+            return True
+        
+        # Antes de mover verifica si está activado el control principal
+        if (self.s_ctrlEn == "DISABLE_CONTROL"):
+            self.actualizar_etiquetas_msg("Fixture control is disabled...")
+            return True
+        
+        # Antes de mover verifica si no está atascado el telemanipulador
+        if (self.b_stallAlm):
+            self.actualizar_etiquetas_msg("Fixture harness is stalled...")
+            return True
+        
+        # TODO chequear ZS también
         
         # Se obtiene el objeto de selección de la vista
         selection = self.inspection_tree_view.get_selection()
@@ -314,8 +457,8 @@ class hmi_SM13():
     def run_simulador(self, button):
         global simu
         
-        if (self.s_archivo_hx == 'none' or self.s_archivo_fixture == 'none' or self.s_archivo_plan == 'none'):
-            self.inspection_etiqueta_msg.set_text("First load configuraton files...")
+        # no arranco el simulador si no se han cargado archivos de configuración antes
+        if not self.archivos():
             return True
          
         if (self.b_simulador == 0):
@@ -464,6 +607,13 @@ class hmi_SM13():
         depurador(1, "HMI", "- Tipo Fixture      : "+self.s_archivo_fixture)
         depurador(1, "HMI", " ")
         
+        # no  si no se han elegido todos los archivos de configuración no se avanza
+        if not self.archivos():
+            depurador(1, "HMI", "****************************************")
+            depurador(1, "HMI", "- Faltan cargar archivos...")
+            depurador(1, "HMI", " ")
+            return True
+        
         a_COLUMNS = ["COL", "ROW", "TUBE"]
         
         #inspection_tree_view = self.builder.get_object("inspection_tree_view")
@@ -516,9 +666,10 @@ class hmi_SM13():
         self.f_tube_od = float(a_specs_tube[0])
         self.f_y_pitch = float(a_specs_tube[1])
         self.f_x_pitch = float(a_specs_tube[2])
-            
-        self.inspection_etiqueta_msg = self.builder.get_object("inspection_etiqueta_msg")
-        self.inspection_etiqueta_msg.set_text("Ready to go...")
+        
+        if (self.s_ctrlEn == "CONTROL_ENABLE"):
+            self.inspection_etiqueta_msg = self.builder.get_object("inspection_etiqueta_msg")
+            self.inspection_etiqueta_msg.set_text("Ready to go...")
         
         # permite que las columnas del TreeView se creen una sola vez
         self.b_carga = 1
@@ -550,6 +701,21 @@ class hmi_SM13():
     # @param button Boton Pueden ser cuatro: jog_to_north, jog_to_east, jog_to_south, jog_to_west
     # @return none
     def jog_control(self, button):
+        # Verificaciones previas al movimiento
+        # no  si no se han elegido todos los archivos de configuración no se avanza
+        if not self.archivos():
+            return True
+        
+        # Antes de mover verifica si está activado el control principal
+        if (self.s_ctrlEn == "DISABLE_CONTROL"):
+            self.actualizar_etiquetas_msg("Fixture control is disabled...")
+            return True
+        
+        # Antes de mover verifica si no está atascado el telemanipulador
+        if (self.b_stallAlm):
+            self.actualizar_etiquetas_msg("Fixture harness is stalled...")
+            return True
+        
         # Obtiene el nombre del boton jog presionado
         s_boton_jog = button.get_name()
         
@@ -566,6 +732,7 @@ class hmi_SM13():
             self.f_incremento_acumulado_jog_row += self.f_incremento_jog
         
         elif (s_boton_jog == "jog_to_south"):
+            
             self.f_py_tubo += self.f_incremento_jog*self.f_y_pitch
             self.f_incremento_acumulado_jog_row -= self.f_incremento_jog
             
@@ -602,6 +769,86 @@ class hmi_SM13():
     # @param button Boton Set Offset
     # @return none
     def offset(self, button):
+        
+        return True
+    
+    ##
+    # @brief Función que indica si se han cargado archivos de configuración o no
+    # @param self puntero al objeto HMI
+    # @return True o False si se han cargado o no los tres archivos de configuración
+    def archivos(self):
+
+        if (self.s_archivo_hx == 'none' or self.s_archivo_fixture == 'none' or self.s_archivo_plan == 'none'):
+            self.inspection_etiqueta_msg.set_text("No configuraton files has been loaded...")
+            return False
+        else:
+            return True
+    
+    ##
+    # @brief Función que optimiza la actualización de mensajes generales
+    # simultáneamente en todas las etiquetas de msg de las diferentes solapas
+    # @param self puntero al objeto HMI
+    # @param msg Mensaje general a imprimir en todas las etiquetas de las solapas
+    # @return none
+    def actualizar_etiquetas_msg(self, msg): 
+        self.inicio_etiqueta_msg.set_text(msg)
+        self.inspection_etiqueta_msg.set_text(msg)
+        self.fr_etiqueta_msg.set_text(msg)
+        #self.manual_etiqueta_msg.set_text(msg)
+        
+        return True
+    
+    ##
+    # @brief Función que levanta la ventana de configuración de red
+    # para mostrar la dirección IP y puerto actuales o para modificarlos.
+    # @param self puntero al objeto HMI
+    # @param button Botón de red en ventana inicio
+    # @return none
+    def ventana_red(self, button):
+        self.window3.show()
+        return True
+    
+    
+    ##
+    # @brief Función que se activa al presionar botón "Cerrar" en ventana
+    # secundaria de configuración de red. Permite esconder la ventana
+    # cuando ya no se necesita.
+    # @param self Puntero al objeto HMI
+    # @param button Botón "Cerrar" en ventana de red.
+    # @return none
+    def cerrar_ventana_red(self, button):
+        self.window3.hide()
+        return True
+    
+    ##
+    # @brief Función que implementa el botón "Modificar" en ventana de configuración
+    # de red. Luego actualiza el archivo de texto con la nueva dirección IP y puerto.
+    # @param self Puntero al objeto HMI
+    # @param button Botón "modificar"
+    # @return none
+    def modificar_red(self, button):
+        
+        ## Entradas para modificación de dirección IP y Puerto de red
+        #entrada_ip_0 = self.builder.get_object("red_entrada_ip_0")
+        #entrada_ip_1 = self.builder.get_object("red_entrada_ip_1")
+        #entrada_ip_2 = self.builder.get_object("red_entrada_ip_2")
+        entrada_ip_0 = self.builder.get_object("red_boton_spin_ip_0")
+        entrada_ip_1 = self.builder.get_object("red_boton_spin_ip_1")
+        entrada_ip_2 = self.builder.get_object("red_boton_spin_ip_2")
+        entrada_ip_3 = self.builder.get_object("red_boton_spin_ip_3")
+        entrada_puerto = self.builder.get_object("red_boton_spin_puerto")
+        
+        self.ui_ip_0 = int(entrada_ip_0.get_value())
+        self.ui_ip_1 = int(entrada_ip_1.get_value())
+        self.ui_ip_2 = int(entrada_ip_2.get_value())
+        self.ui_ip_3 = int(entrada_ip_3.get_value())
+        self.ui_puerto = int(entrada_puerto.get_value())
+     
+        print("ip3: "+str(self.ui_ip_3))
+        print("ip2: "+str(self.ui_ip_2))
+        print("ip1: "+str(self.ui_ip_1))
+        print("ip0: "+str(self.ui_ip_0))
+        print("puerto: "+str(self.ui_puerto))
         
         return True
         

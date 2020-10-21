@@ -1,5 +1,9 @@
 var searchData=
 [
+  ['inicio_5fetiqueta_5festado_5fmain_5fcontrol',['inicio_etiqueta_estado_main_control',['../classhmi__SM13_1_1hmi__SM13.html#a2fe69622048283e4d3360b71cacca3eb',1,'hmi_SM13::hmi_SM13']]],
+  ['inicio_5fetiqueta_5festado_5fstall',['inicio_etiqueta_estado_stall',['../classhmi__SM13_1_1hmi__SM13.html#a0889fd05bcbd99821b3c158283819aae',1,'hmi_SM13::hmi_SM13']]],
+  ['inicio_5fetiqueta_5fmsg',['inicio_etiqueta_msg',['../classhmi__SM13_1_1hmi__SM13.html#a0b59982f7c2005e424ec795e0ab34dcc',1,'hmi_SM13::hmi_SM13']]],
+  ['inicio_5fswitch_5ffixture_5fcontrol',['inicio_switch_fixture_control',['../classhmi__SM13_1_1hmi__SM13.html#a1d732f8019c447d0a3108f0b00abe8f7',1,'hmi_SM13::hmi_SM13']]],
   ['inivel_5ftest0',['iNIVEL_TEST0',['../namespacedepurador.html#ab1b248b05e9b1ec69d323b3069a6e580',1,'depurador']]],
   ['inivel_5ftest1',['iNIVEL_TEST1',['../namespacedepurador.html#a7d5766dac205660e76549cbefe655162',1,'depurador']]],
   ['inivel_5ftest2',['iNIVEL_TEST2',['../namespacedepurador.html#a7c30cafe0b9e0f03f08ce7665a0b424e',1,'depurador']]],
