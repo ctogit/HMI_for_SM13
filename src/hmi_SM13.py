@@ -37,6 +37,8 @@ class hmi_SM13():
     
     ## El constructor del HMI
     def __init__(self):
+        ## Variable contiene el tiempo entre tramas de telemetría
+        UI_MS_REFRESCO_TELEMETRIA = 1000
         # Atributos públicos de la clase hmi_SM13
         ## Contiene el punto X en pulgadas de la posición de la boquilla.
         self.f_px_tubo = 0.0
@@ -82,8 +84,6 @@ class hmi_SM13():
         self.f_velActArm = 0.0
         ## Variable indica la velocidad con la que mueve la articulación POLE.
         self.f_velActPole = 0.0
-        ## Variable contiene el tiempo entre tramas de telemetría
-        self.ui_ms_refresco_telemetria = 1000
         ## Contiene el tipo de montaje respecto al hx.
         # 0: centro en caso de no especificar hx ni montaje,
         # 1: plan de inspección 1,
@@ -169,14 +169,16 @@ class hmi_SM13():
         # ARM o POLE del FH.
         self.s_freeRunDir = " "
         ## Contiene la ruta a la carpeta SM-13.
-        # Cambiar esta línea para correr el HMI en otro sistema.
-        self.s_project_path = "/home/pi/Desktop"
+        # Cambiar esta línea para correr el HMI en otro sistema y
+        # procurar que la ruta tenga la misma cantidad de carpetas, ej: /Carpeta1/Carpeta2/Carpeta3/SM-13
+        # Verificar que la ruta a la carpeta de sources queda .../SM-13/hmi/src/...
+        self.s_project_path = "/home/pi/Desktop/SM-13"
         ## Contiene la ruta al archivo xml de la interfaz
-        self.s_gui_path = self.s_project_path + "/SM-13/hmi/gui/hmi_SM-13.glade"
+        self.s_gui_path = self.s_project_path + "/hmi/gui/hmi_SM-13.glade"
         ## Contiene la ruta a la carpeta de archivos de configuración del sistema
-        self.s_cfg_files_robots_path = self.s_project_path + "/SM-13/hmi/cfg_files/Robots/"
+        self.s_cfg_files_robots_path = self.s_project_path + "/hmi/cfg_files/Robots/"
         ## Contiene la ruta a la carpeta de archivos de configuración del sistema
-        self.s_cfg_files_hx_path = self.s_project_path + "/SM-13/hmi/cfg_files/Heat_exchangers/"
+        self.s_cfg_files_hx_path = self.s_project_path + "/hmi/cfg_files/Heat_exchangers/"
         ## Contiene la ruta al archivo con datos del telemanipulador.
         # por defecto se selecciona SM-13
         self.s_archivo_fixture = self.s_cfg_files_robots_path + "Zetec/SM-13.csv"
@@ -198,7 +200,7 @@ class hmi_SM13():
         self.s_port = "0"
         
         # Se abre el archivo network.csv en modo lectura, se lo lee y se cierra. 
-        network_file = open(self.s_project_path + "/SM-13/hmi/cfg_files/network.csv", "r")
+        network_file = open(self.s_project_path + "/hmi/cfg_files/network.csv", "r")
         address_lines = network_file.readlines()
         network_file.close()
         # Se extraen la variables que contendrán la dir IP y el PUERTO
@@ -316,7 +318,7 @@ class hmi_SM13():
         self.inicio_etiqueta_msg.set_text("Welcome to the NFC Human-Machine Interface!")
         self.window.show()
         
-        GLib.timeout_add(self.ui_ms_refresco_telemetria, self.telemetria)
+        GLib.timeout_add(UI_MS_REFRESCO_TELEMETRIA, self.telemetria)
         
     
     ##
@@ -980,7 +982,7 @@ class hmi_SM13():
         s_temp_puerto = str(ui_puerto)
         
         # Se abre el archivo network.csv en modo lectura, se lo lee y se cierra. 
-        network_file = open(self.s_project_path + "/SM-13/hmi/cfg_files/network.csv", "r")
+        network_file = open(self.s_project_path + "/hmi/cfg_files/network.csv", "r")
         address_lines = network_file.readlines()
         network_file.close()
         
@@ -1000,7 +1002,7 @@ class hmi_SM13():
             
             # Como hay cambios, se abre el archivo network.csv en modo escritura,
             # se actualizan los cambios y se cierra. 
-            new_network_file = open(self.s_project_path + "/SM-13/hmi/cfg_files/network.csv", "w+")
+            new_network_file = open(self.s_project_path + "/hmi/cfg_files/network.csv", "w+")
             new_address_line = s_temp_ip + ";" + s_temp_puerto
             new_network_file.write("IP address;Port\n")
             new_network_file.write(new_address_line)
@@ -1008,7 +1010,7 @@ class hmi_SM13():
             
             # Se abre el archivo network.csv en modo lectura, se lo lee
             # para asegurarse que se implementó el cambio de IP, PORT y se lo cierra. 
-            new_network_file = open(self.s_project_path + "/SM-13/hmi/cfg_files/network.csv", "r")
+            new_network_file = open(self.s_project_path + "/hmi/cfg_files/network.csv", "r")
             new_address_lines = new_network_file.readlines()
             new_network_file.close()
             
