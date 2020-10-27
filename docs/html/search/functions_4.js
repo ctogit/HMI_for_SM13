@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['fila_5fplan_5finspeccion',['fila_plan_inspeccion',['../classhmi__SM13_1_1hmi__SM13.html#aac97848c51f57544626f22e4b66c4424',1,'hmi_SM13::hmi_SM13']]],
-  ['fixture_5fcontrol',['fixture_control',['../classhmi__SM13_1_1hmi__SM13.html#a8e54a88c4f91b157e8a58fe90f4568a3',1,'hmi_SM13::hmi_SM13']]]
+  ['enviar_5fa_5fy_5frecibir_5fde_5frtu',['enviar_a_y_recibir_de_rtu',['../namespaceHMIcomRTU.html#a46117ab563cb1407c4b8efdd27bb3591',1,'HMIcomRTU']]]
 ];

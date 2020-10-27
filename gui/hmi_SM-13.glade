@@ -147,7 +147,6 @@
                     <property name="orientation">vertical</property>
                     <property name="adjustment">ajuste_ip_3</property>
                     <property name="climb_rate">5</property>
-                    <property name="value">192</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -182,7 +181,6 @@
                     <property name="orientation">vertical</property>
                     <property name="adjustment">ajuste_ip_2</property>
                     <property name="climb_rate">5</property>
-                    <property name="value">168</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -217,7 +215,6 @@
                     <property name="orientation">vertical</property>
                     <property name="adjustment">ajuste_ip_1</property>
                     <property name="climb_rate">5</property>
-                    <property name="value">1</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -252,7 +249,6 @@
                     <property name="orientation">vertical</property>
                     <property name="adjustment">ajuste_ip_0</property>
                     <property name="climb_rate">5</property>
-                    <property name="value">20</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -297,7 +293,6 @@
                 <property name="orientation">vertical</property>
                 <property name="adjustment">ajuste_puerto</property>
                 <property name="climb_rate">50</property>
-                <property name="value">5020</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -3397,6 +3392,7 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="inspection_boton_lift_up">
+                            <property name="name">lift_up</property>
                             <property name="width_request">50</property>
                             <property name="height_request">25</property>
                             <property name="visible">True</property>
@@ -3407,6 +3403,7 @@
                             <property name="margin_right">15</property>
                             <property name="margin_top">10</property>
                             <property name="margin_bottom">10</property>
+                            <signal name="clicked" handler="evento_lift_up" swapped="no"/>
                             <child>
                               <object class="GtkImage">
                                 <property name="visible">True</property>
@@ -3424,6 +3421,7 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="inspection_boton_lift_dwn">
+                            <property name="name">lift_down</property>
                             <property name="width_request">50</property>
                             <property name="height_request">25</property>
                             <property name="visible">True</property>
@@ -3434,6 +3432,7 @@
                             <property name="margin_right">15</property>
                             <property name="margin_top">10</property>
                             <property name="margin_bottom">10</property>
+                            <signal name="clicked" handler="evento_lift_down" swapped="no"/>
                             <child>
                               <object class="GtkImage">
                                 <property name="visible">True</property>
@@ -3455,6 +3454,7 @@
                             <property name="can_focus">False</property>
                             <child>
                               <object class="GtkToggleButton" id="inspection_boton_lift_dwn_tot">
+                                <property name="name">lift_down_total</property>
                                 <property name="width_request">50</property>
                                 <property name="height_request">25</property>
                                 <property name="visible">True</property>
@@ -3466,6 +3466,7 @@
                                 <property name="margin_right">10</property>
                                 <property name="margin_top">10</property>
                                 <property name="margin_bottom">50</property>
+                                <signal name="toggled" handler="evento_lift_down_total" swapped="no"/>
                                 <child>
                                   <object class="GtkImage">
                                     <property name="visible">True</property>
@@ -3481,6 +3482,7 @@
                             </child>
                             <child>
                               <object class="GtkToggleButton" id="inspection_boton_lift_up_tot">
+                                <property name="name">lift_up_total</property>
                                 <property name="width_request">50</property>
                                 <property name="height_request">25</property>
                                 <property name="visible">True</property>
@@ -3492,6 +3494,7 @@
                                 <property name="margin_right">10</property>
                                 <property name="margin_top">10</property>
                                 <property name="margin_bottom">50</property>
+                                <signal name="toggled" handler="evento_lift_up_total" swapped="no"/>
                                 <child>
                                   <object class="GtkImage">
                                     <property name="visible">True</property>

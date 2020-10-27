@@ -29,6 +29,8 @@ from gi.repository import Pango
 import sys
 import numpy as np
 import time
+from HMIcomRTU import *
+import socket
 
 class hmi_SM13():   
     global simu
@@ -68,12 +70,46 @@ class hmi_SM13():
         self.f_y_pitch = 0.0
         ## Contiene el valor de la separación entre centro y centro de las columnas de los tubos que forman el hx (varía según este)
         self.f_x_pitch = 0.0
+        ## Variable de tipo float contiene la posición, en grados, a la que se desea comandar el FH-ARM
+        self.f_posCmdArm = 0.0
+        ## Variable de tipo float contiene la posición, en grados, a la que se desea comandar el FH-POLE
+        self.f_posCmdPole = 0.0
+        ## Variable de tipo float contiene la posición, en grados, de la articulación FH-ARM
+        self.f_posActArm = 0.0
+        ## Variable de tipo float contiene la posición, en grados, de la articulación FH-POLE
+        self.f_posActPole = 0.0
+        ## Variable indica la velocidad con la que mueve la articulación ARM.
+        self.f_velActArm = 0.0
+        ## Variable indica la velocidad con la que mueve la articulación POLE.
+        self.f_velActPole = 0.0
+        ## Variable contiene el tiempo entre tramas de telemetría
+        self.ui_ms_refresco_telemetria = 1000
         ## Contiene el tipo de montaje respecto al hx.
         # 0: centro en caso de no especificar hx ni montaje,
         # 1: plan de inspección 1,
         # 2: plan de inspección 2,
         # 3: plan de inspección 3.
         self.ui_montaje = 0
+        ## Contiene el 1er byte de la dirección IP que apunta a RTU.
+        #Se inicializa en 0 pero el sistema la actualiza al
+        # arranque cuando lee el archivo network.csv.
+        self.ui_ip_0 = 0
+        ## Contiene 2do byte de la dirección IP
+        self.ui_ip_1 = 0
+        ## Contiene 3er byte de la dirección IP
+        self.ui_ip_2 = 0
+        ## Contiene 4to byte de la dirección IP
+        self.ui_ip_3 = 0
+        ## Contiene la dirección del puerto.
+        self.ui_puerto = 0
+        ## Contiene la columna elegida en el mazo de tubos del hx
+        self.ui_plan_col = 0
+        ## Contiene la fila elegida en el mazo de tubos del hx
+        self.ui_plan_row = 0
+        ## Variable contiene la velocidad deseada con que se quiere mover el FH-ARM en modo FR.
+        self.ui_velCmdArm = 0
+        ## Variable contiene la velocidad deseada con que se quiere mover el FH-POLE en modo FR.
+        self.ui_velCmdPole = 0
         ## Variable indica se activa si el motor se mueve pero no la lectura de enconder
         # False: sin alarmas de stall
         # True: alarma de stall
@@ -82,12 +118,30 @@ class hmi_SM13():
         # 0: simulador inactivo
         # 1: simulador activo
         self.b_simulador = 0
-        ## Contiene la columna elegida en el mazo de tubos del hx
-        self.ui_plan_col = 0
-        ## Contiene la fila elegida en el mazo de tubos del hx
-        self.ui_plan_row = 0
+        ## Variable booleana indica el estado del ZS superior del eje LIFT
+        self.b_limitUp = False
+        ## Variable booleana indica el estado del ZS inferior del eje LIFT
+        self.b_limitDwn = False
+        ## Variable tipo boleana que indica el estado de la conexión con la RTU
+        # 0: Desconexión
+        # 1: Conexión
+        self.b_connect = False
         ## Variable permite iniciar el TreeView una sola vez
         self.b_carga = 0
+        ## Variable acusa alarma de límite de movimiento horario en eje ARM (vía software)
+        self.b_cwLimitArm = False
+        ## Variable acusa alarma de límite de movimiento anti-horario en eje ARM (vía software)
+        self.b_ccwLimitArm = False
+        ## Variable acusa alarma de límite de movimiento horario en eje POLE (vía software)
+        self.b_cwLimitPole = False
+        ## Variable acusa alarma de límite de movimiento anti-horario en eje POLE (vía software)
+        self.b_ccwLimitPole = False
+        ## Variable acusa alarma de final de carrera superior en eje LIFT (vía ZS)
+        self.b_limitUp = False
+        ## Variable acusa alarma de final de carrera inferior en eje LIFT (vía ZS)
+        self.b_limitDown = False
+        ## Variable 
+        self.ui_status = 0
         ## Contiene el número de tubo elegido en el mazo de tubos del hx
         self.s_tubo_id = "TUBE.DEFAULT"
         ## Carga la lista de columnas del plan de inspección seleccionado
@@ -107,12 +161,22 @@ class hmi_SM13():
         ## Variable que indica el modo de operación del HMI
         # [STOP, FREE_RUN, LIFT, AUTOMATIC]
         self.s_mode = "STOP"
+        ## Variable indica la actividad del eje LIFT
+        self.s_liftDir = "STOP"
+        ## Variable indica el eje del FH
+        self.s_freeRunAxis = " "
+        ## Variable indica el sentido de giro con la que se desea mover las articulaciones
+        # ARM o POLE del FH.
+        self.s_freeRunDir = " "
+        ## Contiene la ruta a la carpeta SM-13.
+        # Cambiar esta línea para correr el HMI en otro sistema.
+        self.s_project_path = "/home/pi/Desktop"
         ## Contiene la ruta al archivo xml de la interfaz
-        self.s_gui_path = "/home/pi/Desktop/SM-13/hmi/gui/hmi_SM-13.glade"
+        self.s_gui_path = self.s_project_path + "/SM-13/hmi/gui/hmi_SM-13.glade"
         ## Contiene la ruta a la carpeta de archivos de configuración del sistema
-        self.s_cfg_files_robots_path = "/home/pi/Desktop/SM-13/hmi/cfg_files/Robots/"
+        self.s_cfg_files_robots_path = self.s_project_path + "/SM-13/hmi/cfg_files/Robots/"
         ## Contiene la ruta a la carpeta de archivos de configuración del sistema
-        self.s_cfg_files_hx_path = "/home/pi/Desktop/SM-13/hmi/cfg_files/Heat_exchangers/"
+        self.s_cfg_files_hx_path = self.s_project_path + "/SM-13/hmi/cfg_files/Heat_exchangers/"
         ## Contiene la ruta al archivo con datos del telemanipulador.
         # por defecto se selecciona SM-13
         self.s_archivo_fixture = self.s_cfg_files_robots_path + "Zetec/SM-13.csv"
@@ -125,6 +189,28 @@ class hmi_SM13():
         # Levanta la interfáz gráfica desde el archivo especificado
         self.builder.add_from_file(self.s_gui_path)
         
+        ## Variable tipo <socket> que almacena la identidad del socket 
+        # generado en la conexión establecida con la RTU.
+        self.s_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        ## Variable usada para guardar la dirección IP de la RTU
+        self.s_ip = "0.0.0.0"
+        ## Variable usada para guardar el puerto de conexión con la RTU
+        self.s_port = "0"
+        
+        # Se abre el archivo network.csv en modo lectura, se lo lee y se cierra. 
+        network_file = open(self.s_project_path + "/SM-13/hmi/cfg_files/network.csv", "r")
+        address_lines = network_file.readlines()
+        network_file.close()
+        # Se extraen la variables que contendrán la dir IP y el PUERTO
+        self.s_ip, self.s_port = address_lines[1].split(";")
+        
+        ## Array con las variables tipo float y enteras a enviar a RTU
+        self.a_HMIDataByte = self.f_posCmdArm, self.f_posCmdPole, self.ui_velCmdArm, self.ui_velCmdPole
+        ## Array con las variables tipo string a enviar a RTU
+        self.a_HMIDataString = self.s_mode, self.s_freeRunAxis, self.s_freeRunDir, self.s_ctrlEn, self.s_stallEn, self.s_liftDir
+        
+        
+        # Todas las señales que manejan los eventos que surgen de presionar botones en la HMI.
         señales = {
             "terminar_aplicacion":Gtk.main_quit,
             "evento_apagar": self.apagar,
@@ -153,9 +239,28 @@ class hmi_SM13():
             "evento_stop": self.detener_movimiento,
             "evento_red": self.ventana_red,
             "evento_cerrar_ventana_red": self.cerrar_ventana_red,
-            "evento_modificar_red": self.modificar_red
+            "evento_modificar_red": self.modificar_red,
+            "evento_lift_up": self.control_lift,
+            "evento_lift_down": self.control_lift,
+            "evento_lift_down_total": self.control_lift,
+            "evento_lift_up_total": self.control_lift
         }
         self.builder.connect_signals(señales)
+        
+        self.entrada_ip_0 = self.builder.get_object("red_boton_spin_ip_0")
+        self.entrada_ip_1 = self.builder.get_object("red_boton_spin_ip_1")
+        self.entrada_ip_2 = self.builder.get_object("red_boton_spin_ip_2")
+        self.entrada_ip_3 = self.builder.get_object("red_boton_spin_ip_3")
+        self.entrada_puerto = self.builder.get_object("red_boton_spin_puerto")
+        
+        # Se descompone la dir ip
+        s_ip_3, s_ip_2, s_ip_1, s_ip_0 = self.s_ip.split(".")
+        # y se muestran en el "entry" de la ventana de cfg de red.
+        self.entrada_ip_0.set_value(int(s_ip_0))
+        self.entrada_ip_1.set_value(int(s_ip_1))
+        self.entrada_ip_2.set_value(int(s_ip_2))
+        self.entrada_ip_3.set_value(int(s_ip_3))
+        self.entrada_puerto.set_value(int(self.s_port))
         
         ## Etiqueta pública de mensajes de la solapa Inicio
         self.inicio_etiqueta_msg = self.builder.get_object("inicio_etiqueta_msg")
@@ -199,13 +304,19 @@ class hmi_SM13():
         ## Widget del interrupor de control principal (nos aseguramos que inicie desactivado)
         self.inicio_switch_fixture_control = self.builder.get_object("inicio_switch_fixture_control")
         self.inicio_switch_fixture_control.set_active(False)
+        
+        self.b_boton_lift_up_total = self.builder.get_object("inspection_boton_lift_up_tot")
+
+        self.b_boton_lift_down_total = self.builder.get_object("inspection_boton_lift_dwn_tot")
 
         # Warning: deprecated!
         #self.window2.override_background_color(0, Gdk.RGBA(0.9,0.0,0.0,1.0))
         
         # Mensaje de bienvenida
         self.inicio_etiqueta_msg.set_text("Welcome to the NFC Human-Machine Interface!")
-        self.window.show()      
+        self.window.show()
+        
+        GLib.timeout_add(self.ui_ms_refresco_telemetria, self.telemetria)
         
     
     ##
@@ -687,6 +798,24 @@ class hmi_SM13():
         if button.get_active():
             if (button.get_label() == "off"):
                 self.f_incremento_jog = 0.0
+                self.inspection_etiqueta_msg.set_text("Jog control disabled...")
+                # Restablecemos la posición de la boquilla sin ningún Jog.
+                self.f_px_tubo -= self.f_incremento_acumulado_jog_col*self.f_x_pitch*2
+                self.f_py_tubo += self.f_incremento_acumulado_jog_row*self.f_y_pitch
+                
+                # Calcula los ángulos de los ejes POLE y ARM en base al corrimiento
+                self.f_pole, self.f_arm = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La)   
+            
+                if (self.b_simulador == 1):
+                    # Se refresca simulador ya que se está haciendo un ajuste fino de la boquilla.
+                    # no se suma el jog porque ya se lo hace arriba en esta misma función.
+                    simu.refrescar_grafico(self.f_px_tubo, self.f_py_tubo, self.f_pole, self.f_arm) 
+                
+                # Se resetea el Jog acumulado y se actualizan las etiquetas
+                self.f_incremento_acumulado_jog_col = 0.0
+                self.f_incremento_acumulado_jog_row = 0.0
+                self.inspection_etiqueta_valor_jog_row.set_text(str(round(self.f_incremento_acumulado_jog_row, 2)))
+                self.inspection_etiqueta_valor_jog_col.set_text(str(round(self.f_incremento_acumulado_jog_col, 2)))
             else:
                 self.f_incremento_jog = float(button.get_label())
             depurador(1, "HMI", "****************************************")
@@ -716,15 +845,21 @@ class hmi_SM13():
             self.actualizar_etiquetas_msg("Fixture harness is stalled...")
             return True
         
+        # Si no hay jog acumulado no hay nada que hacer aquí.
+        if (self.f_incremento_jog == 0.0):
+            self.inspection_etiqueta_msg.set_text("Select an increment to jog the end effector...")
+            return True
+            
+            
         # Obtiene el nombre del boton jog presionado
         s_boton_jog = button.get_name()
         
         if (s_boton_jog == "jog_to_east"):
-            self.f_px_tubo += self.f_incremento_jog*self.f_x_pitch
+            self.f_px_tubo += self.f_incremento_jog*self.f_x_pitch*2
             self.f_incremento_acumulado_jog_col += self.f_incremento_jog
             
         elif (s_boton_jog == "jog_to_west"):
-            self.f_px_tubo -= self.f_incremento_jog*self.f_x_pitch
+            self.f_px_tubo -= self.f_incremento_jog*self.f_x_pitch*2
             self.f_incremento_acumulado_jog_col -= self.f_incremento_jog
             
         if (s_boton_jog == "jog_to_north"):
@@ -732,7 +867,6 @@ class hmi_SM13():
             self.f_incremento_acumulado_jog_row += self.f_incremento_jog
         
         elif (s_boton_jog == "jog_to_south"):
-            
             self.f_py_tubo += self.f_incremento_jog*self.f_y_pitch
             self.f_incremento_acumulado_jog_row -= self.f_incremento_jog
             
@@ -741,6 +875,8 @@ class hmi_SM13():
             self.inspection_etiqueta_valor_jog_col.set_text(str(round(self.f_incremento_acumulado_jog_col, 2)))
         except:
             pass
+        
+        self.inspection_etiqueta_msg.set_text("Jogging the end effector position...")
             
         # Calcula los ángulos de los ejes POLE y ARM en base al corrimiento
         self.f_pole, self.f_arm = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La)   
@@ -822,37 +958,213 @@ class hmi_SM13():
     
     ##
     # @brief Función que implementa el botón "Modificar" en ventana de configuración
-    # de red. Luego actualiza el archivo de texto con la nueva dirección IP y puerto.
+    # de red. Luego actualiza el archivo de texto network.csv y las variables IP y puerto.
     # @param self Puntero al objeto HMI
     # @param button Botón "modificar"
     # @return none
     def modificar_red(self, button):
+        address_lines = [0]
+        new_address_lines = [0]
         
+        depurador(1, "HMI", "****************************************")
         ## Entradas para modificación de dirección IP y Puerto de red
-        #entrada_ip_0 = self.builder.get_object("red_entrada_ip_0")
-        #entrada_ip_1 = self.builder.get_object("red_entrada_ip_1")
-        #entrada_ip_2 = self.builder.get_object("red_entrada_ip_2")
-        entrada_ip_0 = self.builder.get_object("red_boton_spin_ip_0")
-        entrada_ip_1 = self.builder.get_object("red_boton_spin_ip_1")
-        entrada_ip_2 = self.builder.get_object("red_boton_spin_ip_2")
-        entrada_ip_3 = self.builder.get_object("red_boton_spin_ip_3")
-        entrada_puerto = self.builder.get_object("red_boton_spin_puerto")
         
-        self.ui_ip_0 = int(entrada_ip_0.get_value())
-        self.ui_ip_1 = int(entrada_ip_1.get_value())
-        self.ui_ip_2 = int(entrada_ip_2.get_value())
-        self.ui_ip_3 = int(entrada_ip_3.get_value())
-        self.ui_puerto = int(entrada_puerto.get_value())
-     
-        print("ip3: "+str(self.ui_ip_3))
-        print("ip2: "+str(self.ui_ip_2))
-        print("ip1: "+str(self.ui_ip_1))
-        print("ip0: "+str(self.ui_ip_0))
-        print("puerto: "+str(self.ui_puerto))
+        ui_ip_0 = int(self.entrada_ip_0.get_value())
+        ui_ip_1 = int(self.entrada_ip_1.get_value())
+        ui_ip_2 = int(self.entrada_ip_2.get_value())
+        ui_ip_3 = int(self.entrada_ip_3.get_value())
+        ui_puerto = int(self.entrada_puerto.get_value())
         
+        # Variables temporales que sirven para comparar cambios.
+        s_temp_ip = str(ui_ip_3)+"."+str(ui_ip_2)+"."+str(ui_ip_1)+"."+str(ui_ip_0)
+        s_temp_puerto = str(ui_puerto)
+        
+        # Se abre el archivo network.csv en modo lectura, se lo lee y se cierra. 
+        network_file = open(self.s_project_path + "/SM-13/hmi/cfg_files/network.csv", "r")
+        address_lines = network_file.readlines()
+        network_file.close()
+        
+        s_xip, s_xpuerto = address_lines[1].split(";")
+        
+        # Se comprueban cambios.
+        if (s_temp_ip == s_xip and s_temp_puerto == s_xpuerto):
+            # Si no hubo cambios en la dirección de red no se sobreescribe el archivo.
+            depurador(1, "HMI", "- No se modificaron parámetros de red")
+            depurador(1, "HMI", "- IP actual: "+ s_xip + ", Puerto actual: " + s_xpuerto)
+            depurador(1, "HMI", " ")
+            return True
+            
+        else:
+            # Si hay diferencias, se elimina la fila con la IP y PORT anteriores.
+            del address_lines[1]
+            
+            # Como hay cambios, se abre el archivo network.csv en modo escritura,
+            # se actualizan los cambios y se cierra. 
+            new_network_file = open(self.s_project_path + "/SM-13/hmi/cfg_files/network.csv", "w+")
+            new_address_line = s_temp_ip + ";" + s_temp_puerto
+            new_network_file.write("IP address;Port\n")
+            new_network_file.write(new_address_line)
+            new_network_file.close()
+            
+            # Se abre el archivo network.csv en modo lectura, se lo lee
+            # para asegurarse que se implementó el cambio de IP, PORT y se lo cierra. 
+            new_network_file = open(self.s_project_path + "/SM-13/hmi/cfg_files/network.csv", "r")
+            new_address_lines = new_network_file.readlines()
+            new_network_file.close()
+            
+            # Se actualizan la variables principales que contienen la IP y el PORT
+            self.s_ip, self.s_port = new_address_lines[1].split(";")
+        
+            depurador(1, "HMI", "- IP anterior: "+ s_xip + ", Puerto anterior: " + s_xpuerto)
+            depurador(1, "HMI", "- IP nueva   : "+ self.s_ip + ", Puerto nuevo: " + self.s_port)
+            
         return True
+    
+    ##
+    # @brief Función que implementa el comando del eje LIFT
+    # @param self Puntero al objeto HMI
+    # @param button Botones Lift: "UP/DOWN/UP-TOT/DOWN-TOT"
+    # @return none
+    def control_lift(self, button):
+        # Antes de mover verifica si está activado el control principal
+        if (self.s_ctrlEn == "DISABLE_CONTROL"):
+            self.actualizar_etiquetas_msg("Fixture control is disabled...")
+            return True        
         
+        # El tiempo en que se mantiene la variable s_liftDir diferente de STOP
+        ui_delay_ms_pulsador = 2000
+        
+        # Obtiene el nombre del boton jog presionado
+        s_boton_lift = button.get_name()
+        
+        # botones tipo pulsador afectados por temporizador
+        if (s_boton_lift == "lift_up"):
+            if(self.b_limitUp == True):
+                self.s_liftDir = "STOP"
+                self.inspection_etiqueta_msg.set_text("Lift upper limit alarm!")
+                depurador(1, "HMI", "****************************************")
+                depurador(1, "HMI", "- Límite superior alcanzado en LIFT")
+                depurador(1, "HMI", " ")
+                return
+            else:
+                # si ZS no acusa alarma desde RTU se mueve lift
+                self.s_liftDir = "LIFT_UP"
+                GLib.timeout_add(ui_delay_ms_pulsador, self.detener_lift)
+                
+        elif (s_boton_lift == "lift_down"):
+            if(self.b_limitDwn == True):
+                self.s_liftDir = "STOP"
+                self.inspection_etiqueta_msg.set_text("Lift lower limit alarm!")
+                depurador(1, "HMI", "****************************************")
+                depurador(1, "HMI", "- Límite inferior alcanzado en LIFT")
+                depurador(1, "HMI", " ")
+                return
+            else:
+                # si ZS no acusa alarma desde RTU se mueve lift
+                self.s_liftDir = "LIFT_DOWN"
+                GLib.timeout_add(ui_delay_ms_pulsador, self.detener_lift)
+            
+        # botones tipo toggle no afectados por temporizador            
+        if (s_boton_lift == "lift_up_total"):
+            # se verifica si el botón esta presionado o suelto
+            b_boton_lift_up_tot = button.get_active()
+            if (b_boton_lift_up_tot == True):
+                # Si se activó un toggle_tot primero aseguro que el opuesto
+                # se desactive
+                self.b_boton_lift_down_total.set_active(False)
+                if(self.b_limitUp == True):
+                    self.s_liftDir = "STOP"
+                    self.inspection_etiqueta_msg.set_text("Lift upper limit alarm!")
+                    depurador(1, "HMI", "****************************************")
+                    depurador(1, "HMI", "- Límite superior alcanzado en LIFT")
+                    depurador(1, "HMI", " ")
+                    return
+                else:
+                    # si ZS no acusa alarma desde RTU se mueve lift
+                    self.s_liftDir = "LIFT_UP"
+            if (b_boton_lift_up_tot == False):
+                self.detener_lift()
+                return
+                
+        elif (s_boton_lift == "lift_down_total"):
+            # se verifica si el botón esta presionado o suelto
+            b_boton_lift_down_tot = button.get_active()
+            if (b_boton_lift_down_tot == True):
+                # Si se activó un toggle_tot primero aseguro que el opuesto
+                # se desactive
+                self.b_boton_lift_up_total.set_active(False)
+                if(self.b_limitDwn == True):
+                    self.s_liftDir = "STOP"
+                    self.inspection_etiqueta_msg.set_text("Lift lower limit alarm!")
+                    depurador(1, "HMI", "****************************************")
+                    depurador(1, "HMI", "- Límite inferior alcanzado en LIFT")
+                    depurador(1, "HMI", " ")
+                    return
+                else:
+                    # si ZS no acusa alarma desde RTU se mueve lift
+                    self.s_liftDir = "LIFT_DOWN"
+            if (b_boton_lift_down_tot == False):
+                self.detener_lift()
+                return
+            
+        depurador(1, "HMI", "****************************************")
+        depurador(1, "HMI", "- Moving "+ self.s_liftDir)
+        depurador(1, "HMI", " ")
+        self.inspection_etiqueta_msg.set_text("Moving "+ self.s_liftDir + "...")
+        return 
+    
+    ##
+    # @brief Función que coloca la variable de direccion del eje LIFT en STOP.
+    # también sirve para detener el temporizado de los pulsadores asociados
+    # al eje LIFT mediante el retorno de un False.
+    # @param self Puntero al objeto HMI
+    # @return False y detiene el GLib.timeout_add() que creo la tarea.
+    def detener_lift(self):
+        
+        self.s_liftDir = "STOP"
+        
+        depurador(1, "HMI", "****************************************")
+        depurador(1, "HMI", "- " + self.s_liftDir + " LIFT")
+        depurador(1, "HMI", " ")
+        
+        self.inspection_etiqueta_msg.set_text("Stopping LIFT...")
+        
+        # retorna False para detener el temporizador
+        return False
+    
+    ##
+    # @brief Función que se repite periódicamente, inicia la conexión con RTU
+    # y gestiona el intercambio de datos entre HMI y RTU.
+    def telemetria(self):
+        if self.b_connect == False:
+            try:
+                self.s_sock, self.b_connect = RTU_connect(self.b_connect, self.s_ip, self.s_port)
+                depurador(1, "HMI", "****************************************")
+                depurador(1, "HMI", "- IP actual:" + self.s_ip + " / Port: " + self.s_port)
+                depurador(1, "HMI", "- Estado conexión con RTU: " + str(self.b_connect))
+                depurador(1, "HMI", " ")
+            except socket.error as err:
+                print (err)
 
+        else:
+            self.a_RTUData, self.b_connect, self.s_sock = enviar_a_y_recibir_de_rtu(self.a_HMIDataByte, self.a_HMIDataString, self.b_connect, self.s_sock, self.s_ip, self.s_port)
+            if self.b_connect == True:
+                self.f_posActArm = self.a_RTUData[0]
+                self.f_posActPole = self.a_RTUData[1]
+                self.f_velActArm = self.a_RTUData[2]
+                self.f_velActPole = self.a_RTUData[3]
+                self.b_cwLimitArm = self.a_RTUData[4]
+                self.b_ccwLimitArm = self.a_RTUData[5]
+                self.b_cwLimitPole = self.a_RTUData[6]
+                self.b_ccwLimitPole = self.a_RTUData[7]
+                self.b_limitUp = self.a_RTUData[8]
+                self.b_limitDown = self.a_RTUData[9]
+                self.b_stallAlm = self.a_RTUData[10]
+                self.ui_status = self.a_RTUData[11]
+                
+        return True
+                
+                
 if __name__ == "__main__":
     hmi_SM13()
     Gtk.main()

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['offset',['offset',['../classhmi__SM13_1_1hmi__SM13.html#ad6fa6546e4e10395c27b7911c9e27398',1,'hmi_SM13::hmi_SM13']]]
+  ['modificar_5fred',['modificar_red',['../classhmi__SM13_1_1hmi__SM13.html#ae873886e9e3019971ca7aae19fa597a7',1,'hmi_SM13::hmi_SM13']]],
+  ['mover_5fa_5fseleccion',['mover_a_seleccion',['../classhmi__SM13_1_1hmi__SM13.html#a064cd0df769628ea399c81a5f3bd59b5',1,'hmi_SM13::hmi_SM13']]]
 ];

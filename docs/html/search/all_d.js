@@ -1,21 +1,10 @@
 var searchData=
 [
-  ['s_5farchivo_5ffixture',['s_archivo_fixture',['../classhmi__SM13_1_1hmi__SM13.html#aeb2b6776ecec9d0510e10c9342bd7ebd',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5farchivo_5fhx',['s_archivo_hx',['../classhmi__SM13_1_1hmi__SM13.html#a46e40753fc1725c5a44fe3c5ae3102b0',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5farchivo_5fplan',['s_archivo_plan',['../classhmi__SM13_1_1hmi__SM13.html#a43d4b8d239e2d66d764b67466168a3c4',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5fcfg_5ffiles_5fhx_5fpath',['s_cfg_files_hx_path',['../classhmi__SM13_1_1hmi__SM13.html#a2cf0418cf22d28c1f2b625d30f02aee8',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5fcfg_5ffiles_5frobots_5fpath',['s_cfg_files_robots_path',['../classhmi__SM13_1_1hmi__SM13.html#a231b74fd304f11eaaf1a2051cdaa5061',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5fctrlen',['s_ctrlEn',['../classhmi__SM13_1_1hmi__SM13.html#ae806ea0b5c8ece9905885dc256e781b1',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5fgui_5fpath',['s_gui_path',['../classhmi__SM13_1_1hmi__SM13.html#afd1afb1421b8ebdc11b29a5548f3f736',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5fmode',['s_mode',['../classhmi__SM13_1_1hmi__SM13.html#a4dea02e7a64e7dd07dfa7ec48ee6ab92',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5fstallen',['s_stallEn',['../classhmi__SM13_1_1hmi__SM13.html#ad4a9fe108004bbf1a2cfecee3b48a421',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5ftipo_5ffixture',['s_tipo_fixture',['../classsimulador__SM13_1_1simulador__SM13.html#a0bc09fb62b4bbd1ec64ba971d114ac0a',1,'simulador_SM13::simulador_SM13']]],
-  ['s_5ftubo_5fid',['s_tubo_id',['../classhmi__SM13_1_1hmi__SM13.html#a8dbb50e3f7cbdfeeb0a5940c57c30d3f',1,'hmi_SM13::hmi_SM13']]],
-  ['seleccion_5ffixture',['seleccion_fixture',['../classhmi__SM13_1_1hmi__SM13.html#a694d4a64e65a136a27881a2acc418e48',1,'hmi_SM13::hmi_SM13']]],
-  ['seleccion_5fhx',['seleccion_hx',['../classhmi__SM13_1_1hmi__SM13.html#a13b9642b5c01a6034bc6398444c0b7b0',1,'hmi_SM13::hmi_SM13']]],
-  ['seleccion_5fincremento_5fjog',['seleccion_incremento_jog',['../classhmi__SM13_1_1hmi__SM13.html#ae45f46a61f46a3436228ebad1279b553',1,'hmi_SM13::hmi_SM13']]],
-  ['seleccion_5fplan',['seleccion_plan',['../classhmi__SM13_1_1hmi__SM13.html#a2196a8c6bd96630aabafe8f9472326c8',1,'hmi_SM13::hmi_SM13']]],
-  ['siguiente_5ftubo',['siguiente_tubo',['../classhmi__SM13_1_1hmi__SM13.html#a59a08e0e07a9f9929d2aa11971f86753',1,'hmi_SM13::hmi_SM13']]],
-  ['simulador_5fsm13',['simulador_SM13',['../classsimulador__SM13_1_1simulador__SM13.html',1,'simulador_SM13'],['../namespacesimulador__SM13.html',1,'simulador_SM13']]],
-  ['simulador_5fsm13_2epy',['simulador_SM13.py',['../simulador__SM13_8py.html',1,'']]]
+  ['refrescar_5fgrafico',['refrescar_grafico',['../classsimulador__SM13_1_1simulador__SM13.html#a2d08bf0d3eafa7b2ff58fd790ae08e5b',1,'simulador_SM13::simulador_SM13']]],
+  ['reiniciar',['reiniciar',['../classhmi__SM13_1_1hmi__SM13.html#ac2e6b69a96f8422a0ab4684ee54f852c',1,'hmi_SM13::hmi_SM13']]],
+  ['rlist',['rList',['../namespaceClientPy.html#ab23378349b18df1bbf86a33b110d5ebe',1,'ClientPy']]],
+  ['rtu_5fconnect',['RTU_connect',['../namespaceHMIcomRTU.html#ad6ca5b89dcb16f7cd06c784348bfeb53',1,'HMIcomRTU']]],
+  ['rtudata',['RTUData',['../namespaceClientPy.html#a7c6991130a14475520693910ac24d50f',1,'ClientPy.RTUData()'],['../namespaceClientPy.html#a7a8d6be5564e24d811efeb7aa0f1f563',1,'ClientPy.RTUdata()']]],
+  ['rtutranslate',['RTUTranslate',['../namespaceHMIcomRTU.html#a382004458da297adb915fbd21743c88f',1,'HMIcomRTU']]],
+  ['run_5fsimulador',['run_simulador',['../classhmi__SM13_1_1hmi__SM13.html#a7a8bea9a0987809b1e4a553a24ef159d',1,'hmi_SM13::hmi_SM13']]]
 ];

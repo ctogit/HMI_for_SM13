@@ -1,14 +1,20 @@
 var searchData=
 [
-  ['s_5farchivo_5ffixture',['s_archivo_fixture',['../classhmi__SM13_1_1hmi__SM13.html#aeb2b6776ecec9d0510e10c9342bd7ebd',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5farchivo_5fhx',['s_archivo_hx',['../classhmi__SM13_1_1hmi__SM13.html#a46e40753fc1725c5a44fe3c5ae3102b0',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5farchivo_5fplan',['s_archivo_plan',['../classhmi__SM13_1_1hmi__SM13.html#a43d4b8d239e2d66d764b67466168a3c4',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5fcfg_5ffiles_5fhx_5fpath',['s_cfg_files_hx_path',['../classhmi__SM13_1_1hmi__SM13.html#a2cf0418cf22d28c1f2b625d30f02aee8',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5fcfg_5ffiles_5frobots_5fpath',['s_cfg_files_robots_path',['../classhmi__SM13_1_1hmi__SM13.html#a231b74fd304f11eaaf1a2051cdaa5061',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5fctrlen',['s_ctrlEn',['../classhmi__SM13_1_1hmi__SM13.html#ae806ea0b5c8ece9905885dc256e781b1',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5fgui_5fpath',['s_gui_path',['../classhmi__SM13_1_1hmi__SM13.html#afd1afb1421b8ebdc11b29a5548f3f736',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5fmode',['s_mode',['../classhmi__SM13_1_1hmi__SM13.html#a4dea02e7a64e7dd07dfa7ec48ee6ab92',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5fstallen',['s_stallEn',['../classhmi__SM13_1_1hmi__SM13.html#ad4a9fe108004bbf1a2cfecee3b48a421',1,'hmi_SM13::hmi_SM13']]],
-  ['s_5ftipo_5ffixture',['s_tipo_fixture',['../classsimulador__SM13_1_1simulador__SM13.html#a0bc09fb62b4bbd1ec64ba971d114ac0a',1,'simulador_SM13::simulador_SM13']]],
-  ['s_5ftubo_5fid',['s_tubo_id',['../classhmi__SM13_1_1hmi__SM13.html#a8dbb50e3f7cbdfeeb0a5940c57c30d3f',1,'hmi_SM13::hmi_SM13']]]
+  ['i_5fbuffer_5frcv',['i_BUFFER_RCV',['../namespaceHMIcomRTU.html#a05d5d61cd3dfc155db075b2766098184',1,'HMIcomRTU']]],
+  ['i_5fmax_5fcuentas',['i_MAX_CUENTAS',['../namespaceHMIcomRTU.html#a52e4c5b328b1d843bffdcc513d974200',1,'HMIcomRTU']]],
+  ['inicio_5fetiqueta_5festado_5fmain_5fcontrol',['inicio_etiqueta_estado_main_control',['../classhmi__SM13_1_1hmi__SM13.html#a2fe69622048283e4d3360b71cacca3eb',1,'hmi_SM13::hmi_SM13']]],
+  ['inicio_5fetiqueta_5festado_5fstall',['inicio_etiqueta_estado_stall',['../classhmi__SM13_1_1hmi__SM13.html#a0889fd05bcbd99821b3c158283819aae',1,'hmi_SM13::hmi_SM13']]],
+  ['inicio_5fetiqueta_5fmsg',['inicio_etiqueta_msg',['../classhmi__SM13_1_1hmi__SM13.html#a0b59982f7c2005e424ec795e0ab34dcc',1,'hmi_SM13::hmi_SM13']]],
+  ['inicio_5fswitch_5ffixture_5fcontrol',['inicio_switch_fixture_control',['../classhmi__SM13_1_1hmi__SM13.html#a1d732f8019c447d0a3108f0b00abe8f7',1,'hmi_SM13::hmi_SM13']]],
+  ['inivel_5ftest0',['iNIVEL_TEST0',['../namespacedepurador.html#ab1b248b05e9b1ec69d323b3069a6e580',1,'depurador']]],
+  ['inivel_5ftest1',['iNIVEL_TEST1',['../namespacedepurador.html#a7d5766dac205660e76549cbefe655162',1,'depurador']]],
+  ['inivel_5ftest2',['iNIVEL_TEST2',['../namespacedepurador.html#a7c30cafe0b9e0f03f08ce7665a0b424e',1,'depurador']]],
+  ['inivel_5ftest3',['iNIVEL_TEST3',['../namespacedepurador.html#a55f56c9e0f078eef7b4a66cdf057d37a',1,'depurador']]],
+  ['inivel_5ftest4',['iNIVEL_TEST4',['../namespacedepurador.html#abc9d37e130f0e8f7364d66c656cf82b6',1,'depurador']]],
+  ['inspection_5fetiqueta_5fboton_5fsimulador',['inspection_etiqueta_boton_simulador',['../classhmi__SM13_1_1hmi__SM13.html#a6768f73d7c133c72203b48b880781329',1,'hmi_SM13::hmi_SM13']]],
+  ['inspection_5fetiqueta_5fmsg',['inspection_etiqueta_msg',['../classhmi__SM13_1_1hmi__SM13.html#a617a971e264ad2c18e0a474cac707046',1,'hmi_SM13::hmi_SM13']]],
+  ['inspection_5fetiqueta_5fvalor_5fjog_5fcol',['inspection_etiqueta_valor_jog_col',['../classhmi__SM13_1_1hmi__SM13.html#a666c8dc593553cc2def145c664cabc19',1,'hmi_SM13::hmi_SM13']]],
+  ['inspection_5fetiqueta_5fvalor_5fjog_5frow',['inspection_etiqueta_valor_jog_row',['../classhmi__SM13_1_1hmi__SM13.html#a35a2400a89040ba1a8071a49f60933d0',1,'hmi_SM13::hmi_SM13']]],
+  ['inspection_5ftree_5fview',['inspection_tree_view',['../classhmi__SM13_1_1hmi__SM13.html#adeb26c646a14ac510b8a338621b61280',1,'hmi_SM13::hmi_SM13']]],
+  ['iseveridad',['iSeveridad',['../namespacedepurador.html#a5c7774935c427322d6e2934cd82c1b24',1,'depurador']]]
 ];
