@@ -1,4 +1,22 @@
 var searchData=
 [
-  ['lista_5ftubos',['lista_tubos',['../classhmi__SM13_1_1hmi__SM13.html#ab47178f915bd4af01ff5227f11439f50',1,'hmi_SM13::hmi_SM13']]]
+  ['s_5farchivo_5ffixture',['s_archivo_fixture',['../classhmi__SM13_1_1hmi__SM13.html#aeb2b6776ecec9d0510e10c9342bd7ebd',1,'hmi_SM13::hmi_SM13']]],
+  ['s_5farchivo_5fhx',['s_archivo_hx',['../classhmi__SM13_1_1hmi__SM13.html#a46e40753fc1725c5a44fe3c5ae3102b0',1,'hmi_SM13::hmi_SM13']]],
+  ['s_5farchivo_5fplan',['s_archivo_plan',['../classhmi__SM13_1_1hmi__SM13.html#a43d4b8d239e2d66d764b67466168a3c4',1,'hmi_SM13::hmi_SM13']]],
+  ['s_5fcfg_5ffiles_5fhx_5fpath',['s_cfg_files_hx_path',['../classhmi__SM13_1_1hmi__SM13.html#a2cf0418cf22d28c1f2b625d30f02aee8',1,'hmi_SM13::hmi_SM13']]],
+  ['s_5fcfg_5ffiles_5frobots_5fpath',['s_cfg_files_robots_path',['../classhmi__SM13_1_1hmi__SM13.html#a231b74fd304f11eaaf1a2051cdaa5061',1,'hmi_SM13::hmi_SM13']]],
+  ['s_5fclient_5fid',['s_CLIENT_ID',['../namespaceHMIcomRTU.html#a195658a23a28bc3dd797bd8f1f4f743f',1,'HMIcomRTU']]],
+  ['s_5fctrlen',['s_ctrlEn',['../classhmi__SM13_1_1hmi__SM13.html#ae806ea0b5c8ece9905885dc256e781b1',1,'hmi_SM13::hmi_SM13']]],
+  ['s_5ffreerunaxis',['s_freeRunAxis',['../classhmi__SM13_1_1hmi__SM13.html#ab98c74faa6196d6427c16ddd36a47ed5',1,'hmi_SM13::hmi_SM13']]],
+  ['s_5ffreerundir',['s_freeRunDir',['../classhmi__SM13_1_1hmi__SM13.html#a834734b27a1a3947f95781afe5c7b5fe',1,'hmi_SM13::hmi_SM13']]],
+  ['s_5fgui_5fpath',['s_gui_path',['../classhmi__SM13_1_1hmi__SM13.html#afd1afb1421b8ebdc11b29a5548f3f736',1,'hmi_SM13::hmi_SM13']]],
+  ['s_5fip',['s_ip',['../classhmi__SM13_1_1hmi__SM13.html#aa91a71b06efa7d74e59858f76dae367e',1,'hmi_SM13::hmi_SM13']]],
+  ['s_5fliftdir',['s_liftDir',['../classhmi__SM13_1_1hmi__SM13.html#addd146036e1bb76b3389f8f5705c9e51',1,'hmi_SM13::hmi_SM13']]],
+  ['s_5fmode',['s_mode',['../classhmi__SM13_1_1hmi__SM13.html#a4dea02e7a64e7dd07dfa7ec48ee6ab92',1,'hmi_SM13::hmi_SM13']]],
+  ['s_5fport',['s_port',['../classhmi__SM13_1_1hmi__SM13.html#acc79cc0d934e6fc5b0d28dff20acc6c9',1,'hmi_SM13::hmi_SM13']]],
+  ['s_5fproject_5fpath',['s_project_path',['../classhmi__SM13_1_1hmi__SM13.html#a90e7dd8f49fbf4d61e4c900c9d99adf4',1,'hmi_SM13::hmi_SM13']]],
+  ['s_5fsock',['s_sock',['../classhmi__SM13_1_1hmi__SM13.html#a4c8459c8ea746c2599143af7cca48e18',1,'hmi_SM13::hmi_SM13']]],
+  ['s_5fstallen',['s_stallEn',['../classhmi__SM13_1_1hmi__SM13.html#ad4a9fe108004bbf1a2cfecee3b48a421',1,'hmi_SM13::hmi_SM13']]],
+  ['s_5ftipo_5ffixture',['s_tipo_fixture',['../classsimulador__SM13_1_1simulador__SM13.html#a0bc09fb62b4bbd1ec64ba971d114ac0a',1,'simulador_SM13::simulador_SM13']]],
+  ['s_5ftubo_5fid',['s_tubo_id',['../classhmi__SM13_1_1hmi__SM13.html#a8dbb50e3f7cbdfeeb0a5940c57c30d3f',1,'hmi_SM13::hmi_SM13']]]
 ];

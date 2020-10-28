@@ -2,6 +2,10 @@ var searchData=
 [
   ['b_5fboton_5flift_5fdown_5ftotal',['b_boton_lift_down_total',['../classhmi__SM13_1_1hmi__SM13.html#aaa9f600757bae31d6edfdc55bb35f1c1',1,'hmi_SM13::hmi_SM13']]],
   ['b_5fboton_5flift_5fup_5ftotal',['b_boton_lift_up_total',['../classhmi__SM13_1_1hmi__SM13.html#a554a5706c1538cab26afd70d417c4679',1,'hmi_SM13::hmi_SM13']]],
+  ['b_5fboton_5ftoggle_5farm_5fccw',['b_boton_toggle_arm_ccw',['../classhmi__SM13_1_1hmi__SM13.html#a30313aa837da0307c1f141167e9325db',1,'hmi_SM13::hmi_SM13']]],
+  ['b_5fboton_5ftoggle_5farm_5fcw',['b_boton_toggle_arm_cw',['../classhmi__SM13_1_1hmi__SM13.html#a0defc69583dc0c8c62964227708a08e0',1,'hmi_SM13::hmi_SM13']]],
+  ['b_5fboton_5ftoggle_5fpole_5fccw',['b_boton_toggle_pole_ccw',['../classhmi__SM13_1_1hmi__SM13.html#a86644c25fb8dd4bd99d752e48a3b6115',1,'hmi_SM13::hmi_SM13']]],
+  ['b_5fboton_5ftoggle_5fpole_5fcw',['b_boton_toggle_pole_cw',['../classhmi__SM13_1_1hmi__SM13.html#af567ec32ed187e0833731257c210afb9',1,'hmi_SM13::hmi_SM13']]],
   ['b_5fcarga',['b_carga',['../classhmi__SM13_1_1hmi__SM13.html#a320a3b087118be7ec396c1e3126d3d56',1,'hmi_SM13::hmi_SM13']]],
   ['b_5fccwlimitarm',['b_ccwLimitArm',['../classhmi__SM13_1_1hmi__SM13.html#a6316f41db64361f6084e515029a7250c',1,'hmi_SM13::hmi_SM13']]],
   ['b_5fccwlimitpole',['b_ccwLimitPole',['../classhmi__SM13_1_1hmi__SM13.html#a075dcb542157316455f01ccc653e0a43',1,'hmi_SM13::hmi_SM13']]],

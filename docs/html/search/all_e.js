@@ -23,9 +23,7 @@ var searchData=
   ['seleccion_5fhx',['seleccion_hx',['../classhmi__SM13_1_1hmi__SM13.html#a13b9642b5c01a6034bc6398444c0b7b0',1,'hmi_SM13::hmi_SM13']]],
   ['seleccion_5fincremento_5fjog',['seleccion_incremento_jog',['../classhmi__SM13_1_1hmi__SM13.html#ae45f46a61f46a3436228ebad1279b553',1,'hmi_SM13::hmi_SM13']]],
   ['seleccion_5fplan',['seleccion_plan',['../classhmi__SM13_1_1hmi__SM13.html#a2196a8c6bd96630aabafe8f9472326c8',1,'hmi_SM13::hmi_SM13']]],
-  ['server_5faddress',['server_address',['../namespaceClientPy.html#a47b1e5a3992c5c4230058925d22dc1e0',1,'ClientPy']]],
   ['siguiente_5ftubo',['siguiente_tubo',['../classhmi__SM13_1_1hmi__SM13.html#a59a08e0e07a9f9929d2aa11971f86753',1,'hmi_SM13::hmi_SM13']]],
   ['simulador_5fsm13',['simulador_SM13',['../classsimulador__SM13_1_1simulador__SM13.html',1,'simulador_SM13'],['../namespacesimulador__SM13.html',1,'simulador_SM13']]],
-  ['simulador_5fsm13_2epy',['simulador_SM13.py',['../simulador__SM13_8py.html',1,'']]],
-  ['sock',['sock',['../namespaceClientPy.html#a6f3a42a6e2447bdc41d1dedba98c762c',1,'ClientPy']]]
+  ['simulador_5fsm13_2epy',['simulador_SM13.py',['../simulador__SM13_8py.html',1,'']]]
 ];

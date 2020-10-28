@@ -1534,6 +1534,7 @@
                     </child>
                     <child>
                       <object class="GtkButton">
+                        <property name="name">fr_push_arm_cw</property>
                         <property name="width_request">50</property>
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
@@ -1544,6 +1545,7 @@
                         <property name="margin_right">20</property>
                         <property name="margin_top">20</property>
                         <property name="margin_bottom">10</property>
+                        <signal name="clicked" handler="evento_arm_cw_push" swapped="no"/>
                         <child>
                           <object class="GtkImage">
                             <property name="visible">True</property>
@@ -1560,6 +1562,7 @@
                     </child>
                     <child>
                       <object class="GtkButton">
+                        <property name="name">fr_push_arm_ccw</property>
                         <property name="width_request">50</property>
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
@@ -1570,6 +1573,7 @@
                         <property name="margin_right">20</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
+                        <signal name="clicked" handler="evento_arm_ccw_push" swapped="no"/>
                         <child>
                           <object class="GtkImage">
                             <property name="visible">True</property>
@@ -1645,7 +1649,8 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkToggleButton">
+                      <object class="GtkToggleButton" id="fr_toggle_arm_cw">
+                        <property name="name">fr_toggle_arm_cw</property>
                         <property name="width_request">75</property>
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
@@ -1656,6 +1661,7 @@
                         <property name="margin_right">10</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
+                        <signal name="toggled" handler="evento_arm_cw_toggle" swapped="no"/>
                         <child>
                           <object class="GtkImage">
                             <property name="visible">True</property>
@@ -1671,7 +1677,8 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkToggleButton">
+                      <object class="GtkToggleButton" id="fr_toggle_arm_ccw">
+                        <property name="name">fr_toggle_arm_ccw</property>
                         <property name="width_request">75</property>
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
@@ -1682,6 +1689,7 @@
                         <property name="margin_right">10</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
+                        <signal name="toggled" handler="evento_arm_ccw_toggle" swapped="no"/>
                         <child>
                           <object class="GtkImage">
                             <property name="visible">True</property>
@@ -1850,6 +1858,7 @@
                     </child>
                     <child>
                       <object class="GtkButton">
+                        <property name="name">fr_push_pole_cw</property>
                         <property name="width_request">50</property>
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
@@ -1860,6 +1869,7 @@
                         <property name="margin_right">20</property>
                         <property name="margin_top">20</property>
                         <property name="margin_bottom">10</property>
+                        <signal name="clicked" handler="evento_pole_cw_push" swapped="no"/>
                         <child>
                           <object class="GtkImage">
                             <property name="visible">True</property>
@@ -1876,6 +1886,7 @@
                     </child>
                     <child>
                       <object class="GtkButton">
+                        <property name="name">fr_push_pole_ccw</property>
                         <property name="width_request">50</property>
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
@@ -1886,6 +1897,7 @@
                         <property name="margin_right">20</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
+                        <signal name="clicked" handler="evento_pole_ccw_push" swapped="no"/>
                         <child>
                           <object class="GtkImage">
                             <property name="visible">True</property>
@@ -1961,7 +1973,8 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkToggleButton">
+                      <object class="GtkToggleButton" id="fr_toggle_pole_cw">
+                        <property name="name">fr_toggle_pole_cw</property>
                         <property name="width_request">75</property>
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
@@ -1972,6 +1985,7 @@
                         <property name="margin_right">10</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
+                        <signal name="toggled" handler="evento_pole_cw_toggle" swapped="no"/>
                         <child>
                           <object class="GtkImage">
                             <property name="visible">True</property>
@@ -1987,7 +2001,8 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkToggleButton">
+                      <object class="GtkToggleButton" id="fr_toggle_pole_ccw">
+                        <property name="name">fr_toggle_pole_ccw</property>
                         <property name="width_request">75</property>
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
@@ -1998,6 +2013,7 @@
                         <property name="margin_right">10</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
+                        <signal name="toggled" handler="evento_pole_ccw_toggle" swapped="no"/>
                         <child>
                           <object class="GtkImage">
                             <property name="visible">True</property>

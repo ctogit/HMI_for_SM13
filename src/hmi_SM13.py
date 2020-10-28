@@ -37,8 +37,13 @@ class hmi_SM13():
     
     ## El constructor del HMI
     def __init__(self):
-        ## Variable contiene el tiempo entre tramas de telemetría
-        UI_MS_REFRESCO_TELEMETRIA = 1000
+        ## Constante contiene el tiempo entre tramas de telemetría
+        self.ui_REFRESCO_ms_TELEMETRIA = 1000
+        ## Constante indica el tiempo en que una variable queda activada antes
+        # de pasar el modo a STOP otra vez
+        self.ui_DELAY_ms_PULSADOR = 1200
+        ## Constante indica cada cuantos refrescos de telemetría se hace un intento de conexión
+        self.ui_REINTENTAR = 10       
         # Atributos públicos de la clase hmi_SM13
         ## Contiene el punto X en pulgadas de la posición de la boquilla.
         self.f_px_tubo = 0.0
@@ -84,6 +89,9 @@ class hmi_SM13():
         self.f_velActArm = 0.0
         ## Variable indica la velocidad con la que mueve la articulación POLE.
         self.f_velActPole = 0.0
+        ## Variable para evitar que se hagan intentos de conexión tan seguidos cuando no
+        # hay comunicación HMI-RTU.
+        self.ui_intentos = self.ui_REINTENTAR
         ## Contiene el tipo de montaje respecto al hx.
         # 0: centro en caso de no especificar hx ni montaje,
         # 1: plan de inspección 1,
@@ -162,12 +170,14 @@ class hmi_SM13():
         # [STOP, FREE_RUN, LIFT, AUTOMATIC]
         self.s_mode = "STOP"
         ## Variable indica la actividad del eje LIFT
-        self.s_liftDir = "STOP"
+        self.s_liftDir = "LIFT_UP"
         ## Variable indica el eje del FH
-        self.s_freeRunAxis = " "
+        # Puede valer ARM o POLE
+        self.s_freeRunAxis = "ARM"
         ## Variable indica el sentido de giro con la que se desea mover las articulaciones
         # ARM o POLE del FH.
-        self.s_freeRunDir = " "
+        # Puede valer DIR_CW o CCW_DIR
+        self.s_freeRunDir = "DIR_CW"
         ## Contiene la ruta a la carpeta SM-13.
         # Cambiar esta línea para correr el HMI en otro sistema y
         # procurar que la ruta tenga la misma cantidad de carpetas, ej: /Carpeta1/Carpeta2/Carpeta3/SM-13
@@ -245,7 +255,15 @@ class hmi_SM13():
             "evento_lift_up": self.control_lift,
             "evento_lift_down": self.control_lift,
             "evento_lift_down_total": self.control_lift,
-            "evento_lift_up_total": self.control_lift
+            "evento_lift_up_total": self.control_lift,
+            "evento_pole_cw_push": self.control_free_run,
+            "evento_pole_ccw_push": self.control_free_run,
+            "evento_arm_cw_push": self.control_free_run,
+            "evento_arm_ccw_push": self.control_free_run,
+            "evento_pole_cw_toggle": self.control_free_run,
+            "evento_pole_ccw_toggle": self.control_free_run,
+            "evento_arm_cw_toggle": self.control_free_run,
+            "evento_arm_ccw_toggle": self.control_free_run
         }
         self.builder.connect_signals(señales)
         
@@ -310,6 +328,18 @@ class hmi_SM13():
         self.b_boton_lift_up_total = self.builder.get_object("inspection_boton_lift_up_tot")
 
         self.b_boton_lift_down_total = self.builder.get_object("inspection_boton_lift_dwn_tot")
+         
+        self.b_boton_toggle_pole_cw = self.builder.get_object("fr_toggle_pole_cw")
+        
+        self.b_boton_toggle_pole_ccw = self.builder.get_object("fr_toggle_pole_ccw")
+        
+        self.b_boton_toggle_arm_cw = self.builder.get_object("fr_toggle_arm_cw")
+        
+        self.b_boton_toggle_arm_ccw = self.builder.get_object("fr_toggle_arm_ccw")
+        
+        self.ui_fr_escala_vel_arm = self.builder.get_object("fr_escala_vel_arm")
+        
+        self.ui_fr_escala_vel_pole = self.builder.get_object("fr_escala_vel_pole")
 
         # Warning: deprecated!
         #self.window2.override_background_color(0, Gdk.RGBA(0.9,0.0,0.0,1.0))
@@ -318,7 +348,7 @@ class hmi_SM13():
         self.inicio_etiqueta_msg.set_text("Welcome to the NFC Human-Machine Interface!")
         self.window.show()
         
-        GLib.timeout_add(UI_MS_REFRESCO_TELEMETRIA, self.telemetria)
+        GLib.timeout_add(self.ui_REFRESCO_ms_TELEMETRIA, self.telemetria)
         
     
     ##
@@ -1033,16 +1063,13 @@ class hmi_SM13():
             self.actualizar_etiquetas_msg("Fixture control is disabled...")
             return True        
         
-        # El tiempo en que se mantiene la variable s_liftDir diferente de STOP
-        ui_delay_ms_pulsador = 2000
-        
         # Obtiene el nombre del boton jog presionado
         s_boton_lift = button.get_name()
         
         # botones tipo pulsador afectados por temporizador
         if (s_boton_lift == "lift_up"):
             if(self.b_limitUp == True):
-                self.s_liftDir = "STOP"
+                self.s_mode = "STOP"
                 self.inspection_etiqueta_msg.set_text("Lift upper limit alarm!")
                 depurador(1, "HMI", "****************************************")
                 depurador(1, "HMI", "- Límite superior alcanzado en LIFT")
@@ -1050,12 +1077,13 @@ class hmi_SM13():
                 return
             else:
                 # si ZS no acusa alarma desde RTU se mueve lift
+                self.s_mode = "LIFT"
                 self.s_liftDir = "LIFT_UP"
-                GLib.timeout_add(ui_delay_ms_pulsador, self.detener_lift)
+                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos)
                 
         elif (s_boton_lift == "lift_down"):
             if(self.b_limitDwn == True):
-                self.s_liftDir = "STOP"
+                self.s_mode = "STOP"
                 self.inspection_etiqueta_msg.set_text("Lift lower limit alarm!")
                 depurador(1, "HMI", "****************************************")
                 depurador(1, "HMI", "- Límite inferior alcanzado en LIFT")
@@ -1063,8 +1091,9 @@ class hmi_SM13():
                 return
             else:
                 # si ZS no acusa alarma desde RTU se mueve lift
+                self.s_mode = "LIFT"
                 self.s_liftDir = "LIFT_DOWN"
-                GLib.timeout_add(ui_delay_ms_pulsador, self.detener_lift)
+                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos)
             
         # botones tipo toggle no afectados por temporizador            
         if (s_boton_lift == "lift_up_total"):
@@ -1075,7 +1104,7 @@ class hmi_SM13():
                 # se desactive
                 self.b_boton_lift_down_total.set_active(False)
                 if(self.b_limitUp == True):
-                    self.s_liftDir = "STOP"
+                    self.s_mode = "STOP"
                     self.inspection_etiqueta_msg.set_text("Lift upper limit alarm!")
                     depurador(1, "HMI", "****************************************")
                     depurador(1, "HMI", "- Límite superior alcanzado en LIFT")
@@ -1083,9 +1112,10 @@ class hmi_SM13():
                     return
                 else:
                     # si ZS no acusa alarma desde RTU se mueve lift
+                    self.s_mode = "LIFT"
                     self.s_liftDir = "LIFT_UP"
             if (b_boton_lift_up_tot == False):
-                self.detener_lift()
+                self.detener_movimientos()
                 return
                 
         elif (s_boton_lift == "lift_down_total"):
@@ -1096,7 +1126,7 @@ class hmi_SM13():
                 # se desactive
                 self.b_boton_lift_up_total.set_active(False)
                 if(self.b_limitDwn == True):
-                    self.s_liftDir = "STOP"
+                    self.s_mode = "STOP"
                     self.inspection_etiqueta_msg.set_text("Lift lower limit alarm!")
                     depurador(1, "HMI", "****************************************")
                     depurador(1, "HMI", "- Límite inferior alcanzado en LIFT")
@@ -1104,9 +1134,10 @@ class hmi_SM13():
                     return
                 else:
                     # si ZS no acusa alarma desde RTU se mueve lift
+                    self.s_mode = "LIFT"
                     self.s_liftDir = "LIFT_DOWN"
             if (b_boton_lift_down_tot == False):
-                self.detener_lift()
+                self.detener_movimientos()
                 return
             
         depurador(1, "HMI", "****************************************")
@@ -1121,48 +1152,313 @@ class hmi_SM13():
     # al eje LIFT mediante el retorno de un False.
     # @param self Puntero al objeto HMI
     # @return False y detiene el GLib.timeout_add() que creo la tarea.
-    def detener_lift(self):
+    def detener_movimientos(self):
         
-        self.s_liftDir = "STOP"
+        self.s_mode = "STOP"
         
         depurador(1, "HMI", "****************************************")
-        depurador(1, "HMI", "- " + self.s_liftDir + " LIFT")
+        depurador(1, "HMI", "- Modo: " + self.s_mode)
         depurador(1, "HMI", " ")
         
-        self.inspection_etiqueta_msg.set_text("Stopping LIFT...")
-        
+        self.inicio_etiqueta_msg.set_text("Stopping movement...")
+        self.fr_etiqueta_msg.set_text("Stopping movement...")
+        #self.manual_etiqueta_msg.set_text("Stopping movement...")
+        self.inspection_etiqueta_msg.set_text("Stopping movement...")
+    
         # retorna False para detener el temporizador
         return False
+    
+    ##
+    # @brief Función que administra los botones de control ARM y POLE
+    # en solapa Free Run.
+    # @param self Puntero al objeto HMI
+    # @param button Botones de la solapa free run.
+    # push_pole_cw; push_pole_ccw; push_arm_cw; push_arm_ccw;
+    # toggle_pole_cw; toggle_pole_ccw; toggle_arm_cw; toggle_arm_ccw; 
+    def control_free_run(self, button):
+         # Antes de mover verifica si está activado el control principal
+        if (self.s_ctrlEn == "DISABLE_CONTROL"):
+            self.actualizar_etiquetas_msg("Fixture control is disabled...")
+            return True
+        
+        # Se verifica la velocidad seteada para POLE y ARM
+        self.ui_velCmdArm = int(self.ui_fr_escala_vel_arm.get_value())
+        self.ui_velCmdPole = int(self.ui_fr_escala_vel_pole.get_value())        
+        
+        # Obtiene el nombre del boton jog presionado
+        s_boton_fr = button.get_name()
+
+        # botones tipo pulsador afectados por temporizador
+        if (s_boton_fr == "fr_push_arm_cw"):
+            # Si la velocidad seteada es 0 no hay nada que hacer aquí
+            if(self.ui_velCmdArm == 0):
+                self.s_mode = "STOP"
+                self.fr_etiqueta_msg.set_text("The set speed is 0 for this movement...")
+                return
+                
+            # Si hay un límite de movimiento por software se cancela el movimiento
+            elif(self.b_cwLimitArm == True):
+                self.s_mode = "STOP"
+                self.fr_etiqueta_msg.set_text("ARM CW limit alarm!")
+                depurador(1, "HMI", "****************************************")
+                depurador(1, "HMI", "- Límite horario alcanzado en ARM")
+                depurador(1, "HMI", " ")
+                return
+    
+            else:
+                # si no hay alarmas de software desde RTU se mueve ARM CW
+                self.s_mode = "FREE_RUN"
+                self.s_freeRunAxis = "ARM"
+                self.s_freeRunDir = "DIR_CW"
+                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos)
+                
+        elif (s_boton_fr == "fr_push_arm_ccw"):
+            
+            # Si la velocidad seteada es 0 no hay nada que hacer aquí
+            if(self.ui_velCmdArm == 0):
+                self.s_mode = "STOP"
+                self.fr_etiqueta_msg.set_text("The set speed is 0 for this movement...")
+                return
+                
+            elif (self.b_ccwLimitArm == True):
+                self.s_mode = "STOP"
+                self.fr_etiqueta_msg.set_text("ARM CCW limit alarm!")
+                depurador(1, "HMI", "****************************************")
+                depurador(1, "HMI", "- Límite anti-horario alcanzado en ARM")
+                depurador(1, "HMI", " ")
+                return
+            
+            else:
+                # si no hay alarmas de software desde RTU se mueve lift
+                self.s_mode = "FREE_RUN"
+                self.s_freeRunAxis = "ARM"
+                self.s_freeRunDir = "CCW_DIR"
+                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos)
+                
+        if (s_boton_fr == "fr_push_pole_cw"):
+            # Si la velocidad seteada es 0 no hay nada que hacer aquí
+            if(self.ui_velCmdPole == 0):
+                self.s_mode = "STOP"
+                self.fr_etiqueta_msg.set_text("The set speed is 0 for this movement...")
+                return
+            
+            if(self.b_cwLimitPole == True):
+                self.s_mode = "STOP"
+                self_etiqueta_msg.set_text("POLE CW limit alarm!")
+                depurador(1, "HMI", "****************************************")
+                depurador(1, "HMI", "- Límite horario alcanzado en POLE")
+                depurador(1, "HMI", " ")
+                return
+    
+            else:
+                # si no hay alarmas de software desde RTU se mueve ARM CW
+                self.s_mode = "FREE_RUN"
+                self.s_freeRunAxis = "POLE"
+                self.s_freeRunDir = "DIR_CW"
+                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos)
+                
+        elif (s_boton_fr == "fr_push_pole_ccw"):
+            # Si la velocidad seteada es 0 no hay nada que hacer aquí
+            if(self.ui_velCmdPole == 0):
+                self.s_mode = "STOP"
+                self.fr_etiqueta_msg.set_text("The set speed is 0 for this movement...")
+                return
+            
+            elif (self.b_ccwLimitPole == True):
+                self.s_mode = "STOP"
+                self.fr_etiqueta_msg.set_text("POLE CCW limit alarm!")
+                depurador(1, "HMI", "****************************************")
+                depurador(1, "HMI", "- Límite anti-horario alcanzado en POLE")
+                depurador(1, "HMI", " ")
+                return
+            else:
+                # si no hay alarmas de software desde RTU se mueve POLE
+                self.s_mode = "FREE_RUN"
+                self.s_freeRunAxis = "POLE"
+                self.s_freeRunDir = "CCW_DIR"
+                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos)
+            
+        # botones tipo toggle NO afectados por temporizador            
+        if (s_boton_fr == "fr_toggle_arm_cw"):
+            # se verifica si el botón esta presionado o suelto
+            b_toggle_arm_cw = button.get_active()
+            if (b_toggle_arm_cw == True):
+                # Si se activó un toggle_tot primero aseguro que el opuesto
+                # se desactive
+                self.b_boton_toggle_arm_ccw.set_active(False)
+                # Si la velocidad seteada es 0 no hay nada que hacer aquí
+                if(self.ui_velCmdArm == 0):
+                    self.s_mode = "STOP"
+                    self.fr_etiqueta_msg.set_text("The set speed is 0 for this movement...")
+                    return
+                
+                if(self.b_cwLimitArm == True):
+                    self.s_mode = "STOP"
+                    self.fr_etiqueta_msg.set_text("ARM CW limit alarm!")
+                    depurador(1, "HMI", "****************************************")
+                    depurador(1, "HMI", "- Límite horario alcanzado en ARM")
+                    depurador(1, "HMI", " ")
+                    return
+                else:
+                    # si no hay alarmas de límite por software desde RTU se mueve ARM CW
+                    self.s_mode = "FREE_RUN"
+                    self.s_freeRunAxis = "ARM"
+                    self.s_freeRunDir = "DIR_CW"
+            if (b_toggle_arm_cw == False):
+                self.detener_movimientos()
+                return
+                
+        elif (s_boton_fr == "fr_toggle_arm_ccw"):
+            # se verifica si el botón esta presionado o suelto
+            b_toggle_arm_ccw = button.get_active()
+            if (b_toggle_arm_ccw == True):
+                # Si se activó un toggle_tot primero aseguro que el opuesto
+                # se desactive
+                self.b_boton_toggle_arm_cw.set_active(False)
+                # Si la velocidad seteada es 0 no hay nada que hacer aquí
+                if(self.ui_velCmdArm == 0):
+                    self.s_mode = "STOP"
+                    self.fr_etiqueta_msg.set_text("The set speed is 0 for this movement...")
+                    return
+                
+                elif(self.b_ccwLimitArm == True):
+                    self.s_mode = "STOP"
+                    self.fr_etiqueta_msg.set_text("ARM CCW limit alarm!")
+                    depurador(1, "HMI", "****************************************")
+                    depurador(1, "HMI", "- Límite anti-horario alcanzado en ARM")
+                    depurador(1, "HMI", " ")
+                    return
+                else:
+                    # si no hay alarmas de límite por software desde RTU se mueve ARM CCW
+                    self.s_mode = "FREE_RUN"
+                    self.s_freeRunAxis = "ARM"
+                    self.s_freeRunDir = "CCW_DIR"
+            if (b_toggle_arm_ccw == False):
+                self.detener_movimientos()
+                return
+            
+        if (s_boton_fr == "fr_toggle_pole_cw"):
+            # se verifica si el botón esta presionado o suelto
+            b_toggle_pole_cw = button.get_active()
+            if (b_toggle_pole_cw == True):
+                # Si se activó un toggle_tot primero aseguro que el opuesto
+                # se desactive
+                self.b_boton_toggle_pole_ccw.set_active(False)
+                # Si la velocidad seteada es 0 no hay nada que hacer aquí
+                if(self.ui_velCmdPole == 0):
+                    self.s_mode = "STOP"
+                    self.fr_etiqueta_msg.set_text("The set speed is 0 for this movement...")
+                    return
+                
+                elif(self.b_cwLimitPole == True):
+                    self.s_mode = "STOP"
+                    self.fr_etiqueta_msg.set_text("POLE CW limit alarm!")
+                    depurador(1, "HMI", "****************************************")
+                    depurador(1, "HMI", "- Límite horario alcanzado en POLE")
+                    depurador(1, "HMI", " ")
+                    return
+                else:
+                    # si no hay alarmas de límite por software desde RTU se mueve POLE CW
+                    self.s_mode = "FREE_RUN"
+                    self.s_freeRunAxis = "POLE"
+                    self.s_freeRunDir = "DIR_CW"
+            if (b_toggle_pole_cw == False):
+                self.detener_movimientos()
+                return
+                
+        elif (s_boton_fr == "fr_toggle_pole_ccw"):
+            # se verifica si el botón esta presionado o suelto
+            b_toggle_pole_ccw = button.get_active()
+            if (b_toggle_pole_ccw == True):
+                # Si se activó un toggle_tot primero aseguro que el opuesto
+                # se desactive
+                self.b_boton_toggle_pole_cw.set_active(False)
+                # Si la velocidad seteada es 0 no hay nada que hacer aquí
+                if(self.ui_velCmdPole == 0):
+                    self.s_mode = "STOP"
+                    self.fr_etiqueta_msg.set_text("The set speed is 0 for this movement...")
+                    return
+                
+                if(self.b_ccwLimitPole == True):
+                    self.s_mode = "STOP"
+                    self.fr_etiqueta_msg.set_text("POLE CCW limit alarm!")
+                    depurador(1, "HMI", "****************************************")
+                    depurador(1, "HMI", "- Límite anti-horario alcanzado en POLE")
+                    depurador(1, "HMI", " ")
+                    return
+                else:
+                    # si no hay alarmas de límite por software desde RTU se mueve POLE CCW
+                    self.s_mode = "FREE_RUN"
+                    self.s_freeRunAxis = "POLE"
+                    self.s_freeRunDir = "CCW_DIR"
+            if (b_toggle_pole_ccw == False):
+                self.detener_movimientos()
+                return
+            
+        depurador(1, "HMI", "****************************************")
+        depurador(1, "HMI", "- Moviendo "+ self.s_freeRunAxis + " en sentido " + self.s_freeRunDir)
+        depurador(1, "HMI", " ")
+        self.fr_etiqueta_msg.set_text("Moving "+ self.s_freeRunAxis + " , " + self.s_freeRunDir)
+
+        return True
     
     ##
     # @brief Función que se repite periódicamente, inicia la conexión con RTU
     # y gestiona el intercambio de datos entre HMI y RTU.
     def telemetria(self):
-        if self.b_connect == False:
+        # Se evita que el intento de conexión tenga una frecuencia tan alta
+        # como la del envío-recepción de tramas.
+        if (self.ui_intentos >= self.ui_REINTENTAR):
+            self.ui_intentos = 0
+            
+        if (self.b_connect == False) and (self.ui_intentos == 0):
+            depurador(1, "HMI", "****************************************")
+            depurador(1, "HMI", "- Intentando conectar con RTU...")
+            depurador(1, "HMI", "- IP actual: " + self.s_ip + " / Port: " + self.s_port)
             try:
-                self.s_sock, self.b_connect = RTU_connect(self.b_connect, self.s_ip, self.s_port)
+                self.s_sock, self.b_connect = RTU_connect(self.b_connect, self.s_ip, int(self.s_port))
+            except socket.error as e:
                 depurador(1, "HMI", "****************************************")
-                depurador(1, "HMI", "- IP actual:" + self.s_ip + " / Port: " + self.s_port)
-                depurador(1, "HMI", "- Estado conexión con RTU: " + str(self.b_connect))
+                depurador(1, "HMI", "- No se puede establecer comunicación con RTU: " + str(e))
                 depurador(1, "HMI", " ")
-            except socket.error as err:
-                print (err)
+                
+            depurador(1, "HMI", "- Estado conexión con RTU: " + str(self.b_connect))
+            depurador(1, "HMI", " ")
 
-        else:
-            self.a_RTUData, self.b_connect, self.s_sock = enviar_a_y_recibir_de_rtu(self.a_HMIDataByte, self.a_HMIDataString, self.b_connect, self.s_sock, self.s_ip, self.s_port)
-            if self.b_connect == True:
-                self.f_posActArm = self.a_RTUData[0]
-                self.f_posActPole = self.a_RTUData[1]
-                self.f_velActArm = self.a_RTUData[2]
-                self.f_velActPole = self.a_RTUData[3]
-                self.b_cwLimitArm = self.a_RTUData[4]
-                self.b_ccwLimitArm = self.a_RTUData[5]
-                self.b_cwLimitPole = self.a_RTUData[6]
-                self.b_ccwLimitPole = self.a_RTUData[7]
-                self.b_limitUp = self.a_RTUData[8]
-                self.b_limitDown = self.a_RTUData[9]
-                self.b_stallAlm = self.a_RTUData[10]
-                self.ui_status = self.a_RTUData[11]
+        elif (self.b_connect == True):
+            try:
+                # Se refresca el paquete de DataBytes a enviar a RTU
+                self.a_HMIDataByte = self.f_posCmdArm, self.f_posCmdPole, self.ui_velCmdArm, self.ui_velCmdPole
+                
+                # Se refresca el paquete de DataString a enviar a RTU
+                self.a_HMIDataString = self.s_mode, self.s_freeRunAxis, self.s_freeRunDir, self.s_ctrlEn, self.s_stallEn, self.s_liftDir
+                
+                # Se envían los paquetes DataBytes y DataStrings hacia RTU y se recibe un paquete proveniente de RTU 
+                self.a_RTUData, self.b_connect, self.s_sock = enviar_a_y_recibir_de_rtu(self.a_HMIDataByte, self.a_HMIDataString, self.b_connect, self.s_sock, '192.168.0.193', 5020)
+                depurador(3, "HMI", "--> Paquete Data_Byte  : " + str(self.a_HMIDataByte))
+                depurador(3, "HMI", "--> Paquete Data_String: " + str(self.a_HMIDataString))
+                depurador(3, "HMI", "<-- Paquete RTU_Data   : " + str(self.a_RTUData))
+                
+                if self.b_connect == True:
+                    self.f_posActArm = self.a_RTUData[0]
+                    self.f_posActPole = self.a_RTUData[1]
+                    self.f_velActArm = self.a_RTUData[2]
+                    self.f_velActPole = self.a_RTUData[3]
+                    self.b_cwLimitArm = self.a_RTUData[4]
+                    self.b_ccwLimitArm = self.a_RTUData[5]
+                    self.b_cwLimitPole = self.a_RTUData[6]
+                    self.b_ccwLimitPole = self.a_RTUData[7]
+                    self.b_limitUp = self.a_RTUData[8]
+                    self.b_limitDown = self.a_RTUData[9]
+                    self.b_stallAlm = self.a_RTUData[10]
+                    self.ui_status = self.a_RTUData[11]
+            except Exception as e:
+                self.b_connect = False
+                depurador(1, "HMI", "****************************************")
+                depurador(1, "HMI", "- Error durante la comunicación con RTU: " + str(e))
+                depurador(1, "HMI", " ")
+        
+        self.ui_intentos += 1
                 
         return True
                 

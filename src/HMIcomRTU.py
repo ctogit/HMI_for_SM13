@@ -283,10 +283,11 @@ def HMITranslate(a_HMIDataString, a_HMIDataByte):
 ##
 #   -- Desentramado, y transducción de los valores recibidos por trama Ethernet desde RTU.
 def RTUTranslate(a_RTUDataRx):
-       
+
     b_connect = True
         # Destramado
     a_RTUDataRx = a_RTUDataRx.split()
+    
         # Conversión del resultado de resolver a ángulos. -Byte- a -Float-
     try:    
         # Conversión: -uint16- a -float- para angulo y velocidades recibidos de los resolvers.
@@ -294,8 +295,8 @@ def RTUTranslate(a_RTUDataRx):
         f_posActArm = (int(a_RTUDataRx[0])/i_MAX_CUENTAS)*f_MAX_GRADOS
         f_posActPole = (int(a_RTUDataRx[1])/i_MAX_CUENTAS)*f_MAX_GRADOS
         #   -- velAct --
-        f_velActArm = int(a_RTUDataRx[2])
-        f_velActPole = int(a_RTUDataRx[3])
+        f_velActArm = a_RTUDataRx[2]
+        f_velActPole = a_RTUDataRx[3]
         
         # Se convierten los datos de -Byte- a -String- mediante -decode()-.
         b_cwLimitArm = a_RTUDataRx[4].decode()
@@ -386,21 +387,23 @@ def RTUTranslate(a_RTUDataRx):
             # Manejo de errores de conexión 
         if status == 0x81:
             depurador(2, "HMI", "****************************************")
-            depurador(2, "HMIcomRTU","\n\t ClientId incorrecto - Desconectando RTU.")
+            depurador(2, "HMIcomRTU","- ClientId incorrecto - Desconectando RTU.")
             depurador(2, "HMI", " ")
             b_connect = False
         elif status == 0x42:
-            depurador(2, "HMIcomRTU","\n\t Se recibió trama vacía")
+            depurador(2, "HMIcomRTU","- Se recibió trama vacía")
         elif status == 0x43:
             depurador(2, "HMI", "****************************************")
-            depurador(2, "HMIcomRTU","\n\t No se pudo enviar trama desde RTU. \n\t")
+            depurador(2, "HMIcomRTU","- No se pudo enviar trama desde RTU.")
             depurador(2, "HMI", " ")
 
         a_RTUData = [ f_posActArm, f_posActPole, f_velActArm, f_velActPole ,b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, status ]
 
-    except:
+
+
+    except Exception as err:
         depurador(2, "HMI", "****************************************")
-        depurador(2, "HMIcomRTU","\n Error en formato de trama. \n")
+        depurador(2, "HMIcomRTU","- Error en formato de trama:" + str(err))
         depurador(2, "HMI", " ")
         # status 
         sys.exit()
