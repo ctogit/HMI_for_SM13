@@ -2109,6 +2109,7 @@
                             <property name="fill_level">8</property>
                             <property name="round_digits">1</property>
                             <property name="digits">0</property>
+                            <property name="draw_value">False</property>
                             <property name="value_pos">right</property>
                           </object>
                           <packing>
@@ -2171,6 +2172,7 @@
                             <property name="fill_level">8</property>
                             <property name="round_digits">0</property>
                             <property name="digits">0</property>
+                            <property name="draw_value">False</property>
                             <property name="value_pos">left</property>
                           </object>
                           <packing>
@@ -2242,6 +2244,7 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="fr_boton_lift_up">
+                            <property name="name">lift_up</property>
                             <property name="width_request">50</property>
                             <property name="height_request">25</property>
                             <property name="visible">True</property>
@@ -2252,6 +2255,7 @@
                             <property name="margin_right">15</property>
                             <property name="margin_top">10</property>
                             <property name="margin_bottom">10</property>
+                            <signal name="clicked" handler="evento_lift_up" swapped="no"/>
                             <child>
                               <object class="GtkImage">
                                 <property name="visible">True</property>
@@ -2269,6 +2273,7 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="fr_boton_lift_dwn">
+                            <property name="name">lift_down</property>
                             <property name="width_request">50</property>
                             <property name="height_request">25</property>
                             <property name="visible">True</property>
@@ -2279,6 +2284,7 @@
                             <property name="margin_right">15</property>
                             <property name="margin_top">10</property>
                             <property name="margin_bottom">10</property>
+                            <signal name="clicked" handler="evento_lift_down" swapped="no"/>
                             <child>
                               <object class="GtkImage">
                                 <property name="visible">True</property>
@@ -2308,6 +2314,7 @@
                         <property name="can_focus">False</property>
                         <child>
                           <object class="GtkToggleButton" id="fr_boton_lift_up_tot">
+                            <property name="name">lift_up_total</property>
                             <property name="width_request">50</property>
                             <property name="height_request">25</property>
                             <property name="visible">True</property>
@@ -2319,6 +2326,7 @@
                             <property name="margin_right">10</property>
                             <property name="margin_top">10</property>
                             <property name="margin_bottom">50</property>
+                            <signal name="toggled" handler="evento_lift_up_total" swapped="no"/>
                             <child>
                               <object class="GtkImage">
                                 <property name="visible">True</property>
@@ -2334,6 +2342,7 @@
                         </child>
                         <child>
                           <object class="GtkToggleButton" id="fr_boton_lift_dwn_tot">
+                            <property name="name">lift_down_total</property>
                             <property name="width_request">50</property>
                             <property name="height_request">25</property>
                             <property name="visible">True</property>
@@ -2345,6 +2354,7 @@
                             <property name="margin_right">10</property>
                             <property name="margin_top">10</property>
                             <property name="margin_bottom">50</property>
+                            <signal name="toggled" handler="evento_lift_down_total" swapped="no"/>
                             <child>
                               <object class="GtkImage">
                                 <property name="visible">True</property>

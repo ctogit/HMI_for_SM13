@@ -8,7 +8,7 @@ var searchData=
   ['f_5flp',['f_Lp',['../classhmi__SM13_1_1hmi__SM13.html#ae0df51bb1aa32397cbb427efa561b4db',1,'hmi_SM13::hmi_SM13']]],
   ['f_5flx',['f_Lx',['../classhmi__SM13_1_1hmi__SM13.html#acfbfdcad98890e8342ad744bcaf61984',1,'hmi_SM13::hmi_SM13']]],
   ['f_5fly',['f_Ly',['../classhmi__SM13_1_1hmi__SM13.html#a6a12b9f97989c3286653a2300f023357',1,'hmi_SM13::hmi_SM13']]],
-  ['f_5fmax_5fgrados',['f_MAX_GRADOS',['../namespaceHMIcomRTU.html#ae384ca306167a8f901728ceb421cedea',1,'HMIcomRTU']]],
+  ['f_5fmax_5fgrados',['f_MAX_GRADOS',['../classhmi__SM13_1_1hmi__SM13.html#a47ec38460605f9ea6dc9ae52b6fa8b2f',1,'hmi_SM13.hmi_SM13.f_MAX_GRADOS()'],['../namespaceHMIcomRTU.html#ae384ca306167a8f901728ceb421cedea',1,'HMIcomRTU.f_MAX_GRADOS()']]],
   ['f_5fpole',['f_pole',['../classhmi__SM13_1_1hmi__SM13.html#a188b01ddf93cbb492d5ed4f2154c5176',1,'hmi_SM13.hmi_SM13.f_pole()'],['../classsimulador__SM13_1_1simulador__SM13.html#a188b01ddf93cbb492d5ed4f2154c5176',1,'simulador_SM13.simulador_SM13.f_pole()']]],
   ['f_5fposactarm',['f_posActArm',['../classhmi__SM13_1_1hmi__SM13.html#a4d627c863e77e17ba2107e03d0e8970a',1,'hmi_SM13::hmi_SM13']]],
   ['f_5fposactpole',['f_posActPole',['../classhmi__SM13_1_1hmi__SM13.html#a5a32ba7b77b2abea8395f7d55bf01255',1,'hmi_SM13::hmi_SM13']]],
@@ -23,5 +23,9 @@ var searchData=
   ['f_5fx_5fpitch',['f_x_pitch',['../classhmi__SM13_1_1hmi__SM13.html#ac5e9bbe6428fbe1971065aeb3cb4a18b',1,'hmi_SM13::hmi_SM13']]],
   ['f_5fy_5fcoor',['f_y_coor',['../classsimulador__SM13_1_1simulador__SM13.html#aba6e84e218dd961f09d85a80a8f34243',1,'simulador_SM13::simulador_SM13']]],
   ['f_5fy_5fpitch',['f_y_pitch',['../classhmi__SM13_1_1hmi__SM13.html#a4efef75e4c7dccf637c30a4fb278df25',1,'hmi_SM13::hmi_SM13']]],
-  ['fr_5fetiqueta_5fmsg',['fr_etiqueta_msg',['../classhmi__SM13_1_1hmi__SM13.html#a8836eada72bce7b6ab47d720a6ba918a',1,'hmi_SM13::hmi_SM13']]]
+  ['fr_5fetiqueta_5fmsg',['fr_etiqueta_msg',['../classhmi__SM13_1_1hmi__SM13.html#a8836eada72bce7b6ab47d720a6ba918a',1,'hmi_SM13::hmi_SM13']]],
+  ['fr_5fetiqueta_5fvalor_5fang_5farm',['fr_etiqueta_valor_ang_arm',['../classhmi__SM13_1_1hmi__SM13.html#a85ff7339b1ec66f21c687f65de259404',1,'hmi_SM13::hmi_SM13']]],
+  ['fr_5fetiqueta_5fvalor_5fang_5fpole',['fr_etiqueta_valor_ang_pole',['../classhmi__SM13_1_1hmi__SM13.html#a41bd340f18972f5d3867487383569bab',1,'hmi_SM13::hmi_SM13']]],
+  ['fr_5fetiqueta_5fvalor_5fenc_5farm',['fr_etiqueta_valor_enc_arm',['../classhmi__SM13_1_1hmi__SM13.html#a6bb8770c323dc4b6d7c8d124d7c5fff3',1,'hmi_SM13::hmi_SM13']]],
+  ['fr_5fetiqueta_5fvalor_5fenc_5fpole',['fr_etiqueta_valor_enc_pole',['../classhmi__SM13_1_1hmi__SM13.html#afcfa76e0497633937669e8d193788b30',1,'hmi_SM13::hmi_SM13']]]
 ];

@@ -37,14 +37,20 @@ class hmi_SM13():
     
     ## El constructor del HMI
     def __init__(self):
+        # CONSTANTES DEL SISTEMA
         ## Constante contiene el tiempo entre tramas de telemetría
         self.ui_REFRESCO_ms_TELEMETRIA = 1000
         ## Constante indica el tiempo en que una variable queda activada antes
         # de pasar el modo a STOP otra vez
         self.ui_DELAY_ms_PULSADOR = 1200
         ## Constante indica cada cuantos refrescos de telemetría se hace un intento de conexión
-        self.ui_REINTENTAR = 10       
-        # Atributos públicos de la clase hmi_SM13
+        self.ui_REINTENTAR = 10
+        ## Constante grados máximos de una vuelta de ARM o POLE
+        self.f_MAX_GRADOS = 359.999
+        ## Constante máximo valor de conversión del RDC (16 bits)
+        self.ui_MAX_CUENTAS = int(0xFFFF)
+        
+        # ATRIBUTOS PÚBLICOS DE LA CLASE PRINCIPAL
         ## Contiene el punto X en pulgadas de la posición de la boquilla.
         self.f_px_tubo = 0.0
         ## Contiene el punto Y en pulgadas de la posición de la boquilla.
@@ -290,7 +296,6 @@ class hmi_SM13():
         # TODO:self.manual_etiqueta_msg = self.builder.get_object("inspection_etiqueta_msg")
         ## Etiqueta pública de mensajes de la solapa Inspection
         self.inspection_etiqueta_msg = self.builder.get_object("inspection_etiqueta_msg")
-     
         
         ## Etiqueta dinámica que se muestra en el botón tipo toggle del simulador
         self.inspection_etiqueta_boton_simulador = self.builder.get_object("inspection_etiqueta_boton_simulador")
@@ -309,6 +314,26 @@ class hmi_SM13():
         ## Etiqueta dinámica que muestra el estado de la función stall del telemanipulador
         self.inicio_etiqueta_estado_stall = self.builder.get_object("inicio_etiqueta_estado_stall")
         
+        ## Etiquetas dinámicas que muestran el valor de encoder del eje ARM
+        self.fr_etiqueta_valor_enc_arm = self.builder.get_object("fr_etiqueta_valor_enc_arm")
+        # TODO self.manual_etiqueta_valor_enc_arm = self.builder.get_object("manual_etiqueta_valor_enc_arm")
+        self.inspection_etiqueta_valor_enc_arm = self.builder.get_object("inspection_etiqueta_valor_enc_arm")
+        
+        ## Etiquetas dinámicas que muestran el valor de ángulo del eje ARM
+        self.fr_etiqueta_valor_ang_arm = self.builder.get_object("fr_etiqueta_valor_ang_arm")
+        # TODO self.manual_etiqueta_valor_ang_arm = self.builder.get_object("manual_etiqueta_valor_ang_arm")
+        self.inspection_etiqueta_valor_ang_arm = self.builder.get_object("inspection_etiqueta_valor_ang_arm")
+        
+        ## Etiquetas dinámicas que muestran el valor de encoder del eje POLE
+        self.fr_etiqueta_valor_enc_pole = self.builder.get_object("fr_etiqueta_valor_enc_pole")
+        # TODO self.manual_etiqueta_valor_enc_pole = self.builder.get_object("manual_etiqueta_valor_enc_pole")
+        self.inspection_etiqueta_valor_enc_pole = self.builder.get_object("inspection_etiqueta_valor_enc_pole")
+        
+        ## Etiquetas dinámicas que muestran el valor de ángulo del eje POLE
+        self.fr_etiqueta_valor_ang_pole = self.builder.get_object("fr_etiqueta_valor_ang_pole")
+        # TODO self.manual_etiqueta_valor_ang_pole = self.builder.get_object("manual_etiqueta_valor_ang_pole")
+        self.inspection_etiqueta_valor_ang_pole = self.builder.get_object("inspection_etiqueta_valor_ang_pole")
+        
         ## Ventana principal del HMI
         self.window = self.builder.get_object("ventana_principal")
         
@@ -325,21 +350,53 @@ class hmi_SM13():
         self.inicio_switch_fixture_control = self.builder.get_object("inicio_switch_fixture_control")
         self.inicio_switch_fixture_control.set_active(False)
         
-        self.b_boton_lift_up_total = self.builder.get_object("inspection_boton_lift_up_tot")
-
-        self.b_boton_lift_down_total = self.builder.get_object("inspection_boton_lift_dwn_tot")
-         
+        ## Widget botón lift up total de la solapa Free Run
+        self.b_fr_boton_lift_up_total = self.builder.get_object("fr_boton_lift_up_tot")
+        ## Widget botón lift down total de la solapa Free Run
+        self.b_fr_boton_lift_down_total = self.builder.get_object("fr_boton_lift_dwn_tot")
+        # Widget botón lift up total de la solapa Manual
+        # TODO self.b_manual_boton_lift_up_total = self.builder.get_object("manual_boton_lift_up_tot")
+        # Widget botón lift down total de la solapa Manual
+        # TODO self.b_manual_boton_lift_down_total = self.builder.get_object("manual_boton_lift_dwn_tot")
+        ## Widget botón lift up total de la solapa Inspection
+        self.b_inspection_boton_lift_up_total = self.builder.get_object("inspection_boton_lift_up_tot")
+        ## Widget botón lift down total de la solapa Inspection
+        self.b_inspection_boton_lift_down_total = self.builder.get_object("inspection_boton_lift_dwn_tot")
+        
+        ## Widget botón toggle POLE CW la solapa Free Run
         self.b_boton_toggle_pole_cw = self.builder.get_object("fr_toggle_pole_cw")
-        
+        ## Widget botón toggle POLE CCW la solapa Free Run
         self.b_boton_toggle_pole_ccw = self.builder.get_object("fr_toggle_pole_ccw")
-        
+        ## Widget botón toggle ARM CW la solapa Free Run
         self.b_boton_toggle_arm_cw = self.builder.get_object("fr_toggle_arm_cw")
-        
+        ## Widget botón toggle ARM CCW la solapa Free Run
         self.b_boton_toggle_arm_ccw = self.builder.get_object("fr_toggle_arm_ccw")
         
+        ## Widget escala vel ARM
         self.ui_fr_escala_vel_arm = self.builder.get_object("fr_escala_vel_arm")
+        # Se agregan las marcas de escala
+        self.ui_fr_escala_vel_arm.add_mark(8, Gtk.PositionType.LEFT, "8")
+        self.ui_fr_escala_vel_arm.add_mark(7, Gtk.PositionType.LEFT, "7")
+        self.ui_fr_escala_vel_arm.add_mark(6, Gtk.PositionType.LEFT, "6")
+        self.ui_fr_escala_vel_arm.add_mark(5, Gtk.PositionType.LEFT, "5")
+        self.ui_fr_escala_vel_arm.add_mark(4, Gtk.PositionType.LEFT, "4")
+        self.ui_fr_escala_vel_arm.add_mark(3, Gtk.PositionType.LEFT, "3")
+        self.ui_fr_escala_vel_arm.add_mark(2, Gtk.PositionType.LEFT, "2")
+        self.ui_fr_escala_vel_arm.add_mark(1, Gtk.PositionType.LEFT, "1")
+        self.ui_fr_escala_vel_arm.add_mark(0, Gtk.PositionType.LEFT, "0")
         
+        ## Widget escala vel
         self.ui_fr_escala_vel_pole = self.builder.get_object("fr_escala_vel_pole")
+        # Se agregan las marcas de escala
+        self.ui_fr_escala_vel_pole.add_mark(8, Gtk.PositionType.RIGHT, "8")
+        self.ui_fr_escala_vel_pole.add_mark(7, Gtk.PositionType.RIGHT, "7")
+        self.ui_fr_escala_vel_pole.add_mark(6, Gtk.PositionType.RIGHT, "6")
+        self.ui_fr_escala_vel_pole.add_mark(5, Gtk.PositionType.RIGHT, "5")
+        self.ui_fr_escala_vel_pole.add_mark(4, Gtk.PositionType.RIGHT, "4")
+        self.ui_fr_escala_vel_pole.add_mark(3, Gtk.PositionType.RIGHT, "3")
+        self.ui_fr_escala_vel_pole.add_mark(2, Gtk.PositionType.RIGHT, "2")
+        self.ui_fr_escala_vel_pole.add_mark(1, Gtk.PositionType.RIGHT, "1")
+        self.ui_fr_escala_vel_pole.add_mark(0, Gtk.PositionType.RIGHT, "0")
 
         # Warning: deprecated!
         #self.window2.override_background_color(0, Gdk.RGBA(0.9,0.0,0.0,1.0))
@@ -348,6 +405,7 @@ class hmi_SM13():
         self.inicio_etiqueta_msg.set_text("Welcome to the NFC Human-Machine Interface!")
         self.window.show()
         
+        # Función telemetría se ejecuta cada REFRESCO_ms_TELEMETRIA milisegundos
         GLib.timeout_add(self.ui_REFRESCO_ms_TELEMETRIA, self.telemetria)
         
     
@@ -967,6 +1025,36 @@ class hmi_SM13():
         return True
     
     ##
+    # @brief Función que actualiza todas las etiquetas enc y ang de las solapas
+    # free run, manual e inspection.
+    # @param self puntero al objeto HMI
+    # @param f_ang_arm ángulo de la articulación ARM
+    # @param f_ang_pole ángulo de la articulación POLE
+    # @return none
+    def actualizar_etiquetas_enc_ang(self, f_ang_arm, f_ang_pole):
+        
+        self.ui_encActArm = self.f_posActArm/self.f_MAX_GRADOS*self.ui_MAX_CUENTAS
+        self.ui_encActPole = self.f_posActArm/self.f_MAX_GRADOS*self.ui_MAX_CUENTAS
+        
+        self.fr_etiqueta_valor_ang_arm.set_text(str(round(self.f_posActArm, 3)))
+        # TODO self.manual_etiqueta_valor_ang_arm.set_text(str(round(f_posActArm, 3)))
+        self.inspection_etiqueta_valor_ang_arm.set_text(str(round(self.f_posActArm, 3)))
+                    
+        self.fr_etiqueta_valor_enc_arm.set_text(str(round(self.ui_encActArm)))
+        # TODO self.manual_etiqueta_valor_ang_arm.set_text(str(round(self.ui_encActArm)))
+        self.inspection_etiqueta_valor_enc_arm.set_text(str(round(self.ui_encActArm)))
+                    
+        self.fr_etiqueta_valor_ang_pole.set_text(str(round(self.f_posActPole, 3)))
+        # TODO self.manual_etiqueta_valor_ang_arm.set_text(str(round(self.f_posActPole, 3)))
+        self.inspection_etiqueta_valor_ang_pole.set_text(str(round(self.f_posActPole, 3)))
+                    
+        self.fr_etiqueta_valor_enc_pole.set_text(str(round(self.ui_encActPole)))
+        # TODO self.manual_etiqueta_valor_ang_arm.set_text(str(round(self.ui_encActPole)))
+        self.inspection_etiqueta_valor_enc_pole.set_text(str(round(self.ui_encActPole)))
+        
+        return True
+    
+    ##
     # @brief Función que levanta la ventana de configuración de red
     # para mostrar la dirección IP y puerto actuales o para modificarlos.
     # @param self puntero al objeto HMI
@@ -1102,7 +1190,9 @@ class hmi_SM13():
             if (b_boton_lift_up_tot == True):
                 # Si se activó un toggle_tot primero aseguro que el opuesto
                 # se desactive
-                self.b_boton_lift_down_total.set_active(False)
+                self.b_fr_boton_lift_down_total.set_active(False)
+                # TODO self.b_manual_boton_lift_down_total.set_active(False)
+                self.b_inspection_boton_lift_down_total.set_active(False)
                 if(self.b_limitUp == True):
                     self.s_mode = "STOP"
                     self.inspection_etiqueta_msg.set_text("Lift upper limit alarm!")
@@ -1124,7 +1214,9 @@ class hmi_SM13():
             if (b_boton_lift_down_tot == True):
                 # Si se activó un toggle_tot primero aseguro que el opuesto
                 # se desactive
-                self.b_boton_lift_up_total.set_active(False)
+                self.b_fr_boton_lift_up_total.set_active(False)
+                # TODO self.b_manual_boton_lift_up_total.set_active(False)
+                self.b_inspection_boton_lift_up_total.set_active(False)
                 if(self.b_limitDwn == True):
                     self.s_mode = "STOP"
                     self.inspection_etiqueta_msg.set_text("Lift lower limit alarm!")
@@ -1143,7 +1235,8 @@ class hmi_SM13():
         depurador(1, "HMI", "****************************************")
         depurador(1, "HMI", "- Moving "+ self.s_liftDir)
         depurador(1, "HMI", " ")
-        self.inspection_etiqueta_msg.set_text("Moving "+ self.s_liftDir + "...")
+        self.actualizar_etiquetas_msg("Moving "+ self.s_liftDir + "...")
+    
         return 
     
     ##
@@ -1452,6 +1545,11 @@ class hmi_SM13():
                     self.b_limitDown = self.a_RTUData[9]
                     self.b_stallAlm = self.a_RTUData[10]
                     self.ui_status = self.a_RTUData[11]
+                    
+                    # Se actualizan las etiquetas de cuentas y ángulos en las tres solapas
+                    self.actualizar_etiquetas_enc_ang(self.f_posActArm, self.f_posActPole)
+                               
+                    
             except Exception as e:
                 self.b_connect = False
                 depurador(1, "HMI", "****************************************")
