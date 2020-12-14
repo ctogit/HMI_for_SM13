@@ -3,9 +3,19 @@ longitud POLE (Lp); 9.5; in
 longitud ARM (La); 15.25; in
 ancho_base (w); 8.125; in
 alto_base (h); 7.036; in
-montaje 1 en X (Lx); 23.125; in
-montaje 1 en Y (Ly); 3.518; in
-montaje 2 en X (Lx); 30.844; in
-montaje 2 en Y (Ly); 4.222; in
-montaje 3 en X (Lx); 47.125; in
-montaje 3 en Y (Ly); 3.518; in
+montaje 1 3211-HX1 en X (Lx) COL132; 16.625; in
+montaje 1 3211-HX1 en Y (Ly) ROW5  ; 3.518; in
+montaje 2 3211-HX1 en X (Lx) COL102; 28.812; in
+montaje 2 3211-HX1 en Y (Ly) ROW5  ; 3.518; in
+montaje 3 3211-HX1 en X (Lx) COL74 ; 41.438; in
+montaje 3 3211-HX1 en Y (Ly) ROW5  ; 3.518; in
+montaje 4 3211-HX1 en X (Lx) COL44 ; 53.625; in
+montaje 4 3211-HX1 en Y (Ly) ROW5  ; 3.518; in
+montaje 1 3211-HX2 en X (Lx) COL44 ; 16.625; in
+montaje 1 3211-HX2 en Y (Ly) ROW5  ; 3.518; in
+montaje 2 3211-HX2 en X (Lx) COL74 ; 28.812; in
+montaje 2 3211-HX2 en Y (Ly) ROW5  ; 3.518; in
+montaje 3 3211-HX2 en X (Lx) COL102; 41.438; in
+montaje 3 3211-HX2 en Y (Ly) ROW5  ; 3.518; in
+montaje 4 3211-HX2 en X (Lx) COL132; 53.625; in
+montaje 4 3211-HX2 en Y (Ly) ROW5  ; 3.518; in

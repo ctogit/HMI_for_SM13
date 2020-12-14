@@ -25,7 +25,7 @@ import numpy as np
 import math
 from depurador import *
 
-def ik_SM13(f_x, f_y, f_l1, f_l2, f_l3, f_l4):
+def ik_SM13(f_x, f_y, f_l1, f_l2, f_l3, f_l4, s_pivot_type):
     global iSeveridad
     
     f_Px = f_x
@@ -45,20 +45,44 @@ def ik_SM13(f_x, f_y, f_l1, f_l2, f_l3, f_l4):
     depurador(2, "ik_SM13", "- Longitud_POLE = " + str(f_l3))
     depurador(2, "ik_SM13", "- Longitud_ARM  = " + str(f_l4))
 
-    f_r1 = f_Px - f_Lx
-    f_r2 = f_Py - f_Ly
-    f_h = math.sqrt(f_r1**2 + f_r2**2)
-    f_alfa = math.atan2(f_r2, f_r1)
-    f_beta = math.acos((f_Lp**2 - f_La**2 + f_h**2)/(2*f_Lp*f_h))
-    f_qp = float(f_alfa - f_beta + math.pi/2)
-    f_qa = float(math.acos((f_La**2 + f_Lp**2 - f_h**2)/(2*f_La*f_Lp)))
+    try:
+        f_r1 = f_Px - f_Lx
+        f_r2 = f_Py - f_Ly
+        f_h = math.sqrt(f_r1**2 + f_r2**2)
+        f_alfa = math.atan2(f_r2, f_r1)
+        f_beta = math.acos((f_Lp**2 - f_La**2 + f_h**2)/(2*f_Lp*f_h))
+
+        if (s_pivot_type == "main"):
+            f_qp = float(f_alfa - f_beta + math.pi/2)
+            f_qa = float(math.acos((f_La**2 + f_Lp**2 - f_h**2)/(2*f_La*f_Lp)))
+        elif (s_pivot_type == "alternative"):
+            f_qp = float(f_alfa + f_beta + math.pi/2)
+            f_qa = 2*math.pi - float(math.acos((f_La**2 + f_Lp**2 - f_h**2)/(2*f_La*f_Lp)))
+            
+        b_success = True
+
+        depurador(2, "ik_SM13", " ")
+        depurador(2, "ik_SM13", "- Ángulo POLE = "+ str(np.rad2deg(f_qp)))
+        depurador(2, "ik_SM13", "- Ángulo ARM = " + str(np.rad2deg(f_qa)))
+        depurador(2, "ik_SM13", " ")
+
+    except Exception as err_msg:
+        if err_msg == "math domain error":
+            f_qp = 0.0
+            f_qa = 0.0
+            b_success = False
+            depurador(2, "ik_SM13", " ")
+            depurador(2, "ik_SM13", "- Ángulos POLE y ARM inalcanzables...")
+            depurador(2, "ik_SM13", " ")
+        else:
+            f_qp = 0.0
+            f_qa = 0.0
+            b_success = False
+            depurador(2, "ik_SM13", " ")
+            depurador(2, "ik_SM13", "- Ángulos POLE y ARM inalcanzables: " + str(err_msg))
+            depurador(2, "ik_SM13", " ")
     
-    depurador(2, "ik_SM13", " ")
-    depurador(2, "ik_SM13", "- Ángulo POLE = "+ str(np.rad2deg(f_qp)))
-    depurador(2, "ik_SM13", "- Ángulo ARM = " + str(np.rad2deg(f_qa)))
-    depurador(2, "ik_SM13", " ")
-    
-    return f_qp, f_qa
+    return f_qp, f_qa, b_success
     
 # if __name__ == "__main__":
 #     ik_SM13(70.688, 0.704, 47.725, 3.518, 9.5, 15.25)

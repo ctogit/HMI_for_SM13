@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['window_410',['window',['../classhmi__SM13_1_1hmi__SM13.html#a04a8a2bbfa9c15500892b8e5033d625b',1,'hmi_SM13::hmi_SM13']]],
-  ['window2_411',['window2',['../classhmi__SM13_1_1hmi__SM13.html#a8052f79df8939ee240538d5ed7e9c8c8',1,'hmi_SM13::hmi_SM13']]],
-  ['window3_412',['window3',['../classhmi__SM13_1_1hmi__SM13.html#a13e3b89ffb1faf3a071113767b508d25',1,'hmi_SM13::hmi_SM13']]]
+  ['tipo_5fhx_447',['tipo_hx',['../classsimulador__SM13_1_1simulador__SM13.html#ae07f23e64d9b9e69fc919b5abe0065de',1,'simulador_SM13::simulador_SM13']]]
 ];

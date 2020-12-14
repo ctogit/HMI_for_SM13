@@ -1,4 +1,4 @@
-digraph "Graph Legend"
+digraph "Colores y flechas del Gráfico"
 {
  // LATEX_PDF_SIZE
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];

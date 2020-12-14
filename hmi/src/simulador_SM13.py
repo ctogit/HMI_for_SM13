@@ -38,8 +38,6 @@ class simulador_SM13(object):
     # se presiona el botón Simulator
     #
     # @param self Puntero al objeto
-    # @param f_x Coordenada X en pulgadas
-    # @param f_y Coordenada Y en pulgadas
     # @param s_f_file Dirección del archivo que contiene el tipo de fixture
     # @param ui_m El montaje del fixture respecto al hx
     # @param s_hx_file Dirección del archivo que contiene los datos de los tubos del hx
@@ -48,21 +46,19 @@ class simulador_SM13(object):
     #
     # @author Cristian Torres Barrios
     # creado Vie 18 Sep 20:35:00 2020
-    def __init__(self, f_x, f_y, s_f_file, ui_m, s_hx_file):        
+    def __init__(self, s_f_file, ui_m, s_hx_file):        
         
         plt.ion()
-        self.f_x_coor = f_x
-        self.f_y_coor = f_y
-        #self.a_lista_tubos_x = a_hx_x
-        #self.a_lista_tubos_y = a_hx_y
+
         self.ui_tipo_montaje = ui_m
         self.s_tipo_fixture = s_f_file
  
         # Si se cambia el path, procurar que tenga la misma cantidad de carpetas
         trash, s_folder1, s_folder2, s_folder3, s_folder4, s_folder5, s_folder6, s_folder7, s_folder8, trash = s_hx_file.split("/")
-        
+        self.tipo_hx = s_folder8
+
         # Obtiene las dimensiones físicas del telemanipulador y su posición de montaje
-        self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, f_w, f_h = leer_datos_SM13(self.s_tipo_fixture, self.ui_tipo_montaje)
+        self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, f_w, f_h = leer_datos_SM13(self.tipo_hx, self.s_tipo_fixture, self.ui_tipo_montaje)
         
         # Initialize plot and line objects for target, end effector, and arm.
         # Turn on interactive plotting and show plot.   
@@ -70,9 +66,10 @@ class simulador_SM13(object):
         self.fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
         ax.grid(False)
         
-        self.tubo, = ax.plot([], [], marker='o', c='r')
-        self.codo, = ax.plot([], [], marker='o', c='b', lw=4)
-        self.sonda, = ax.plot([], [], marker='o', markerfacecolor='w', c='b', lw=4)
+        self.codo_cmd, = ax.plot([], [], marker='o', ls='dashed', c='r', lw=2)
+        self.codo_act, = ax.plot([], [], marker='o', c='g', lw=4)
+        self.sonda_cmd, = ax.plot([], [], marker='o', ls='dashed', markerfacecolor='w', c='r', lw=2)
+        self.sonda_act, = ax.plot([], [], marker='o', markerfacecolor='w', c='g', lw=4)
         
         # Lee archivo de especificaciones de los tubos del hx seleccionado
         s_tube_specs_path = "/"+s_folder1+"/"+s_folder2+"/"+s_folder3+"/"+s_folder4+"/"+s_folder5+"/"+s_folder6+"/"+s_folder7+"/"+s_folder8+"/tube_specs.csv"
@@ -106,6 +103,7 @@ class simulador_SM13(object):
         ax.add_artist(circulo_ne)
         ax.add_artist(circulo_so)
         ax.add_artist(circulo_se)
+        ax.plot(self.f_Lx, self.f_Ly - f_h/2 + f_y_pitch, marker='^', c='k', lw=2)
         
         # Add dashed circle to plot indicating reaches min and max.
         #Determine maximum reach of arm.
@@ -147,39 +145,64 @@ class simulador_SM13(object):
         plt.show()
     
     ##
-    # Método refrescar_grafico
+    # Método refrescar_pos_comandada
     #
     # @brief Esta función permite refrescar el simulador sin tener que inicializarlo
     # cada vez que hay una actualización del target.
     #
-    # @param self Puntero al objeto
-    # @param f_x Coordenada X en pulgadas
-    # @param f_y Coordenada Y en pulgadas
-    # @param f_p Ángulo de la articulación POLE respecto a la base
-    # @param f_a Ángulo de la articulación ARM respecto al POLE
+    # @param self Puntero al objeto Simulador
+    # @param f_p_cmd Ángulo comandado de la articulación POLE respecto a la base
+    # @param f_a_cmd Ángulo comandado de la articulación ARM respecto al POLE
     #
     # @return none
     #
     # @author Cristian Torres Barrios
     # creado Vie 18 Sep 20:35:00 2020
-    def refrescar_grafico(self, f_x, f_y, f_p, f_a):
+    def refrescar_pos_comandada(self, f_p_cmd, f_a_cmd):
           
-        self.f_pole = f_p
-        self.f_arm = f_a
-        self.f_x_coor = f_x
-        self.f_y_coor = f_y
+        self.f_pole_cmd = f_p_cmd
+        self.f_arm_cmd = f_a_cmd
         
-        f_px_codo, f_py_codo, f_px_sonda, f_py_sonda = dk_SM13(self.f_pole, self.f_arm, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La)
+        f_px_codo, f_py_codo, f_px_sonda, f_py_sonda = dk_SM13(self.f_pole_cmd, self.f_arm_cmd, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La)
             
-        self.tubo.set_data(self.f_x_coor, self.f_y_coor)
-        self.codo.set_data([self.f_Lx, f_px_codo], [self.f_Ly, f_py_codo])
-        self.sonda.set_data([f_px_codo, f_px_sonda], [f_py_codo, f_py_sonda])
+        self.codo_cmd.set_data([self.f_Lx, f_px_codo], [self.f_Ly, f_py_codo])
+        self.sonda_cmd.set_data([f_px_codo, f_px_sonda], [f_py_codo, f_py_sonda])
         
         #plt.ion()
         plt.show()
             
         #self.fig.canvas.get_tk_widget().update()
         self.fig.canvas.flush_events()   
+
+    ##
+    # Método refrescar_pos_actual
+    #
+    # @brief Esta función permite refrescar en el simulador los valores 
+    # actuales de los ángulos POLE y ARM.
+    #
+    # @param self Puntero al objeto Simulador
+    # @param f_p_act Ángulo actual de la articulación POLE respecto a la base
+    # @param f_a_act Ángulo actual de la articulación ARM respecto al POLE
+    #
+    # @return none
+    #
+    # @author Cristian Torres Barrios
+    # creado Jue 19 Sep 01:23:00 2020
+    def refrescar_pos_actual(self, f_p_act, f_a_act):
+          
+        self.f_pole_act = f_p_act
+        self.f_arm_act = f_a_act
+        
+        f_px_codo, f_py_codo, f_px_sonda, f_py_sonda = dk_SM13(self.f_pole_act, self.f_arm_act, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La)
+            
+        self.codo_act.set_data([self.f_Lx, f_px_codo], [self.f_Ly, f_py_codo])
+        self.sonda_act.set_data([f_px_codo, f_px_sonda], [f_py_codo, f_py_sonda])
+        
+        #plt.ion()
+        plt.show()
+            
+        #self.fig.canvas.get_tk_widget().update()
+        self.fig.canvas.flush_events() 
     
 #if __name__ == "__main__":
 #    main()
