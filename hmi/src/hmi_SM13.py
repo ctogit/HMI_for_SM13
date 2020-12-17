@@ -13,6 +13,38 @@
 #
 # @author Cristian Torres Barrios
 # creado Vie 30 Sep 23:03:00 2020
+#
+#                           RX FROM RTU
+#   --------------------------------------
+#   f_posActArm     <--     a_RTUData[0] *
+#   f_posActPole    <--     a_RTUData[1] *
+#   f_velActArm     <--     a_RTUData[2] *
+#   f_velActPole    <--     a_RTUData[3] *
+#   b_cwLimitArm    <--     a_RTUData[4] *
+#   b_ccwLimitArm   <--     a_RTUData[5] *
+#   b_cwLimitPole   <--     a_RTUData[6] *
+#   b_ccwLimitPole  <--     a_RTUData[7] *
+#   b_limitUp       <--     a_RTUData[8] *
+#   b_limitDown     <--     a_RTUData[9] *
+#   b_stallAlm      <--     a_RTUData[10] *
+#   ui_status       <--     a_RTUData[11] *
+#
+#
+#   TX TO RTU                           
+#   --------------------------------------
+#   a_HMIDataByte[0]    <--     f_posCmdArm *
+#   a_HMIDataByte[1]    <--     f_posCmdPole *
+#   a_HMIDataByte[2]    <--     ui_velCmdArm *
+#   a_HMIDataByte[3]    <--     ui_velCmdPole *
+#
+#   a_HMIDataString[0]  <--     s_mode *
+#   a_HMIDataString[1]  <--     s_freeRunAxis *
+#   a_HMIDataString[2]  <--     s_freeRunDir *
+#   a_HMIDataString[3]  <--     s_ctrlEn *
+#   a_HMIDataString[4]  <--     s_stallEn *
+#   a_HMIDataString[5]  <--     s_liftDir *
+
+
 
 # from control_proceso import *
 import gi
@@ -21,6 +53,7 @@ from gi.repository import GLib, Gtk, Gdk, GObject
 import os
 import time
 from simulador_SM13 import *
+from ik_SM13 import *
 from leer_archivo_hx import *
 from leer_plan import *
 from leer_specs_tubos import *
@@ -32,25 +65,59 @@ import time
 from HMIcomRTU import *
 import socket
 import zumbador
+import multiprocessing
+import threading
+
+global simu
+global a_RTUData
+global a_HMIDataByte
+global a_HMIDataString
+global b_connect
+global s_sock
+global s_port
+global s_ip
 
 class hmi_SM13():   
-    global simu
-    
     ## El constructor del HMI
     def __init__(self):
+        global simu
+        global a_RTUData
+        global a_HMIDataByte
+        global a_HMIDataString
+        global b_connect
+        global s_sock
+        global s_port
+        global s_ip
+        global b_simulador
+
+        # Se inicializan variables globales
+        ## Variable global contiene la lista de datos que llegan desde RTU:
+        # [f_posActArm, f_posActPole, f_velActArm, f_velActPole, 
+        # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, ui_status]
+        a_RTUData = [0, 4.712, 0, 0, False, False, False, False, False, False, False, 0]
+        ## Variable global para que la vea HMI y el hilo TM. Almacena los datos 
+        # de ángulos y velocidad comandados hacia la RTU:
+        # [f_posCmdArm, f_posCmdPole, ui_velCmdArm, ui_velCmdPole]
+        a_HMIDataByte = [0, 270, 0, 0]
+        ## Variable global para que la vea HMI y el hilo TM. Almacena una lista de  
+        #  eventos que surguen desde HMI y son comunicados a RTU:
+        # [s_mode, s_freeRunAxis, s_freeRunDir, s_ctrlEn, s_stallEn, s_liftDir]
+        a_HMIDataString = ["STOP", "ARM", "DIR_CW", "DISABLE_CONTROL", "STALL_ENABLE", "LIFT_UP"]
+        ## Variable global la ve tanto HMI como TM. Contiene el estado del simulador
+        # 0: simulador inactivo
+        # 1: simulador activo
+        b_simulador = 0
+
+
         # CONSTANTES DEL SISTEMA
         ## Constante contiene el tiempo para actualizar etiquetas del reloj
         self.ui_REFRESCO_ms_RELOJ = 5000
-        ## Constante contiene el tiempo entre tramas de telemetría
-        self.ui_REFRESCO_ms_TELEMETRIA = 1000
         ## Constante contiene el tiempo de refresco de valores actuales de ángulos POLE y ARM del 
         # simulador
         self.ui_REFRESCO_ms_SIMULADOR = 1000
         ## Constante indica el tiempo en que una variable queda activada antes
         # de pasar el modo a STOP otra vez
-        self.ui_DELAY_ms_PULSADOR = 1200
-        ## Constante indica cada cuantos refrescos de telemetría se hace un intento de conexión
-        self.ui_REINTENTAR = 10
+        self.ui_DELAY_ms_PULSADOR = 300
         ## Constante grados máximos de una vuelta de ARM o POLE
         self.f_MAX_GRADOS = 359.999
         ## Constante máximo valor de conversión del RDC (16 bits)
@@ -73,7 +140,7 @@ class hmi_SM13():
         # Se inicializa en 0 pero la modifica el archivo de datos del telemanipulador.
         self.f_La = 0.0
         ## Contiene el ángulo de rotación de la articulación POLE respecto a la base del telemanipulador.
-        self.f_pole = np.deg2rad(270.0)
+        self.f_pole = 270.0
         ## Contiene el ángulo de rotación de la articulación ARM respecto a la base del telemanipulador.
         self.f_arm = 0.0
         ## Contiene la cantidad a incrementar por el Jog Control
@@ -88,21 +155,6 @@ class hmi_SM13():
         self.f_y_pitch = 0.0
         ## Contiene el valor de la separación entre centro y centro de las columnas de los tubos que forman el hx (varía según este)
         self.f_x_pitch = 0.0
-        ## Variable de tipo float contiene la posición, en grados, a la que se desea comandar el FH-ARM
-        self.f_posCmdArm = 0.0
-        ## Variable de tipo float contiene la posición, en grados, a la que se desea comandar el FH-POLE
-        self.f_posCmdPole = 270.0
-        ## Variable de tipo float contiene la posición, en radianes, de la articulación FH-ARM
-        self.f_posActArm = 0.0
-        ## Variable de tipo float contiene la posición, en radianes, de la articulación FH-POLE
-        self.f_posActPole = np.deg2rad(270.0)
-        ## Variable indica la velocidad con la que mueve la articulación ARM.
-        self.f_velActArm = 0.0
-        ## Variable indica la velocidad con la que mueve la articulación POLE.
-        self.f_velActPole = 0.0
-        ## Variable para evitar que se hagan intentos de conexión tan seguidos cuando no
-        # hay comunicación HMI-RTU.
-        self.ui_intentos = self.ui_REINTENTAR
         ## Contiene el tipo de montaje respecto al hx.
         # 0: centro en caso de no especificar hx ni montaje,
         # 1: plan de inspección 1,
@@ -126,9 +178,9 @@ class hmi_SM13():
         ## Contiene la fila elegida en el mazo de tubos del hx
         self.ui_plan_row = 0
         ## Variable contiene la velocidad deseada con que se quiere mover el FH-ARM en modo FR.
-        self.ui_velCmdArm = 0
+        #a_HMIDataByte[2] = 0
         ## Variable contiene la velocidad deseada con que se quiere mover el FH-POLE en modo FR.
-        self.ui_velCmdPole = 0
+        #a_HMIDataByte[3] = 0
         ## Variable contiene el valor actual deL RDC del eje POLE 
         self.ui_rdcActPole = 0
         ## Variable contiene el valor actual deL RDC del eje ARM 
@@ -143,42 +195,18 @@ class hmi_SM13():
         ## Variable contiene el valor de offset para el eje ARM configurado al inicio cuando levanta
         # el archivo robots_home_offsets.csv 
         self.ui_arm_rdc_offset = 0
-        ## Variable indica se activa si el motor se mueve pero no la lectura de enconder
-        # False: sin alarmas de stall
-        # True: alarma de stall
-        self.b_stallAlm = False
-        ## Contiene el estado del simulador
-        # 0: simulador inactivo
-        # 1: simulador activo
-        self.b_simulador = 0
-        ## Variable booleana indica el estado del ZS superior del eje LIFT
-        self.b_limitUp = False
         ## Variable booleana indica el estado del ZS inferior del eje LIFT
         self.b_limitDwn = False
         ## Variable tipo boleana que indica el estado de la conexión con la RTU
         # 0: Desconexión
         # 1: Conexión
-        self.b_connect = False
+        b_connect = False
         ## Variable permite iniciar el TreeView una sola vez
         self.b_carga = 0
-        ## Variable acusa alarma de límite de movimiento horario en eje ARM (vía software)
-        self.b_cwLimitArm = False
-        ## Variable acusa alarma de límite de movimiento anti-horario en eje ARM (vía software)
-        self.b_ccwLimitArm = False
-        ## Variable acusa alarma de límite de movimiento horario en eje POLE (vía software)
-        self.b_cwLimitPole = False
-        ## Variable acusa alarma de límite de movimiento anti-horario en eje POLE (vía software)
-        self.b_ccwLimitPole = False
-        ## Variable acusa alarma de final de carrera superior en eje LIFT (vía ZS)
-        self.b_limitUp = False
-        ## Variable acusa alarma de final de carrera inferior en eje LIFT (vía ZS)
-        self.b_limitDown = False
         ## Variable booleana para permitir o rechazar sonidos de la interfaz
         self.b_beeps = True
         ## Variable booleana indica si los càlculos de cinemática inversa fueron exitosos o no
         self.b_ik_success = False
-        ## Variable 
-        self.ui_status = 0
         ## Contiene el número de tubo elegido en el mazo de tubos del hx
         self.s_tubo_id = "TUBE.DEFAULT"
         ## Carga la lista de columnas del plan de inspección seleccionado
@@ -191,26 +219,10 @@ class hmi_SM13():
         self.a_lista_px = [0]
         ## Carga la lista de puntos y en pulgadas del hx seleccionado
         self.a_lista_py = [0]
-        ## Variable que habilita/deshabilita el control del telemanipulador
-        self.s_ctrlEn = "DISABLE_CONTROL"
-        ## Variable que habilita/deshabilita la función stall del sistema
-        self.s_stallEn = "STALL_ENABLE"
         ## Variable contiene el tipo de solución matemática que va a usar el
         # algoritmo de cinemática inversa para que el quiebre del ARM se de la
         # forma principal o alternativa.
         self.s_pivot_type = "main"
-        ## Variable que indica el modo de operación del HMI
-        # [STOP, FREE_RUN, LIFT, AUTOMATIC]
-        self.s_mode = "STOP"
-        ## Variable indica la actividad del eje LIFT
-        self.s_liftDir = "LIFT_UP"
-        ## Variable indica el eje del FH
-        # Puede valer ARM o POLE
-        self.s_freeRunAxis = "ARM"
-        ## Variable indica el sentido de giro con la que se desea mover las articulaciones
-        # ARM o POLE del FH.
-        # Puede valer DIR_CW o CCW_DIR
-        self.s_freeRunDir = "DIR_CW"
         ## Contiene la ruta a la carpeta SM-13.
         # Cambiar esta línea para correr el HMI en otro sistema y
         # procurar que la ruta tenga la misma cantidad de carpetas, ej: /Carpeta1/Carpeta2/Carpeta3/SM-13
@@ -238,23 +250,18 @@ class hmi_SM13():
         
         ## Variable tipo <socket> que almacena la identidad del socket 
         # generado en la conexión establecida con la RTU.
-        self.s_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         ## Variable usada para guardar la dirección IP de la RTU
-        self.s_ip = "0.0.0.0"
+        s_ip = "0.0.0.0"
         ## Variable usada para guardar el puerto de conexión con la RTU
-        self.s_port = "0"
+        s_port = "0"
         
         # Se abre el archivo network.csv en modo lectura, se lo lee y se cierra. 
         network_file = open(self.s_project_path + "/hmi/cfg_files/network.csv", "r")
         address_lines = network_file.readlines()
         network_file.close()
         # Se extraen la variables que contendrán la dir IP y el PUERTO
-        self.s_ip, self.s_port = address_lines[1].split(";")
-        
-        ## Array con las variables tipo float y enteras a enviar a RTU
-        self.a_HMIDataByte = self.f_posCmdArm, self.f_posCmdPole, self.ui_velCmdArm, self.ui_velCmdPole
-        ## Array con las variables tipo string a enviar a RTU
-        self.a_HMIDataString = self.s_mode, self.s_freeRunAxis, self.s_freeRunDir, self.s_ctrlEn, self.s_stallEn, self.s_liftDir
+        s_ip, s_port = address_lines[1].split(";")
         
         
         # Todas las señales que manejan los eventos que surgen de presionar botones en la HMI.
@@ -319,13 +326,13 @@ class hmi_SM13():
         self.entrada_puerto = self.builder.get_object("red_boton_spin_puerto")
         
         # Se descompone la dir ip
-        s_ip_3, s_ip_2, s_ip_1, s_ip_0 = self.s_ip.split(".")
+        s_ip_3, s_ip_2, s_ip_1, s_ip_0 = s_ip.split(".")
         # y se muestran en el "entry" de la ventana de cfg de red.
         self.entrada_ip_0.set_value(int(s_ip_0))
         self.entrada_ip_1.set_value(int(s_ip_1))
         self.entrada_ip_2.set_value(int(s_ip_2))
         self.entrada_ip_3.set_value(int(s_ip_3))
-        self.entrada_puerto.set_value(int(self.s_port))
+        self.entrada_puerto.set_value(int(s_port))
         
         ## Etiqueta pública de mensajes de la solapa Inicio
         self.inicio_etiqueta_msg = self.builder.get_object("inicio_etiqueta_msg")
@@ -420,6 +427,8 @@ class hmi_SM13():
         self.inicio_etiqueta_estado_pivot = self.builder.get_object("inicio_etiqueta_estado_pivot")
         ## Ventana principal del HMI
         self.window = self.builder.get_object("ventana_principal")
+        #win_name = Gtk.Label("SM-13 HUMAN-MACHINE INTERFACE")
+        #self.window.add(win_name)
         
         ## Ventana secundaria de selección de archivos del sistema
         self.window2 = self.builder.get_object("ventana_secundaria_archivos")
@@ -509,12 +518,9 @@ class hmi_SM13():
         # Beep 
         zumbador.beep_primordial()
 
-        # Función telemetría se ejecuta cada REFRESCO_ms_TELEMETRIA milisegundos
-        GLib.timeout_add(self.ui_REFRESCO_ms_TELEMETRIA, self.telemetria)
-
-         # Función telemetría se ejecuta cada REFRESCO_ms_TELEMETRIA milisegundos
+         # Función refrescar_simulador se ejecuta cada REFRESCO_ms_SIMULADOR milisegundos
         GLib.timeout_add(self.ui_REFRESCO_ms_SIMULADOR, self.refrescar_simulador)
-        
+       
 
     def control_zumbador(self, button):
         # se verifica si el botón esta presionado o suelto
@@ -547,13 +553,21 @@ class hmi_SM13():
     # @param button "Main control", "Stall Function" o "Stow"
     # @return none
     def fixture_control(self, button):
+        global simu
+        global a_RTUData
+        global a_HMIDataByte
+        global a_HMIDataString
+        global b_connect
+        global s_sock
+        global s_port
+        global s_ip
         
         # Obtiene el nombre del widget switch presionado
         s_name = button.get_name()
 
         if (s_name == "fixture_control_button"):    
             if button.get_active():
-                self.s_ctrlEn = "CONTROL_ENABLE"
+                a_HMIDataString[3] = "CONTROL_ENABLE"
                 self.inicio_etiqueta_estado_main_control.set_text("Enabled")
                 # Se indica en todas las etiquetas de msg del hmi
                 self.actualizar_etiquetas_msg("Fixture harness main control enabled...")
@@ -562,7 +576,7 @@ class hmi_SM13():
                     zumbador.beep_button()
 
             else:
-                self.s_ctrlEn = "DISABLE_CONTROL"
+                a_HMIDataString[3] = "DISABLE_CONTROL"
                 self.inicio_etiqueta_estado_main_control.set_text("Disabled")
                 # Se indica en todas las etiquetas de msg del hmi
                 self.actualizar_etiquetas_msg("Fixture harness main control disabled...")
@@ -571,12 +585,12 @@ class hmi_SM13():
                     zumbador.beep_stop()
 
             depurador(1, "HMI", "****************************************")
-            depurador(1, "HMI", "- Fixture status = " + self.s_ctrlEn)
+            depurador(1, "HMI", "- Fixture status = " + a_HMIDataString[3])
             depurador(1, "HMI", " ")
             
         elif (s_name == "fixture_stall_button"):
             if button.get_active():
-                self.s_stallEn = "STALL_ENABLE"
+                a_HMIDataString[4] = "STALL_ENABLE"
                 self.inicio_etiqueta_estado_stall.set_text("Enabled")
                 # Se indica en todas las etiquetas de msg del hmi
                 self.actualizar_etiquetas_msg("Fixture harness stall function enabled...")
@@ -585,7 +599,7 @@ class hmi_SM13():
                     zumbador.beep_button()
 
             else:
-                self.s_stallEn = "DISABLE_STALL"
+                a_HMIDataString[4] = "DISABLE_STALL"
                 self.inicio_etiqueta_estado_stall.set_text("Disabled")
                 self.actualizar_etiquetas_msg("Fixture harness stall function disabled...")
 
@@ -593,12 +607,12 @@ class hmi_SM13():
                     zumbador.beep_button()
 
             depurador(1, "HMI", "****************************************")
-            depurador(1, "HMI", "- Fixture status = " + self.s_stallEn)
+            depurador(1, "HMI", "- Fixture status = " + a_HMIDataString[4])
             depurador(1, "HMI", " ")
 
         elif (s_name == "fixture_stow_button"):
             # Antes de mover verifica si está activado el control principal
-            if (self.s_ctrlEn == "DISABLE_CONTROL"):
+            if (a_HMIDataString[3] == "DISABLE_CONTROL"):
                 if self.b_beeps == True:
                     zumbador.beep_stop()
 
@@ -607,7 +621,7 @@ class hmi_SM13():
                 return True
             
             # Antes de mover verifica si no está atascado el telemanipulador
-            elif (self.b_stallAlm == True and self.s_stallEn == "STALL_ENABLE"):
+            elif (a_RTUData[10] == True and a_HMIDataString[4] == "STALL_ENABLE"):
                 if self.b_beeps == True:
                     zumbador.beep_stop()
 
@@ -616,11 +630,11 @@ class hmi_SM13():
                 return True   
 
             else:
-                self.f_pole = np.deg2rad(270)
-                self.f_arm = np.deg2rad(0)
-                self.f_posCmdPole = 270
-                self.f_posCmdArm = 0
-                simu.refrescar_pos_comandada(self.f_pole, self.f_arm)
+                self.f_pole = 270
+                self.f_arm = 0
+                a_HMIDataByte[1] = self.f_pole
+                a_HMIDataByte[0] = self.f_arm
+                simu.refrescar_pos_comandada(np.deg2rad(self.f_pole), np.deg2rad(self.f_arm))
 
                 self.actualizar_etiquetas_msg("Moving robot to STOW position...")
 
@@ -648,15 +662,16 @@ class hmi_SM13():
     # @param button "STOP"
     # @return none
     def stop_total(self, button):
-        # Desenergiza relé principal en NFC
+        global a_HMIDataString
 
+        # Desenergiza relé principal en NFC
         if(self.b_beeps == True):
             # Beep 
             zumbador.beep_stop()
 
-        self.s_ctrlEn = "DISABLE_CONTROL"
+        a_HMIDataString[3] = "DISABLE_CONTROL"
         # Actualiza la variable modo
-        self.s_mode = "STOP"
+        a_HMIDataString[0] = "STOP"
         # Cambia a OFF el widget del interruptor principal
         self.inicio_toggle_fixture_control.set_active(False)
         # Cambia el mensaje de la etiqueta del interruptor
@@ -679,7 +694,7 @@ class hmi_SM13():
         
         depurador(1, "HMI", "****************************************")
         depurador(1, "HMI", "- STOP TOTAL")
-        depurador(1, "HMI", "- Fixture status = " + self.s_ctrlEn)
+        depurador(1, "HMI", "- Fixture status = " + a_HMIDataString[3])
         depurador(1, "HMI", " ")
             
         return True
@@ -718,6 +733,10 @@ class hmi_SM13():
     # @return none
     def mover_a_seleccion(self, button):
         global simu
+        global a_RTUData
+        global a_HMIDataString
+        global a_HMIDataByte
+        global b_simulador
         
         # Verificaciones previas al movimiento
         # no  si no se han elegido todos los archivos de configuración no se avanza
@@ -725,7 +744,7 @@ class hmi_SM13():
             return True
         
         # Antes de mover verifica si está activado el control principal
-        if (self.s_ctrlEn == "DISABLE_CONTROL"):
+        if (a_HMIDataString[3] == "DISABLE_CONTROL"):
             if self.b_beeps == True:
                 zumbador.beep_stop()
 
@@ -734,7 +753,7 @@ class hmi_SM13():
             return True
         
         # Antes de mover verifica si no está atascado el telemanipulador
-        if (self.b_stallAlm == True and self.s_stallEn == "STALL_ENABLE"):
+        if (a_RTUData[10] == True and a_HMIDataString[4] == "STALL_ENABLE"):
             if self.b_beeps == True:
                 zumbador.beep_stop()
 
@@ -746,7 +765,7 @@ class hmi_SM13():
 
         if self.b_beeps == True:
                 zumbador.beep_button()
-
+        
         # Cálculo cinemático de los angulos necesarios para alcanzar COL, ROW deseados
         # en base a el archivo de intercambiador elegido y la posición de montaje del robot
         if (self.ui_plan_col != 0 and self.ui_plan_row != 0):
@@ -765,6 +784,16 @@ class hmi_SM13():
         # Calcula los ángulos de los ejes POLE y ARM en base a la distancia que hay que alcanzar
         self.f_pole, self.f_arm, self.b_ik_success = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, self.s_pivot_type)
         
+        # Se convierten los ágnulos de las articulaciones a grados y se redondea a 3 decimales
+        self.f_pole = round(np.rad2deg(self.f_pole), 3)
+        self.f_arm = round(np.rad2deg(self.f_arm), 3)
+        # A veces pasa que la conversión da números negativos así que se corrige 
+        if self.f_pole < 0:
+            self.f_pole = self.f_pole + 360
+        if self.f_arm < 0:
+            self.f_arm = self.f_arm + 360
+
+
         if not self.b_ik_success:
             if self.b_beeps == True:
                 zumbador.beep_stop()
@@ -775,7 +804,7 @@ class hmi_SM13():
 
         else:
             depurador(1, "HMI", "****************************************")
-            depurador(1, "HMI", "- Se calcularon ángulos POLE = "+str(round(np.rad2deg(self.f_pole), 3))+"°"+", ARM = "+str(round(np.rad2deg(self.f_arm), 3))+"°")
+            depurador(1, "HMI", "- Se calcularon ángulos POLE = "+str(self.f_pole)+"°"+", ARM = "+str(self.f_arm)+"°")
             depurador(1, "HMI", "- Para ubicar boquilla en Px = "+str(round(self.f_px_tubo, 3))+" in"+", Py = "+str(round(self.f_py_tubo, 3))+" in")
             depurador(1, "HMI", " ") 
             
@@ -784,18 +813,18 @@ class hmi_SM13():
             depurador(1, "HMI", " ")
             self.actualizar_etiquetas_msg("Moving to tube ROW : "+ str(self.ui_plan_row) + ", COL : "+str(self.ui_plan_col))
             
-            if(self.b_simulador == 1):
+            if(b_simulador == 1):
                 depurador(1, "HMI", " - Nuevo ángulo POLE = " + str(self.f_pole))
                 depurador(1, "HMI", " - Nuevo ángulo ARM  = " + str(self.f_arm))
-                simu.refrescar_pos_comandada(self.f_pole, self.f_arm)
+                simu.refrescar_pos_comandada(np.deg2rad(self.f_pole), np.deg2rad(self.f_arm))
                 depurador(1, "HMI", "****************************************")
                 depurador(1, "HMI", "- Refrescando simulador SM-13")
                 depurador(1, "HMI", " ")
             
             # Se convierten a [º] los ángulos POLE y ARM, se redondea a 3 decimales y
             # se actualizan las variables posCmd así las toma el módulo HMIcomRTU y las envía a RTU.    
-            self.f_posCmdPole = (round(np.rad2deg(self.f_pole), 3))
-            self.f_posCmdArm = (round(np.rad2deg(self.f_arm), 3))
+            a_HMIDataByte[1] = self.f_pole
+            a_HMIDataByte[0] = self.f_arm
 
             # Al presionar botón "Select Tube" se envían los ángulos al robot y se igualan 
             # los valores de COL y ROW desedos con actuales.
@@ -819,6 +848,10 @@ class hmi_SM13():
     # @return none
     def siguiente_tubo(self, button):
         global simu
+        global a_RTUData
+        global a_HMIDataString
+        global a_HMIDataByte
+        global b_simulador
         
         # Verificaciones previas al movimiento
         # no  si no se han elegido todos los archivos de configuración no se avanza
@@ -826,7 +859,7 @@ class hmi_SM13():
             return True
         
         # Antes de mover verifica si está activado el control principal
-        if (self.s_ctrlEn == "DISABLE_CONTROL"):
+        if (a_HMIDataString[3] == "DISABLE_CONTROL"):
             if self.b_beeps == True:
                 zumbador.beep_stop()
 
@@ -835,7 +868,7 @@ class hmi_SM13():
             return True
         
         # Antes de mover verifica si no está atascado el telemanipulador
-        if (self.b_stallAlm == True and self.s_stallEn == "STALL_ENABLE"):
+        if (a_RTUData[10] == True and a_HMIDataString[4] == "STALL_ENABLE"):
             if self.b_beeps == True:
                 zumbador.beep_stop()
 
@@ -853,7 +886,7 @@ class hmi_SM13():
         # Se obtiene la fila actualmente seleccionada
         sel = selection.get_selected()
         if not sel[1] == None:
-            # Se obtiene el próximo iter
+            # Se obtiene self.f_poleel próximo iter
             next = self.lista_tubos.iter_next(sel[1])
             if next:
                 # Si hay un next, o sea retorna True la función anterior, se
@@ -878,6 +911,16 @@ class hmi_SM13():
         # Calcula los ángulos de los ejes POLE y ARM en base a la distancia que hay que alcanzar
         self.f_pole, self.f_arm, self.b_ik_success = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, self.s_pivot_type)
         
+        # Se convierten los ágnulos de las articulaciones a grados y se redondea a 3 decimales
+        self.f_pole = round(np.rad2deg(self.f_pole), 3)
+        self.f_arm = round(np.rad2deg(self.f_arm), 3)
+        # A veces pasa que la conversión da números negativos así que se corrige 
+        if self.f_pole < 0:
+            self.f_pole = self.f_pole + 360
+        if self.f_arm < 0:
+            self.f_arm = self.f_arm + 360
+
+
         if not self.b_ik_success:
             if self.b_beeps == True:
                 zumbador.beep_stop()
@@ -887,7 +930,7 @@ class hmi_SM13():
 
         else:
             depurador(1, "HMI", "****************************************")
-            depurador(1, "HMI", "- Se calcularon ángulos POLE = "+str(round(np.rad2deg(self.f_pole), 3))+"°"+", ARM = "+str(round(np.rad2deg(self.f_arm), 3))+"°")
+            depurador(1, "HMI", "- Se calcularon ángulos POLE = "+str(self.f_pole)+"°"+", ARM = "+str(self.f_arm)+"°")
             depurador(1, "HMI", "- Para ubicar boquilla en Px = "+str(round(self.f_px_tubo, 3))+" in"+", Py = "+str(round(self.f_py_tubo, 3))+" in")
             depurador(1, "HMI", " ") 
 
@@ -897,18 +940,18 @@ class hmi_SM13():
             depurador(1, "HMI", " ")
             self.actualizar_etiquetas_msg("Moving to tube ROW : "+ str(self.ui_plan_row) + ", COL : "+str(self.ui_plan_col))
             
-            if(self.b_simulador == 1):
+            if(b_simulador == 1):
                 depurador(1, "HMI", " - Nuevo ángulo POLE = " + str(self.f_pole))
                 depurador(1, "HMI", " - Nuevo ángulo ARM  = " + str(self.f_arm))
-                simu.refrescar_pos_comandada(self.f_pole, self.f_arm)
+                simu.refrescar_pos_comandada(np.deg2rad(self.f_pole), np.deg2rad(self.f_arm))
                 depurador(1, "HMI", "****************************************")
                 depurador(1, "HMI", "- Refrescando simulador SM-13")
                 depurador(1, "HMI", " ")
                 
             # Se convierten a [º] los ángulos POLE y ARM, se redondea a 3 decimales y
             # se actualizan las variables posCmd así las toma el módulo HMIcomRTU y las envía a RTU.    
-            self.f_posCmdPole = (round(np.rad2deg(self.f_pole), 3))
-            self.f_posCmdArm = (round(np.rad2deg(self.f_arm), 3))
+            a_HMIDataByte[1] = self.f_pole
+            a_HMIDataByte[0] = self.f_arm
 
             # Al presionar botón "Next Tube" se envían los ángulos al robot y se igualan 
             # los valores de COL y ROW desedos con actuales.
@@ -926,6 +969,7 @@ class hmi_SM13():
     # @return none
     def run_simulador(self, button):
         global simu
+        global b_simulador
         
         # no arranco el simulador si no se han cargado archivos de configuración antes
         if not self.archivos():
@@ -936,7 +980,7 @@ class hmi_SM13():
             self.inicio_id_toggle_simulador.set_active(False)
             return True
          
-        if (self.b_simulador == 0):
+        if (b_simulador == 0):
             if self.b_beeps == True:
                 zumbador.beep_primordial()
 
@@ -966,14 +1010,14 @@ class hmi_SM13():
             
             depurador(1, "HMI", " - Simulador refrescando con qp = " + str(self.f_pole))
             depurador(1, "HMI", " - Simulador refrescando con qa = " + str(self.f_arm))
-            simu.refrescar_pos_comandada(self.f_pole, self.f_arm)
-            self.b_simulador = 1
+            simu.refrescar_pos_comandada(np.deg2rad(self.f_pole), np.deg2rad(self.f_arm))
+            b_simulador = 1
             
             depurador(1, "HMI", " ")
             
             return True
             
-        if (self.b_simulador == 1):
+        if (b_simulador == 1):
             if self.b_beeps == True:
                 zumbador.beep_stop()
 
@@ -982,7 +1026,7 @@ class hmi_SM13():
             depurador(1, "HMI", " ")
             del simu
             self.inicio_etiqueta_estado_simulador.set_text("Disabled")
-            self.b_simulador = 0
+            b_simulador = 0
             
             return True
 
@@ -991,9 +1035,22 @@ class hmi_SM13():
     # @param self Puntero al objeto HMI
     def refrescar_simulador(self):
         global simu
+        global a_RTUData
+        global b_connect
+        global b_simulador
 
-        if (self.b_simulador):
-            simu.refrescar_pos_actual(self.f_posActPole, self.f_posActArm)
+        if b_connect == True:
+            try:
+                # Se actualizan las etiquetas de cuentas y ángulos en las tres solapas
+                self.actualizar_etiquetas_enc_ang(a_RTUData[1], a_RTUData[0])
+            except:
+                pass
+
+        if (b_simulador):
+            try:
+                simu.refrescar_pos_actual(a_RTUData[1], a_RTUData[0])
+            except:
+                pass
 
         return True
 
@@ -1131,6 +1188,7 @@ class hmi_SM13():
     # @return none
     def cargar_archivos(self, button):
         global simu
+        global b_simulador
 
         if self.b_beeps == True:
             zumbador.beep_primordial()
@@ -1185,10 +1243,10 @@ class hmi_SM13():
         self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, trash, trash = leer_datos_SM13(self.s_hx_type, self.s_archivo_fixture, self.ui_montaje)
         
         # Se resetea simulador ya que cambió el plan de inspección y, por lo tanto, la posición del FH.
-        if (self.b_simulador == 1):
+        if (b_simulador == 1):
             del simu
             simu = simulador_SM13(self.s_archivo_fixture, self.ui_montaje, self.s_archivo_hx)
-            simu.refrescar_pos_comandada(self.f_pole, self.f_arm)
+            simu.refrescar_pos_comandada(np.deg2rad(self.f_pole), np.deg2rad(self.f_arm))
             
         # Se establecen las especificaciones del mazo de tubos en base al intercambiador elegido
         # Si se cambia el path, procurar que tenga la misma cantidad de carpetas
@@ -1222,6 +1280,8 @@ class hmi_SM13():
     # @param button Botones radio fino/grueso
     # @return none
     def seleccion_incremento_jog(self, button):
+        global a_HMIDataByte
+
         if button.get_active():
             if (button.get_label() == "off"):
                 if self.b_beeps == True:
@@ -1236,6 +1296,16 @@ class hmi_SM13():
                 
                 # Calcula los ángulos de los ejes POLE y ARM en base al corrimiento
                 self.f_pole, self.f_arm, self.b_ik_success = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, self.s_pivot_type)   
+                
+                # Se convierten los ágnulos de las articulaciones a grados y se redondea a 3 decimales
+                self.f_pole = round(np.rad2deg(self.f_pole), 3)
+                self.f_arm = round(np.rad2deg(self.f_arm), 3)
+                # A veces pasa que la conversión da números negativos así que se corrige 
+                if self.f_pole < 0:
+                    self.f_pole = self.f_pole + 360
+                if self.f_arm < 0:
+                    self.f_arm = self.f_arm + 360
+
                 if not self.b_ik_success:
                     if self.b_beeps == True:
                         zumbador.beep_stop()
@@ -1244,15 +1314,15 @@ class hmi_SM13():
 
                     return True
 
-                if (self.b_simulador == 1):
+                if (b_simulador == 1):
                     # Se refresca simulador ya que se está haciendo un ajuste fino de la boquilla.
                     # no se suma el jog porque ya se lo hace arriba en esta misma función.
-                    simu.refrescar_pos_comandada(self.f_pole, self.f_arm) 
+                    simu.refrescar_pos_comandada(np.deg2rad(self.f_pole), np.deg2rad(self.f_arm)) 
 
                 # Se convierten a [º] los ángulos POLE y ARM, se redondea a 3 decimales y
                 # se actualizan las variables posCmd así las toma el módulo HMIcomRTU y las envía a RTU.    
-                self.f_posCmdPole = (round(np.rad2deg(self.f_pole), 3))
-                self.f_posCmdArm = (round(np.rad2deg(self.f_arm), 3))
+                a_HMIDataByte[1] = self.f_pole
+                a_HMIDataByte[0] = self.f_arm
                 
                 # Se resetea el Jog acumulado y se actualizan las etiquetas
                 self.f_incremento_acumulado_jog_col = 0.0
@@ -1281,6 +1351,12 @@ class hmi_SM13():
     # @param button Boton Pueden ser cuatro: jog_to_north, jog_to_east, jog_to_south, jog_to_west
     # @return none
     def jog_control(self, button):
+        global a_RTUData
+        global a_HMIDataByte
+        global a_HMIDataString
+        global simu
+        global b_simulador
+
         # Verificaciones previas al movimiento
         # no  si no se han elegido todos los archivos de configuración no se avanza
         if not self.archivos():
@@ -1291,7 +1367,7 @@ class hmi_SM13():
             return True
         
         # Antes de mover verifica si está activado el control principal
-        if (self.s_ctrlEn == "DISABLE_CONTROL"):
+        if (a_HMIDataString[3] == "DISABLE_CONTROL"):
             if self.b_beeps == True:
                 zumbador.beep_stop()
 
@@ -1300,7 +1376,7 @@ class hmi_SM13():
             return True
         
         # Antes de mover verifica si no está atascado el telemanipulador
-        if (self.b_stallAlm == True and self.s_stallEn == "STALL_ENABLE"):
+        if (a_RTUData[10] == True and a_HMIDataString[4] == "STALL_ENABLE"):
             if self.b_beeps == True:
                 zumbador.beep_stop()
 
@@ -1351,6 +1427,17 @@ class hmi_SM13():
             
         # Calcula los ángulos de los ejes POLE y ARM en base al corrimiento
         self.f_pole, self.f_arm, self.b_ik_success = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, self.s_pivot_type)   
+        
+        # Se convierten los ágnulos de las articulaciones a grados y se redondea a 3 decimales
+        self.f_pole = round(np.rad2deg(self.f_pole), 3)
+        self.f_arm = round(np.rad2deg(self.f_arm), 3)
+        # A veces pasa que la conversión da números negativos así que se corrige 
+        if self.f_pole < 0:
+            self.f_pole = self.f_pole + 360
+        if self.f_arm < 0:
+            self.f_arm = self.f_arm + 360
+
+
         if not self.b_ik_success:
             if self.b_beeps == True:
                 zumbador.beep_stop()
@@ -1359,22 +1446,22 @@ class hmi_SM13():
             
             return True
 
-        if (self.b_simulador == 1):
+        if (b_simulador == 1):
             # Se refresca simulador ya que se está haciendo un ajuste fino de la boquilla.
             # no se suma el jog porque ya se lo hace arriba en esta misma función.
-            simu.refrescar_pos_comandada(self.f_pole, self.f_arm)
+            simu.refrescar_pos_comandada(np.deg2rad(self.f_pole), np.deg2rad(self.f_arm))
         
         depurador(1, "HMI", "****************************************")
         depurador(1, "HMI", "- Ajustando fino con incremento jog: "+str(self.f_incremento_jog))
         depurador(1, "HMI", "- Jog acumulado en COL: "+str(self.f_incremento_acumulado_jog_col))
         depurador(1, "HMI", "- Jog acumulado en ROW: "+str(self.f_incremento_acumulado_jog_row))
-        depurador(1, "HMI", "- Se calcularon ángulos POLE = "+str(round(np.rad2deg(self.f_pole), 3))+"°"+", ARM = "+str(round(np.rad2deg(self.f_arm), 3))+"°")
+        depurador(1, "HMI", "- Se calcularon ángulos POLE = "+str(self.f_pole)+"°"+", ARM = "+str(self.f_arm)+"°")
         depurador(1, "HMI", "- Para ubicar boquilla en Px = "+str(round(self.f_px_tubo, 3))+" in"+", Py = "+str(round(self.f_py_tubo, 3))+" in")
         depurador(1, "HMI", " ") 
         
         # se actualizan las variables posCmd con el JOG aplicado.    
-        self.f_posCmdPole = (round(np.rad2deg(self.f_pole), 3))
-        self.f_posCmdArm = (round(np.rad2deg(self.f_arm), 3))
+        a_HMIDataByte[1] = self.f_pole
+        a_HMIDataByte[0] = self.f_arm
         
         return True
     
@@ -1609,10 +1696,10 @@ class hmi_SM13():
             new_network_file.close()
             
             # Se actualizan la variables principales que contienen la IP y el PORT
-            self.s_ip, self.s_port = new_address_lines[1].split(";")
+            s_ip, s_port = new_address_lines[1].split(";")
         
             depurador(1, "HMI", "- IP anterior: "+ s_xip + ", Puerto anterior: " + s_xpuerto)
-            depurador(1, "HMI", "- IP nueva   : "+ self.s_ip + ", Puerto nuevo: " + self.s_port)
+            depurador(1, "HMI", "- IP nueva   : "+ s_ip + ", Puerto nuevo: " + s_port)
             
         return True
     
@@ -1622,8 +1709,11 @@ class hmi_SM13():
     # @param button Botones Lift: "UP/DOWN/UP-TOT/DOWN-TOT"
     # @return none
     def control_lift(self, button):
+        global a_RTUData
+        global a_HMIDataString
+
         # Antes de mover verifica si está activado el control principal
-        if (self.s_ctrlEn == "DISABLE_CONTROL"):
+        if (a_HMIDataString[3] == "DISABLE_CONTROL"):
 
             if self.b_beeps == True:
                 zumbador.beep_stop()
@@ -1649,8 +1739,8 @@ class hmi_SM13():
         
         # botones tipo pulsador afectados por temporizador
         if (s_boton_lift == "lift_up"):
-            if(self.b_limitUp == True):
-                self.s_mode = "STOP"
+            if(a_RTUData[8] == True):
+                a_HMIDataString[0] = "STOP"
                 self.inspection_etiqueta_msg.set_text("Lift upper limit alarm!")
                 depurador(1, "HMI", "****************************************")
                 depurador(1, "HMI", "- Límite superior alcanzado en LIFT")
@@ -1658,13 +1748,13 @@ class hmi_SM13():
                 return
             else:
                 # si ZS no acusa alarma desde RTU se mueve lift
-                self.s_mode = "LIFT"
-                self.s_liftDir = "LIFT_UP"
+                a_HMIDataString[0] = "LIFT"
+                a_HMIDataString[5] = "LIFT_UP"
                 GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos)
                 
         elif (s_boton_lift == "lift_down"):
             if(self.b_limitDwn == True):
-                self.s_mode = "STOP"
+                a_HMIDataString[0] = "STOP"
                 self.inspection_etiqueta_msg.set_text("Lift lower limit alarm!")
                 depurador(1, "HMI", "****************************************")
                 depurador(1, "HMI", "- Límite inferior alcanzado en LIFT")
@@ -1672,8 +1762,8 @@ class hmi_SM13():
                 return
             else:
                 # si ZS no acusa alarma desde RTU se mueve lift
-                self.s_mode = "LIFT"
-                self.s_liftDir = "LIFT_DOWN"
+                a_HMIDataString[0] = "LIFT"
+                a_HMIDataString[5] = "LIFT_DOWN"
                 GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos)
             
         # botones tipo toggle no afectados por temporizador            
@@ -1686,8 +1776,8 @@ class hmi_SM13():
                 self.b_fr_boton_lift_down_total.set_active(False)
                 self.b_manual_boton_lift_down_total.set_active(False)
                 self.b_inspection_boton_lift_down_total.set_active(False)
-                if(self.b_limitUp == True):
-                    self.s_mode = "STOP"
+                if(a_RTUData[8] == True):
+                    a_HMIDataString[0] = "STOP"
                     self.inspection_etiqueta_msg.set_text("Lift upper limit alarm!")
                     depurador(1, "HMI", "****************************************")
                     depurador(1, "HMI", "- Límite superior alcanzado en LIFT")
@@ -1695,8 +1785,8 @@ class hmi_SM13():
                     return
                 else:
                     # si ZS no acusa alarma desde RTU se mueve lift
-                    self.s_mode = "LIFT"
-                    self.s_liftDir = "LIFT_UP"
+                    a_HMIDataString[0] = "LIFT"
+                    a_HMIDataString[5] = "LIFT_UP"
             if (b_boton_lift_up_tot == False):
                 self.detener_movimientos()
                 return
@@ -1711,7 +1801,7 @@ class hmi_SM13():
                 self.b_manual_boton_lift_up_total.set_active(False)
                 self.b_inspection_boton_lift_up_total.set_active(False)
                 if(self.b_limitDwn == True):
-                    self.s_mode = "STOP"
+                    a_HMIDataString[0] = "STOP"
                     self.actualizar_etiquetas_msg("Lift lower limit alarm!")
                     depurador(1, "HMI", "****************************************")
                     depurador(1, "HMI", "- Límite inferior alcanzado en LIFT")
@@ -1719,16 +1809,16 @@ class hmi_SM13():
                     return
                 else:
                     # si ZS no acusa alarma desde RTU se mueve lift
-                    self.s_mode = "LIFT"
-                    self.s_liftDir = "LIFT_DOWN"
+                    a_HMIDataString[0] = "LIFT"
+                    a_HMIDataString[5] = "LIFT_DOWN"
             if (b_boton_lift_down_tot == False):
                 self.detener_movimientos()
                 return
             
         depurador(1, "HMI", "****************************************")
-        depurador(1, "HMI", "- Moving "+ self.s_liftDir)
+        depurador(1, "HMI", "- Moving "+ a_HMIDataString[5])
         depurador(1, "HMI", " ")
-        self.actualizar_etiquetas_msg("Moving "+ self.s_liftDir + "...")
+        self.actualizar_etiquetas_msg("Moving "+ a_HMIDataString[5] + "...")
     
         return 
     
@@ -1739,11 +1829,12 @@ class hmi_SM13():
     # @param self Puntero al objeto HMI
     # @return False y detiene el GLib.timeout_add() que creo la tarea.
     def detener_movimientos(self):
-        
-        self.s_mode = "STOP"
+        global a_HMIDataString
+
+        a_HMIDataString[0] = "STOP"
         
         depurador(1, "HMI", "****************************************")
-        depurador(1, "HMI", "- Modo: " + self.s_mode)
+        depurador(1, "HMI", "- Modo: " + a_HMIDataString[0])
         depurador(1, "HMI", " ")
         
         self.actualizar_etiquetas_msg("Stopping movement...")
@@ -1759,8 +1850,12 @@ class hmi_SM13():
     # push_pole_cw; push_pole_ccw; push_arm_cw; push_arm_ccw;
     # toggle_pole_cw; toggle_pole_ccw; toggle_arm_cw; toggle_arm_ccw; 
     def control_free_run(self, button):
+        global a_RTUData
+        global a_HMIDataByte
+        global a_HMIDataString
+
         # Antes de mover verifica si está activado el control principal
-        if (self.s_ctrlEn == "DISABLE_CONTROL"):
+        if (a_HMIDataString[3] == "DISABLE_CONTROL"):
             self.actualizar_etiquetas_msg("Fixture control is disabled...")
 
             # Si no está habilitado el control principal aseguramos que no queden 
@@ -1776,8 +1871,8 @@ class hmi_SM13():
             return True
         
         # Se verifica la velocidad seteada para POLE y ARM
-        self.ui_velCmdArm = int(self.ui_fr_escala_vel_arm.get_value())
-        self.ui_velCmdPole = int(self.ui_fr_escala_vel_pole.get_value())        
+        a_HMIDataByte[2] = int(self.ui_fr_escala_vel_arm.get_value())
+        a_HMIDataByte[3] = int(self.ui_fr_escala_vel_pole.get_value())        
         
         # Obtiene el nombre del boton jog presionado
         s_boton_fr = button.get_name()
@@ -1785,8 +1880,8 @@ class hmi_SM13():
         # botones tipo pulsador afectados por temporizador
         if (s_boton_fr == "fr_push_arm_cw"):
             # Si la velocidad seteada es 0 no hay nada que hacer aquí
-            if(self.ui_velCmdArm == 0):
-                self.s_mode = "STOP"            
+            if(a_HMIDataByte[2] == 0):
+                a_HMIDataString[0] = "STOP"            
                 self.fr_etiqueta_msg.set_text("The set speed is 0 for this movement...")
 
                 if self.b_beeps == True:
@@ -1795,8 +1890,8 @@ class hmi_SM13():
                 return
                 
             # Si hay un límite de movimiento por software se cancela el movimiento
-            elif(self.b_cwLimitArm == True):
-                self.s_mode = "STOP"
+            elif(a_RTUData[4] == True):
+                a_HMIDataString[0] = "STOP"
                 self.fr_etiqueta_msg.set_text("ARM CW limit alarm!")
                 depurador(1, "HMI", "****************************************")
                 depurador(1, "HMI", "- Límite horario alcanzado en ARM")
@@ -1809,9 +1904,9 @@ class hmi_SM13():
     
             else:
                 # si no hay alarmas de software desde RTU se mueve ARM CW
-                self.s_mode = "FREE_RUN"
-                self.s_freeRunAxis = "ARM"
-                self.s_freeRunDir = "DIR_CW"
+                a_HMIDataString[0] = "FREE_RUN"
+                a_HMIDataString[1] = "ARM"
+                a_HMIDataString[2] = "DIR_CW"
 
                 if self.b_beeps == True:
                     zumbador.beep_button()
@@ -1821,8 +1916,8 @@ class hmi_SM13():
         elif (s_boton_fr == "fr_push_arm_ccw"):
             
             # Si la velocidad seteada es 0 no hay nada que hacer aquí
-            if(self.ui_velCmdArm == 0):
-                self.s_mode = "STOP"
+            if(a_HMIDataByte[2] == 0):
+                a_HMIDataString[0] = "STOP"
                 self.fr_etiqueta_msg.set_text("The set speed is 0 for this movement...")
 
                 if self.b_beeps == True:
@@ -1830,8 +1925,8 @@ class hmi_SM13():
 
                 return
                 
-            elif (self.b_ccwLimitArm == True):
-                self.s_mode = "STOP"
+            elif (a_RTUData[5] == True):
+                a_HMIDataString[0] = "STOP"
                 self.fr_etiqueta_msg.set_text("ARM CCW limit alarm!")
                 depurador(1, "HMI", "****************************************")
                 depurador(1, "HMI", "- Límite anti-horario alcanzado en ARM")
@@ -1844,9 +1939,9 @@ class hmi_SM13():
             
             else:
                 # si no hay alarmas de software desde RTU se mueve lift
-                self.s_mode = "FREE_RUN"
-                self.s_freeRunAxis = "ARM"
-                self.s_freeRunDir = "CCW_DIR"
+                a_HMIDataString[0] = "FREE_RUN"
+                a_HMIDataString[1] = "ARM"
+                a_HMIDataString[2] = "CCW_DIR"
 
                 if self.b_beeps == True:
                     zumbador.beep_button()
@@ -1855,8 +1950,8 @@ class hmi_SM13():
                 
         if (s_boton_fr == "fr_push_pole_cw"):
             # Si la velocidad seteada es 0 no hay nada que hacer aquí
-            if(self.ui_velCmdPole == 0):
-                self.s_mode = "STOP"
+            if(a_HMIDataByte[3] == 0):
+                a_HMIDataString[0] = "STOP"
 
                 if self.b_beeps == True:
                     zumbador.beep_stop()
@@ -1864,8 +1959,8 @@ class hmi_SM13():
                 self.fr_etiqueta_msg.set_text("The set speed is 0 for this movement...")
                 return
             
-            if(self.b_cwLimitPole == True):
-                self.s_mode = "STOP"
+            if(a_RTUData[6] == True):
+                a_HMIDataString[0] = "STOP"
                 self_etiqueta_msg.set_text("POLE CW limit alarm!")
                 depurador(1, "HMI", "****************************************")
                 depurador(1, "HMI", "- Límite horario alcanzado en POLE")
@@ -1878,9 +1973,9 @@ class hmi_SM13():
     
             else:
                 # si no hay alarmas de software desde RTU se mueve ARM CW
-                self.s_mode = "FREE_RUN"
-                self.s_freeRunAxis = "POLE"
-                self.s_freeRunDir = "DIR_CW"
+                a_HMIDataString[0] = "FREE_RUN"
+                a_HMIDataString[1] = "POLE"
+                a_HMIDataString[2] = "DIR_CW"
 
                 if self.b_beeps == True:
                     zumbador.beep_button()
@@ -1889,8 +1984,8 @@ class hmi_SM13():
                 
         elif (s_boton_fr == "fr_push_pole_ccw"):
             # Si la velocidad seteada es 0 no hay nada que hacer aquí
-            if(self.ui_velCmdPole == 0):
-                self.s_mode = "STOP"
+            if(a_HMIDataByte[3] == 0):
+                a_HMIDataString[0] = "STOP"
                 self.fr_etiqueta_msg.set_text("The set speed is 0 for this movement...")
 
                 if self.b_beeps == True:
@@ -1898,8 +1993,8 @@ class hmi_SM13():
 
                 return
             
-            elif (self.b_ccwLimitPole == True):
-                self.s_mode = "STOP"
+            elif (a_RTUData[7] == True):
+                a_HMIDataString[0] = "STOP"
                 self.fr_etiqueta_msg.set_text("POLE CCW limit alarm!")
                 depurador(1, "HMI", "****************************************")
                 depurador(1, "HMI", "- Límite anti-horario alcanzado en POLE")
@@ -1911,9 +2006,9 @@ class hmi_SM13():
                 return
             else:
                 # si no hay alarmas de software desde RTU se mueve POLE
-                self.s_mode = "FREE_RUN"
-                self.s_freeRunAxis = "POLE"
-                self.s_freeRunDir = "CCW_DIR"
+                a_HMIDataString[0] = "FREE_RUN"
+                a_HMIDataString[1] = "POLE"
+                a_HMIDataString[2] = "CCW_DIR"
 
                 if self.b_beeps == True:
                     zumbador.beep_button()
@@ -1929,8 +2024,8 @@ class hmi_SM13():
                 # se desactive
                 self.b_boton_toggle_arm_ccw.set_active(False)
                 # Si la velocidad seteada es 0 no hay nada que hacer aquí
-                if(self.ui_velCmdArm == 0):
-                    self.s_mode = "STOP"
+                if(a_HMIDataByte[2] == 0):
+                    a_HMIDataString[0] = "STOP"
 
                     # Si no hay velocidad seleccionada aseguramos que no quede presionado el toggle
                     self.b_boton_toggle_arm_cw.set_active(False)
@@ -1942,8 +2037,8 @@ class hmi_SM13():
 
                     return
                 
-                if(self.b_cwLimitArm == True):
-                    self.s_mode = "STOP"
+                if(a_RTUData[4] == True):
+                    a_HMIDataString[0] = "STOP"
                     self.fr_etiqueta_msg.set_text("ARM CW limit alarm!")
                     depurador(1, "HMI", "****************************************")
                     depurador(1, "HMI", "- Límite horario alcanzado en ARM")
@@ -1955,9 +2050,9 @@ class hmi_SM13():
                     return
                 else:
                     # si no hay alarmas de límite por software desde RTU se mueve ARM CW
-                    self.s_mode = "FREE_RUN"
-                    self.s_freeRunAxis = "ARM"
-                    self.s_freeRunDir = "DIR_CW"
+                    a_HMIDataString[0] = "FREE_RUN"
+                    a_HMIDataString[1] = "ARM"
+                    a_HMIDataString[2] = "DIR_CW"
 
                     if self.b_beeps == True:
                         zumbador.beep_button()
@@ -1974,8 +2069,8 @@ class hmi_SM13():
                 # se desactive
                 self.b_boton_toggle_arm_cw.set_active(False)
                 # Si la velocidad seteada es 0 no hay nada que hacer aquí
-                if(self.ui_velCmdArm == 0):
-                    self.s_mode = "STOP"
+                if(a_HMIDataByte[2] == 0):
+                    a_HMIDataString[0] = "STOP"
 
                     # Si no hay velocidad seleccionada aseguramos que no quede presionado el toggle
                     self.b_boton_toggle_arm_ccw.set_active(False)
@@ -1987,8 +2082,8 @@ class hmi_SM13():
 
                     return
                 
-                elif(self.b_ccwLimitArm == True):
-                    self.s_mode = "STOP"
+                elif(a_RTUData[5] == True):
+                    a_HMIDataString[0] = "STOP"
                     self.fr_etiqueta_msg.set_text("ARM CCW limit alarm!")
                     depurador(1, "HMI", "****************************************")
                     depurador(1, "HMI", "- Límite anti-horario alcanzado en ARM")
@@ -2000,9 +2095,9 @@ class hmi_SM13():
                     return
                 else:
                     # si no hay alarmas de límite por software desde RTU se mueve ARM CCW
-                    self.s_mode = "FREE_RUN"
-                    self.s_freeRunAxis = "ARM"
-                    self.s_freeRunDir = "CCW_DIR"
+                    a_HMIDataString[0] = "FREE_RUN"
+                    a_HMIDataString[1] = "ARM"
+                    a_HMIDataString[2] = "CCW_DIR"
 
                     if self.b_beeps == True:
                         zumbador.beep_button()
@@ -2019,8 +2114,8 @@ class hmi_SM13():
                 # se desactive
                 self.b_boton_toggle_pole_ccw.set_active(False)
                 # Si la velocidad seteada es 0 no hay nada que hacer aquí
-                if(self.ui_velCmdPole == 0):
-                    self.s_mode = "STOP"
+                if(a_HMIDataByte[3] == 0):
+                    a_HMIDataString[0] = "STOP"
 
                     # Si no hay velocidad seleccionada aseguramos que no quede presionado el toggle
                     self.b_boton_toggle_pole_cw.set_active(False)
@@ -2032,8 +2127,8 @@ class hmi_SM13():
 
                     return
                 
-                elif(self.b_cwLimitPole == True):
-                    self.s_mode = "STOP"
+                elif(a_RTUData[6] == True):
+                    a_HMIDataString[0] = "STOP"
                     self.fr_etiqueta_msg.set_text("POLE CW limit alarm!")
                     depurador(1, "HMI", "****************************************")
                     depurador(1, "HMI", "- Límite horario alcanzado en POLE")
@@ -2045,9 +2140,9 @@ class hmi_SM13():
                     return
                 else:
                     # si no hay alarmas de límite por software desde RTU se mueve POLE CW
-                    self.s_mode = "FREE_RUN"
-                    self.s_freeRunAxis = "POLE"
-                    self.s_freeRunDir = "DIR_CW"
+                    a_HMIDataString[0] = "FREE_RUN"
+                    a_HMIDataString[1] = "POLE"
+                    a_HMIDataString[2] = "DIR_CW"
 
                     if self.b_beeps == True:
                         zumbador.beep_button()
@@ -2064,8 +2159,8 @@ class hmi_SM13():
                 # se desactive
                 self.b_boton_toggle_pole_cw.set_active(False)
                 # Si la velocidad seteada es 0 no hay nada que hacer aquí
-                if(self.ui_velCmdPole == 0):
-                    self.s_mode = "STOP"
+                if(a_HMIDataByte[3] == 0):
+                    a_HMIDataString[0] = "STOP"
 
                     # Si no hay velocidad seleccionada aseguramos que no quede presionado el toggle
                     self.b_boton_toggle_pole_ccw.set_active(False)
@@ -2077,8 +2172,8 @@ class hmi_SM13():
 
                     return
                 
-                if(self.b_ccwLimitPole == True):
-                    self.s_mode = "STOP"
+                if(a_RTUData[7] == True):
+                    a_HMIDataString[0] = "STOP"
                     self.fr_etiqueta_msg.set_text("POLE CCW limit alarm!")
                     depurador(1, "HMI", "****************************************")
                     depurador(1, "HMI", "- Límite anti-horario alcanzado en POLE")
@@ -2090,9 +2185,9 @@ class hmi_SM13():
                     return
                 else:
                     # si no hay alarmas de límite por software desde RTU se mueve POLE CCW
-                    self.s_mode = "FREE_RUN"
-                    self.s_freeRunAxis = "POLE"
-                    self.s_freeRunDir = "CCW_DIR"
+                    a_HMIDataString[0] = "FREE_RUN"
+                    a_HMIDataString[1] = "POLE"
+                    a_HMIDataString[2] = "CCW_DIR"
 
                     if self.b_beeps == True:
                         zumbador.beep_button()
@@ -2102,9 +2197,9 @@ class hmi_SM13():
                 return
             
         depurador(1, "HMI", "****************************************")
-        depurador(1, "HMI", "- Moviendo "+ self.s_freeRunAxis + " en sentido " + self.s_freeRunDir)
+        depurador(1, "HMI", "- Moviendo "+ a_HMIDataString[1] + " en sentido " + a_HMIDataString[2])
         depurador(1, "HMI", " ")
-        self.fr_etiqueta_msg.set_text("Moving "+ self.s_freeRunAxis + " , " + self.s_freeRunDir)
+        self.fr_etiqueta_msg.set_text("Moving "+ a_HMIDataString[1] + " , " + a_HMIDataString[2])
 
         return True
 
@@ -2116,6 +2211,8 @@ class hmi_SM13():
     # @param button Botones de la solapa Manual, sección Guide Tube Position.
     def control_manual(self, button):
         global simu
+        global a_RTUData
+        global a_HMIDataString
 
         # Verificaciones previas al movimiento
         # no  si no se han elegido todos los archivos de configuración no se avanza
@@ -2127,7 +2224,7 @@ class hmi_SM13():
             return True
         
         # Antes de mover verifica si está activado el control principal
-        if (self.s_ctrlEn == "DISABLE_CONTROL"):
+        if (a_HMIDataString[3] == "DISABLE_CONTROL"):
             self.actualizar_etiquetas_msg("Fixture control is disabled...")
 
             if self.b_beeps == True:
@@ -2136,7 +2233,7 @@ class hmi_SM13():
             return True
         
         # Antes de mover verifica si no está atascado el telemanipulador
-        if (self.b_stallAlm):
+        if (a_RTUData[10]):
             self.actualizar_etiquetas_msg("Fixture harness is stalled...")
 
             if self.b_beeps == True:
@@ -2293,6 +2390,8 @@ class hmi_SM13():
     # fecha y de mensajes de estado de conexiòn con RTU
     # @param self Puntero al objeto HMI
     def leer_reloj(self):
+        global b_connect
+
         s_fecha, s_hora = str(dt.datetime.now()).split(' ')
         s_anio, s_mes, s_dia = s_fecha.split('-')
         s_hr, s_min, s_seg = s_hora.split(':') 
@@ -2302,10 +2401,10 @@ class hmi_SM13():
 
         # Si no hay conexión con RTU se avisa constantemente, si se conectó, la variable
         # print_status permite que se muestre el aviso de conexión solo una vez.
-        if(self.b_connect  == False):
+        if(b_connect  == False):
             self.actualizar_etiquetas_msg("Attempting to connect to NFC...")
             self.b_print_status = True
-        elif(self.b_connect == True and self.b_print_status == True):
+        elif(b_connect == True and self.b_print_status == True):
             if(self.b_beeps == True):
                 zumbador.beep_primordial()
 
@@ -2315,119 +2414,137 @@ class hmi_SM13():
 
         return True       
 
-    
-    ##
-    # @brief Función que se repite periódicamente, inicia la conexión con RTU
-    # y gestiona el intercambio de datos entre HMI y RTU.
-    # @param self Puntero al objeto HMI
-    def telemetria(self):
+##
+# @brief Función que se ejecuta en un hilo separado del HMI. Inicia la conexión con RTU
+# y gestiona el intercambio de datos entre HMI y RTU.
+# @param None Conoce los datos que HMI desea transmitir mediante array globales
+# @return None Comunica los datos recibidos desde RTU al HMI mediante array global
+def tm():
+    global a_RTUData
+    global a_HMIDataByte
+    global a_HMIDataString
+    global b_connect
+    global s_sock
+    global s_port
+    global s_ip
+    global b_simulador
 
-        # Código de simulación de variación en ángulos actuales
-        if self.f_posCmdPole < 0:
-            self.f_posCmdPole = self.f_posCmdPole + 360
-        if self.f_posCmdArm < 0:
-            self.f_posCmdArm = self.f_posCmdArm + 360
+    ui_PERIODO_ms_TRAMA = 10 # (mili-segundos)
+    ui_PERIODO_ms_ANGULOS_SIMULADOS = 300
+    f_ERROR_ANGULOS_SIMULADOS = 0.125
+    f_INCREMENTO_ANGULOS_SIMULADOS = 0.025
 
-        if self.f_posActArm == np.deg2rad(self.f_posCmdArm):
-            pass
-        else:
-            if np.abs(np.deg2rad(self.f_posCmdArm)) > self.f_posActArm:
-                self.f_posActArm += 0.125
-                if self.f_posActArm >= np.deg2rad(360):
-                    self.f_posActArm = 0
-            elif np.abs(np.deg2rad(self.f_posCmdArm)) < self.f_posActArm:
-                self.f_posActArm -= 0.125
-                if self.f_posActArm < 0:
-                    self.f_posActArm = 0
+    while(True):
+        # Código de simulación de variación en ángulos actuales, sólo funciona off-line
+        # Pemite que si no está activo el simulador y no hay conexión, intente reconectar más rápido.
+        if (b_connect == False and b_simulador == False):
+            a_RTUData[1] = np.deg2rad(a_HMIDataByte[1])
+            a_RTUData[0] = np.deg2rad(a_HMIDataByte[0])
 
-            if np.abs(self.f_posActArm - np.deg2rad(self.f_posCmdArm)) <= 0.125:
-                self.f_posActArm = np.deg2rad(self.f_posCmdArm)
-
-        if self.f_posActPole == np.deg2rad(self.f_posCmdPole):
-            pass
-        else:
-            if np.abs(np.deg2rad(self.f_posCmdPole)) > self.f_posActPole:
-                self.f_posActPole += 0.125
-                if self.f_posActPole >= np.deg2rad(360):
-                    self.f_posActPole = 0
-            elif np.abs(np.deg2rad(self.f_posCmdPole)) < self.f_posActPole:
-                self.f_posActPole -= 0.125
-                if self.f_posActPole < 0:
-                    self.f_posActPole = 0
-
-            if np.abs(self.f_posActPole - np.deg2rad(self.f_posCmdPole)) <= 0.125:
-                self.f_posActPole = np.deg2rad(self.f_posCmdPole)
-
-        # Se actualizan las etiquetas de cuentas y ángulos en las tres solapas
-        self.actualizar_etiquetas_enc_ang(np.rad2deg(self.f_posActPole), np.rad2deg(self.f_posActArm))
-        # fin código de simulación de ángulos actuales SM-13
-
-
-        # Se evita que el intento de conexión tenga una frecuencia tan alta
-        # como la del envío-recepción de tramas.
-        if (self.ui_intentos >= self.ui_REINTENTAR):
-            self.ui_intentos = 0
-            
-        if (self.b_connect == False) and (self.ui_intentos == 0):
-            depurador(1, "HMI", "****************************************")
-            depurador(1, "HMI", "- Intentando conectar con RTU...")
-            depurador(1, "HMI", "- IP actual: " + self.s_ip + " / Port: " + self.s_port)
+        # Si no hay conexión con RTU y el operador quiere simular el SM-13 se le da más prioridad que
+        # la reconexión
+        if (b_connect == False and b_simulador == True):
             try:
-                self.s_sock, self.b_connect = RTU_connect(self.b_connect, self.s_ip, int(self.s_port))
+                if a_HMIDataByte[1] < 0:
+                    a_HMIDataByte[1] = a_HMIDataByte[1] + 360
+                if a_HMIDataByte[0] < 0:
+                    a_HMIDataByte[0] = a_HMIDataByte[0] + 360
+
+                if a_RTUData[0] == np.deg2rad(a_HMIDataByte[0]):
+                    pass
+                else:
+                    if np.abs(np.deg2rad(a_HMIDataByte[0])) > a_RTUData[0]:
+                        a_RTUData[0] += f_INCREMENTO_ANGULOS_SIMULADOS
+                        if a_RTUData[0] >= np.deg2rad(360):
+                            a_RTUData[0] = 0
+                    elif np.abs(np.deg2rad(a_HMIDataByte[0])) < a_RTUData[0]:
+                        a_RTUData[0] -= f_INCREMENTO_ANGULOS_SIMULADOS
+                        if a_RTUData[0] < 0:
+                            a_RTUData[0] = 0
+
+                    if np.abs(a_RTUData[0] - np.deg2rad(a_HMIDataByte[0])) <= f_ERROR_ANGULOS_SIMULADOS:
+                        a_RTUData[0] = np.deg2rad(a_HMIDataByte[0])
+
+                if a_RTUData[1] == np.deg2rad(a_HMIDataByte[1]):
+                    pass
+                else:
+                    if np.abs(np.deg2rad(a_HMIDataByte[1])) > a_RTUData[1]:
+                        a_RTUData[1] += f_INCREMENTO_ANGULOS_SIMULADOS
+                        if a_RTUData[1] >= np.deg2rad(360):
+                            a_RTUData[1] = 0
+                    elif np.abs(np.deg2rad(a_HMIDataByte[1])) < a_RTUData[1]:
+                        a_RTUData[1] -= f_INCREMENTO_ANGULOS_SIMULADOS
+                        if a_RTUData[1] < 0:
+                            a_RTUData[1] = 0
+
+                    if np.abs(a_RTUData[1] - np.deg2rad(a_HMIDataByte[1])) <= f_ERROR_ANGULOS_SIMULADOS:
+                        a_RTUData[1] = np.deg2rad(a_HMIDataByte[1])
+                # fin código de simulación de ángulos actuales SM-13
+            except:
+                pass
+
+            time.sleep(ui_PERIODO_ms_ANGULOS_SIMULADOS/1000)
+        
+        # Si no se está jugando con el simulador de ángulos actuales y no hay conexión, se le da 
+        # prioridad a la reconexión.
+        if (b_connect == False and a_RTUData[1] == np.deg2rad(a_HMIDataByte[1]) and a_RTUData[0] == np.deg2rad(a_HMIDataByte[0])):
+            # Cuando no hay conexión con RTU intenta 
+            depurador(1, "TM", "****************************************")
+            depurador(1, "TM", "- Intentando conectar con RTU...")
+            depurador(1, "TM", "- IP actual: " + s_ip + " / Port: " + s_port)
+            try:
+                s_sock, b_connect = RTU_connect(b_connect, s_ip, int(s_port))
                 pass
             except socket.error as e:
-                depurador(1, "HMI", "****************************************")
-                depurador(1, "HMI", "- No se puede establecer comunicación con RTU: " + str(e))
-                depurador(1, "HMI", " ")
+                depurador(1, "TM", "****************************************")
+                depurador(1, "TM", "- No se puede establecer comunicación con RTU: " + str(e))
+                depurador(1, "TM", " ")
                 
-            depurador(1, "HMI", "- Estado conexión con RTU: " + str(self.b_connect))
-            depurador(1, "HMI", " ")
+            depurador(1, "TM", "- Estado conexión con RTU: " + str(b_connect))
+            depurador(1, "TM", " ")
 
-        elif (self.b_connect == True):
+        elif (b_connect == True):
             try:
-                # Se refresca el paquete de DataBytes a enviar a RTU
-                self.a_HMIDataByte = self.f_posCmdArm, self.f_posCmdPole, self.ui_velCmdArm, self.ui_velCmdPole
-                
-                # Se refresca el paquete de DataString a enviar a RTU
-                self.a_HMIDataString = self.s_mode, self.s_freeRunAxis, self.s_freeRunDir, self.s_ctrlEn, self.s_stallEn, self.s_liftDir
-                
                 # Se envían los paquetes DataBytes y DataStrings hacia RTU y se recibe un paquete proveniente de RTU 
-                self.a_RTUData, self.b_connect, self.s_sock = enviar_a_y_recibir_de_rtu(self.a_HMIDataByte, self.a_HMIDataString, self.b_connect, self.s_sock, '192.168.0.193', 5020)
-                depurador(3, "HMI", "--> Paquete Data_Byte  : " + str(self.a_HMIDataByte))
-                depurador(3, "HMI", "--> Paquete Data_String: " + str(self.a_HMIDataString))
-                depurador(3, "HMI", "<-- Paquete RTU_Data   : " + str(self.a_RTUData))
-                
-                if self.b_connect == True:
-                    self.f_posActArm = self.a_RTUData[0]
-                    self.f_posActPole = self.a_RTUData[1]
-                    self.f_velActArm = self.a_RTUData[2]
-                    self.f_velActPole = self.a_RTUData[3]
-                    self.b_cwLimitArm = self.a_RTUData[4]
-                    self.b_ccwLimitArm = self.a_RTUData[5]
-                    self.b_cwLimitPole = self.a_RTUData[6]
-                    self.b_ccwLimitPole = self.a_RTUData[7]
-                    self.b_limitUp = self.a_RTUData[8]
-                    self.b_limitDown = self.a_RTUData[9]
-                    self.b_stallAlm = self.a_RTUData[10]
-                    self.ui_status = self.a_RTUData[11]
-                    
-                    # Se actualizan las etiquetas de cuentas y ángulos en las tres solapas
-                    self.actualizar_etiquetas_enc_ang(self.f_posActPole, self.f_posActArm)
-                               
+                a_RTUData, b_connect, s_sock = enviar_a_y_recibir_de_rtu(a_HMIDataByte, a_HMIDataString, b_connect, s_sock, s_ip, s_port)#'192.168.0.193', 5020)
+                depurador(2, "TM", "--> Paquete Data_Byte  : " + str(a_HMIDataByte))
+                depurador(2, "TM", "--> Paquete Data_String: " + str(a_HMIDataString))
+                depurador(2, "TM", "<-- Paquete RTU_Data   : " + str(a_RTUData))                      
                     
             except Exception as e:
-                self.b_connect = False
-                depurador(1, "HMI", "****************************************")
-                depurador(1, "HMI", "- Error durante la comunicación con RTU: " + str(e))
-                depurador(1, "HMI", " ")
+                b_connect = False
+                depurador(1, "TM", "****************************************")
+                depurador(1, "TM", "- Error durante la comunicación con RTU: " + str(e))
+                depurador(3, "TM", "- CONNECT : " + str(b_connect))
+                depurador(3, "TM", "- SOCKET : " + str(s_sock))
+                depurador(3, "TM", "- IP : " + str(s_ip))
+                depurador(3, "TM", "- PORT : " + str(s_port))
+                depurador(1, "TM", " ")
+
+        # Esta porción de código permite que no se detenga el HMI con la llegada de
+        # alguna trama corrupta+
+        for x in range(0, 11):
+            try:
+                if a_RTUData[x] == True:
+                    pass
+            except Exception as e:
+                depurador(1, "TM", "****************************************")
+                depurador(1, "TM", "- Error en trama recibida de RTU: " + str(e))   
+                ## Variable global contiene la lista de datos que llegan desde RTU:
+                # [f_posActArm, f_posActPole, f_velActArm, f_velActPole, 
+                # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, ui_status]
+                a_RTUData = [0, 4.712, 0, 0, False, False, False, False, False, False, False, 0]  
+                pass  
         
-        self.ui_intentos += 1
-                
-        return True
-                
                 
 if __name__ == "__main__":
-    hmi_SM13()
-    Gtk.main()
     
+    interfaz_hombre_maquina = hmi_SM13()
+
+    telemetria = threading.Thread(target=tm).start()
+        
+    Gtk.main()
+
+    #telemetria.join()
+
     

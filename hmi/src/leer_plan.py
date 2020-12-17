@@ -36,7 +36,6 @@ def leer_plan(s_plan_file):
           
         i=0
         for data in plan:
-            print(data[0], data[1], data[2])
             a_row_plan.append(int(data[0]))
             a_col_plan.append(int(data[1]))
             a_tube_plan.append(data[2])

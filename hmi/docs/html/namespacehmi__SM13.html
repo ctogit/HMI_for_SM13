@@ -63,7 +63,9 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Clases</a>  </div>
+<a href="#nested-classes">Clases</a> &#124;
+<a href="#func-members">Funciones</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">Referencia del Namespace hmi_SM13</div>  </div>
 </div><!--header-->
@@ -73,7 +75,76 @@ $(function() {
 Clases</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhmi__SM13_1_1hmi__SM13.html">hmi_SM13</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Funciones</h2></td></tr>
+<tr class="memitem:a68d74fc287c135f5ae5b61b01cd4e50f"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehmi__SM13.html#a68d74fc287c135f5ae5b61b01cd4e50f">tm</a> ()</td></tr>
+<tr class="memdesc:a68d74fc287c135f5ae5b61b01cd4e50f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Función que se ejecuta en un hilo separado del HMI.  <a href="namespacehmi__SM13.html#a68d74fc287c135f5ae5b61b01cd4e50f">Más...</a><br /></td></tr>
+<tr class="separator:a68d74fc287c135f5ae5b61b01cd4e50f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a061a134e3f4404e5b26dfba3ee36f4da"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehmi__SM13.html#a061a134e3f4404e5b26dfba3ee36f4da">interfaz_hombre_maquina</a> = <a class="el" href="classhmi__SM13_1_1hmi__SM13.html">hmi_SM13</a>()</td></tr>
+<tr class="separator:a061a134e3f4404e5b26dfba3ee36f4da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12995c3a1f77f6d2d449da22ac8566e3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehmi__SM13.html#a12995c3a1f77f6d2d449da22ac8566e3">telemetria</a> = threading.Thread(target=<a class="el" href="namespacehmi__SM13.html#a68d74fc287c135f5ae5b61b01cd4e50f">tm</a>).start()</td></tr>
+<tr class="separator:a12995c3a1f77f6d2d449da22ac8566e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Documentación de las funciones</h2>
+<a id="a68d74fc287c135f5ae5b61b01cd4e50f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68d74fc287c135f5ae5b61b01cd4e50f">&#9670;&nbsp;</a></span>tm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def hmi_SM13.tm </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Función que se ejecuta en un hilo separado del HMI. </p>
+<p>Inicia la conexión con RTU y gestiona el intercambio de datos entre HMI y RTU. </p><dl class="params"><dt>Parámetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">None</td><td>Conoce los datos que HMI desea transmitir mediante array globales </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Devuelve</dt><dd>None Comunica los datos recibidos desde RTU al HMI mediante array global </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Documentación de las variables</h2>
+<a id="a061a134e3f4404e5b26dfba3ee36f4da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a061a134e3f4404e5b26dfba3ee36f4da">&#9670;&nbsp;</a></span>interfaz_hombre_maquina</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">interfaz_hombre_maquina = <a class="el" href="classhmi__SM13_1_1hmi__SM13.html">hmi_SM13</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a12995c3a1f77f6d2d449da22ac8566e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12995c3a1f77f6d2d449da22ac8566e3">&#9670;&nbsp;</a></span>telemetria</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">telemetria = threading.Thread(target=<a class="el" href="namespacehmi__SM13.html#a68d74fc287c135f5ae5b61b01cd4e50f">tm</a>).start()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

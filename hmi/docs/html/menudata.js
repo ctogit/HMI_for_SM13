@@ -25,7 +25,17 @@ var menudata={children:[
 {text:"Paquetes",url:"namespaces.html",children:[
 {text:"Paquetes",url:"namespaces.html"},
 {text:"Funciones del 'package'",url:"namespacemembers.html",children:[
-{text:"Todo",url:"namespacemembers.html"},
+{text:"Todo",url:"namespacemembers.html",children:[
+{text:"b",url:"namespacemembers.html#index_b"},
+{text:"d",url:"namespacemembers.html#index_d"},
+{text:"e",url:"namespacemembers.html#index_e"},
+{text:"f",url:"namespacemembers.html#index_f"},
+{text:"h",url:"namespacemembers.html#index_h"},
+{text:"i",url:"namespacemembers.html#index_i"},
+{text:"l",url:"namespacemembers.html#index_l"},
+{text:"r",url:"namespacemembers.html#index_r"},
+{text:"s",url:"namespacemembers.html#index_s"},
+{text:"t",url:"namespacemembers.html#index_t"}]},
 {text:"Funciones",url:"namespacemembers_func.html"},
 {text:"Variables",url:"namespacemembers_vars.html"}]}]},
 {text:"Clases",url:"annotated.html",children:[
@@ -62,7 +72,6 @@ var menudata={children:[
 {text:"m",url:"functions_func.html#index_m"},
 {text:"r",url:"functions_func.html#index_r"},
 {text:"s",url:"functions_func.html#index_s"},
-{text:"t",url:"functions_func.html#index_t"},
 {text:"v",url:"functions_func.html#index_v"}]},
 {text:"Variables",url:"functions_vars.html",children:[
 {text:"a",url:"functions_vars.html#index_a"},

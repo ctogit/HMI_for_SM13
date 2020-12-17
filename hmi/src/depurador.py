@@ -27,7 +27,7 @@ iNIVEL_TEST3 = int(3)
 iNIVEL_TEST4 = int(4)
 
 ## Variable de depuración
-iSeveridad = iNIVEL_TEST3
+iSeveridad = iNIVEL_TEST1
 
 import datetime as dt
 
@@ -35,7 +35,7 @@ def depurador(iS, sSM, sTexto):
     global iSeveridad
 
     # consulta fecha y hora
-    sFecha, sHora = str(dt.datetime.utcnow()).split(' ')
+    sFecha, sHora = str(dt.datetime.now()).split(' ')
     sAnio, sMes, sDia = sFecha.split('-')
     sHora, sMin, sSeg = sHora.split(':')
     
