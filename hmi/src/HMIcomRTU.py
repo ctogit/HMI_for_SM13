@@ -63,6 +63,13 @@ def enviar_a_y_recibir_de_rtu(a_HMIDataByte, a_HMIDataString, b_connect, s_sock,
 
         # Transmisión de tramas y recepción de datos desde RTU -a_RTUData-.
     a_RTUData, b_connect, s_sock = DataTxRx(a_HMIDataByte, a_HMIDataString, s_CLIENT_ID, s_sock, b_connect)
+
+    depurador(2, "HMIcomRTU", "****************************************")
+    depurador(2, "HMIcomRTU", "- Enviando y recibiendo...")
+    depurador(2, "HMIcomRTU", "- Tx--> HMIDataByte: " + str(a_HMIDataByte))
+    depurador(2, "HMIcomRTU", "- Tx--> HMIDataString: " + str(a_HMIDataString))
+    depurador(2, "HMIcomRTU", "- Rx<-- RTUData: " + str(a_RTUData))
+    depurador(2, "HMIcomRTU", " ")
         
     # Valores de salida para módulo HMIcomRTU
     return a_RTUData, b_connect, s_sock
@@ -283,31 +290,39 @@ def HMITranslate(a_HMIDataString, a_HMIDataByte):
 ##
 #   -- Desentramado, y transducción de los valores recibidos por trama Ethernet desde RTU.
 def RTUTranslate(a_RTUDataRx):
-
     b_connect = True
-        # Destramado
-    a_RTUDataRx = a_RTUDataRx.split()
+    # Destramado
+    a_RTUDataRx = list(a_RTUDataRx)
+
+    #depurador(3, "HMIcomRTU", "****************************************")
+    #depurador(3, "HMIcomRTU","- length a_RTUData:" + len(str(a_RTUDataRx)))
     
         # Conversión del resultado de resolver a ángulos. -Byte- a -Float-
-    try:    
+    #if(True):
+    try:   
         # Conversión: -uint16- a -float- para angulo y velocidades recibidos de los resolvers.
         #   -- posAct --
-        f_posActArm = (int(a_RTUDataRx[0])/i_MAX_CUENTAS)*f_MAX_GRADOS
-        f_posActPole = (int(a_RTUDataRx[1])/i_MAX_CUENTAS)*f_MAX_GRADOS
+        f_posActArm_MSB = int(a_RTUDataRx[0]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
+        f_posActArm_LSB = int(a_RTUDataRx[1]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
+        f_posActArm = f_posActArm_MSB*255 + f_posActArm_LSB
+
+        f_posActPole_MSB = int(a_RTUDataRx[2]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
+        f_posActPole_LSB = int(a_RTUDataRx[3]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
+        f_posActPole = f_posActPole_MSB*255 + f_posActPole_LSB
         #   -- velAct --
-        f_velActArm = a_RTUDataRx[2]
-        f_velActPole = a_RTUDataRx[3]
+        f_velActArm = int(a_RTUDataRx[4])
+        f_velActPole = int(a_RTUDataRx[5])
         
         # Se convierten los datos de -Byte- a -String- mediante -decode()-.
-        b_cwLimitArm = a_RTUDataRx[4].decode()
-        b_ccwLimitArm = a_RTUDataRx[5].decode()
-        b_cwLimitPole = a_RTUDataRx[6].decode()
-        b_ccwLimitPole = a_RTUDataRx[7].decode()
-        b_limitUp = a_RTUDataRx[8].decode()
-        b_limitDown = a_RTUDataRx[9].decode()
-        b_stallAlm = a_RTUDataRx[10].decode()
-        status = int(a_RTUDataRx[11])
-
+        b_cwLimitArm = int(a_RTUDataRx[6])#.decode()
+        b_ccwLimitArm = int(a_RTUDataRx[7])#.decode()
+        b_cwLimitPole = int(a_RTUDataRx[8])#.decode()
+        b_ccwLimitPole = int(a_RTUDataRx[9])#.decode()
+        b_limitUp = int(a_RTUDataRx[10])#.decode()
+        b_limitDown = int(a_RTUDataRx[11])#.decode()
+        b_stallAlm = int(a_RTUDataRx[12])#.decode()
+        status = int(a_RTUDataRx[13])
+        
         # Conversion de comandos. -Char- a -Bool-.
             # b_cwLimitArm
         if b_cwLimitArm  == "ACW_RUN;":
@@ -397,17 +412,18 @@ def RTUTranslate(a_RTUDataRx):
             depurador(2, "HMIcomRTU","- No se pudo enviar trama desde RTU.")
             depurador(2, "HMI", " ")
 
-        a_RTUData = [ f_posActArm, f_posActPole, f_velActArm, f_velActPole ,b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, status ]
-
-
+        a_RTUData = [f_posActArm, f_posActPole, f_velActArm, f_velActPole, b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, status]
 
     except Exception as err:
-        depurador(2, "HMI", "****************************************")
-        depurador(2, "HMIcomRTU","- Error en formato de trama:" + str(err))
-        depurador(2, "HMI", " ")
+        depurador(4, "HMIcomRTU", "****************************************")
+        depurador(4, "HMIcomRTU","- Error en formato de trama:" + str(err))
+        depurador(4, "HMIcomRTU", " ")
         # status 
         sys.exit()
+        
     finally:
+        depurador(4, "HMIcomRTU","- Finalizando RTUTranslate()")
+        depurador(4, "HMIcomRTU","- a_RTUData: " + str(a_RTUData))
         return a_RTUData, b_connect # DataTxRx
 
 ##
@@ -425,11 +441,16 @@ def RTUTranslate(a_RTUDataRx):
 # 
 ##
 def LSB_MSB(ui_grd):
-    ui_grd = ui_grd/f_MAX_GRADOS
-    ui_grd *= i_MAX_CUENTAS
+    depurador(4, "HMIcomRTU", "****************************************")
+    #ui_grd = ui_grd/f_MAX_GRADOS
+    #ui_grd *= i_MAX_CUENTAS
     ui_grd = int(ui_grd)
+    depurador(4, "HMIcomRTU","- Separando en 2 bytes: " + str(ui_grd))
     ui_grd_MSB = int(ui_grd/256)
     ui_grd_LSB = ui_grd - (256*ui_grd_MSB)
+    depurador(4, "HMIcomRTU","- Byte MSB: " + str(ui_grd_MSB))
+    depurador(4, "HMIcomRTU","- Byte LSB: " + str(ui_grd_LSB))
+    depurador(4, "HMIcomRTU", " ")
     return ui_grd_LSB, ui_grd_MSB
     
 

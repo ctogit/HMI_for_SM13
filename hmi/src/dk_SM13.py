@@ -47,21 +47,21 @@ def dk_SM13(f_pole_ang, f_arm_ang, f_l1, f_l2, f_l3, f_l4):
 
     a_A12 = np.array([
         [1, 0, 0, 0],
-        [0, math.cos(np.deg2rad(90)), -math.sin(np.deg2rad(90)), 0],
-        [0, math.sin(np.deg2rad(90)), math.cos(np.deg2rad(90)), f_Ly],
+        [0, math.cos(np.deg2rad(270)), -math.sin(np.deg2rad(270)), 0],
+        [0, math.sin(np.deg2rad(270)), math.cos(np.deg2rad(270)), f_Ly],
         [0, 0, 0, 1]
         ])
 
     a_A23 = np.array([
-        [math.cos(np.deg2rad(f_qp)), -math.sin(np.deg2rad(f_qp)), 0, f_Lp*math.sin(np.deg2rad(f_qp))],
-        [math.sin(np.deg2rad(f_qp)), math.cos(np.deg2rad(f_qp)), 0, -f_Lp*math.cos(np.deg2rad(f_qp))],
+        [math.cos(np.deg2rad(f_qp)), -math.sin(np.deg2rad(f_qp)), 0, -f_Lp*math.cos(np.deg2rad(f_qp))],
+        [math.sin(np.deg2rad(f_qp)), math.cos(np.deg2rad(f_qp)), 0, -f_Lp*math.sin(np.deg2rad(f_qp))],
         [0, 0, 1, 0],
         [0, 0, 0, 1]
         ])
 
     a_A34 = np.array([
-        [math.cos(np.deg2rad(f_qa)), -math.sin(np.deg2rad(f_qa)), 0, f_La*math.sin(np.deg2rad(f_qa))],
-        [math.sin(np.deg2rad(f_qa)), math.cos(np.deg2rad(f_qa)), 0, f_La*math.cos(np.deg2rad(f_qa))],
+        [math.cos(np.deg2rad(f_qa)), -math.sin(np.deg2rad(f_qa)), 0, f_La*math.cos(np.deg2rad(f_qa))],
+        [math.sin(np.deg2rad(f_qa)), math.cos(np.deg2rad(f_qa)), 0, f_La*math.sin(np.deg2rad(f_qa))],
         [0, 0, 1, 0],
         [0, 0, 0, 1]
         ])
@@ -81,6 +81,11 @@ def dk_SM13(f_pole_ang, f_arm_ang, f_l1, f_l2, f_l3, f_l4):
     depurador(2, "dk_SM13", "****************************************")
     depurador(2, "dk_SM13", "- Cinemática Directa SM-13")
     depurador(2, "dk_SM13", " ")
+    depurador(2, "dk_SM13", "- Lx = " + str(f_l1))
+    depurador(2, "dk_SM13", "- Ly = " + str(f_l2))
+    depurador(2, "dk_SM13", "- Longitud_POLE = " + str(f_l3))
+    depurador(2, "dk_SM13", "- Longitud_ARM  = " + str(f_l4))
+    depurador(2, "dk_SM13", " ")
     depurador(2, "dk_SM13", "- Ángulo POLE = "+str(f_qp))
     depurador(2, "dk_SM13", "- Ángulo ARM  = "+str(f_qa))
     depurador(2, "dk_SM13", " ")
@@ -90,5 +95,8 @@ def dk_SM13(f_pole_ang, f_arm_ang, f_l1, f_l2, f_l3, f_l4):
     return f_px_codo, f_py_codo, f_px_sonda, f_py_sonda
     
     
-# if __name__ == "__main__":
-#     dk_SM13(np.deg2rad(56.375), np.deg2rad(137.143), 47.725, 3.518, 9.5, 15.25)
+if __name__ == "__main__":
+    #dk_SM13(np.deg2rad(52.14131386972829), np.deg2rad(85.29875951929517), 16.625, 3.518, 9.5, 15.25)
+    # para x = -0.438" ; y = 0.704"
+    dk_SM13(np.deg2rad(143.37500124044982), np.deg2rad(155.68240231015258), 16.625, 3.518, 9.5, 15.25)
+    # para x = 31.656"; y = 22.516"

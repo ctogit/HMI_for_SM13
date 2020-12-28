@@ -46,18 +46,18 @@ def ik_SM13(f_x, f_y, f_l1, f_l2, f_l3, f_l4, s_pivot_type):
     depurador(2, "ik_SM13", "- Longitud_ARM  = " + str(f_l4))
 
     try:
-        f_r1 = f_Px - f_Lx
-        f_r2 = f_Py - f_Ly
-        f_h = math.sqrt(f_r1**2 + f_r2**2)
-        f_alfa = math.atan2(f_r2, f_r1)
-        f_beta = math.acos((f_Lp**2 - f_La**2 + f_h**2)/(2*f_Lp*f_h))
+        f_r1 = (f_Lx - f_Px)
+        f_r2 = (f_Ly - f_Py)
+        f_h = (math.sqrt(f_r1**2 + f_r2**2))
+        f_alfa = (math.atan2(f_r2, f_r1))
+        f_beta = (math.acos((f_Lp**2 - f_La**2 + f_h**2)/(2*f_Lp*f_h)))
 
         if (s_pivot_type == "main"):
-            f_qp = float(f_alfa - f_beta + math.pi/2)
-            f_qa = float(math.acos((f_La**2 + f_Lp**2 - f_h**2)/(2*f_La*f_Lp)))
+            f_qp = f_beta - f_alfa
+            f_qa = math.acos((f_La**2 + f_Lp**2 - f_h**2)/(2*f_La*f_Lp))
         elif (s_pivot_type == "alternative"):
-            f_qp = float(f_alfa + f_beta + math.pi/2)
-            f_qa = 2*math.pi - float(math.acos((f_La**2 + f_Lp**2 - f_h**2)/(2*f_La*f_Lp)))
+            f_qp = 2*math.pi - f_alfa - f_beta
+            f_qa = 2*math.pi - math.acos((f_La**2 + f_Lp**2 - f_h**2)/(2*f_La*f_Lp))
             
         b_success = True
 
@@ -84,5 +84,6 @@ def ik_SM13(f_x, f_y, f_l1, f_l2, f_l3, f_l4, s_pivot_type):
     
     return f_qp, f_qa, b_success
     
-# if __name__ == "__main__":
-#     ik_SM13(70.688, 0.704, 47.725, 3.518, 9.5, 15.25)
+if __name__ == "__main__":
+    ik_SM13(-0.438, 0.704, 16.625, 3.518, 9.5, 15.25, "main")
+    # qp = 52.14ª; qa = 85.29ª

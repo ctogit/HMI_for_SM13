@@ -43,10 +43,18 @@
 #   a_HMIDataString[3]  <--     s_ctrlEn *
 #   a_HMIDataString[4]  <--     s_stallEn *
 #   a_HMIDataString[5]  <--     s_liftDir *
+#
+#   IMPORTANTE TENER EN CUENTA:
+#   HMI to RTU
+#   a_DataByte[0] (ARM  en grados) ---> a_DataByteTx[0] (convertido a cuentas resolver y enviado por trama. Se tiene en cuenta offset)
+#   a_DataByte[1] (POLE en grados) ---> a_DataByteTx[0] (convertido a cuentas resolver y enviado por trama. Se tiene en cuenta offset)
+#   Dentro de HMIcomRTU a_DataByteTx_MSB = MSB(a_DataByteTx[0]) y a_DataByteTx_LSB = LSB(a_DataByteTx[0]). Lo mismo para a_DataByteTx[1]
+#
+#   RTU to HMI
+#   a_RTUDataRx[0] (cuentas resolver ARM ) ---> a_RTUData[0] (se convierte a grados teniendo en cuenta offsets)
+#   a_RTUDataRx[1] (cuentas resolver POLE) ---> a_RTUData[1] (se convierte a grados teniendo en cuenta offsets)
+#   Dentro de HMIcomRTU a_RTUDataRx[0]=a_RTUDataRx_MSB+a_RTUDataRx_LSB. Lo mismo para a_RTUDataRx[1].
 
-
-
-# from control_proceso import *
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import GLib, Gtk, Gdk, GObject
@@ -70,6 +78,7 @@ import threading
 
 global simu
 global a_RTUData
+global a_RTUDataRx
 global a_HMIDataByte
 global a_HMIDataString
 global b_connect
@@ -82,6 +91,7 @@ class hmi_SM13():
     def __init__(self):
         global simu
         global a_RTUData
+        global a_RTUDataRx
         global a_HMIDataByte
         global a_HMIDataString
         global b_connect
@@ -89,16 +99,18 @@ class hmi_SM13():
         global s_port
         global s_ip
         global b_simulador
+        global ui_pole_rdc_offset
+        global ui_arm_rdc_offset
 
-        # Se inicializan variables globales
+        # Se inicializan variables globales comartidas por HMI y TM
         ## Variable global contiene la lista de datos que llegan desde RTU:
         # [f_posActArm, f_posActPole, f_velActArm, f_velActPole, 
         # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, ui_status]
-        a_RTUData = [0, 4.712, 0, 0, False, False, False, False, False, False, False, 0]
+        a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False, 0]
         ## Variable global para que la vea HMI y el hilo TM. Almacena los datos 
         # de ángulos y velocidad comandados hacia la RTU:
         # [f_posCmdArm, f_posCmdPole, ui_velCmdArm, ui_velCmdPole]
-        a_HMIDataByte = [0, 270, 0, 0]
+        a_HMIDataByte = [0, 0, 0, 0]
         ## Variable global para que la vea HMI y el hilo TM. Almacena una lista de  
         #  eventos que surguen desde HMI y son comunicados a RTU:
         # [s_mode, s_freeRunAxis, s_freeRunDir, s_ctrlEn, s_stallEn, s_liftDir]
@@ -107,6 +119,12 @@ class hmi_SM13():
         # 0: simulador inactivo
         # 1: simulador activo
         b_simulador = 0
+        ## Variable contiene el valor de offset para el eje POLE configurado al inicio cuando levanta
+        # el archivo robots_home_offsets.csv 
+        ui_pole_rdc_offset = 0
+        ## Variable contiene el valor de offset para el eje ARM configurado al inicio cuando levanta
+        # el archivo robots_home_offsets.csv 
+        ui_arm_rdc_offset = 0
 
 
         # CONSTANTES DEL SISTEMA
@@ -140,7 +158,7 @@ class hmi_SM13():
         # Se inicializa en 0 pero la modifica el archivo de datos del telemanipulador.
         self.f_La = 0.0
         ## Contiene el ángulo de rotación de la articulación POLE respecto a la base del telemanipulador.
-        self.f_pole = 270.0
+        self.f_pole = 0.0
         ## Contiene el ángulo de rotación de la articulación ARM respecto a la base del telemanipulador.
         self.f_arm = 0.0
         ## Contiene la cantidad a incrementar por el Jog Control
@@ -181,20 +199,6 @@ class hmi_SM13():
         #a_HMIDataByte[2] = 0
         ## Variable contiene la velocidad deseada con que se quiere mover el FH-POLE en modo FR.
         #a_HMIDataByte[3] = 0
-        ## Variable contiene el valor actual deL RDC del eje POLE 
-        self.ui_rdcActPole = 0
-        ## Variable contiene el valor actual deL RDC del eje ARM 
-        self.ui_rdcActArm = 0
-        ## Variable contiene el valor comandado para el eje POLE 
-        self.ui_rdcCmdPole = 0
-        ## Variable contiene el valor comandado para el eje ARM 
-        self.ui_rdcCmdArm = 0
-        ## Variable contiene el valor de offset para el eje POLE configurado al inicio cuando levanta
-        # el archivo robots_home_offsets.csv 
-        self.ui_pole_rdc_offset = 0
-        ## Variable contiene el valor de offset para el eje ARM configurado al inicio cuando levanta
-        # el archivo robots_home_offsets.csv 
-        self.ui_arm_rdc_offset = 0
         ## Variable booleana indica el estado del ZS inferior del eje LIFT
         self.b_limitDwn = False
         ## Variable tipo boleana que indica el estado de la conexión con la RTU
@@ -630,7 +634,7 @@ class hmi_SM13():
                 return True   
 
             else:
-                self.f_pole = 270
+                self.f_pole = 0
                 self.f_arm = 0
                 a_HMIDataByte[1] = self.f_pole
                 a_HMIDataByte[0] = self.f_arm
@@ -1036,19 +1040,20 @@ class hmi_SM13():
     def refrescar_simulador(self):
         global simu
         global a_RTUData
+        global a_RTUDataRx
         global b_connect
         global b_simulador
 
         if b_connect == True:
             try:
                 # Se actualizan las etiquetas de cuentas y ángulos en las tres solapas
-                self.actualizar_etiquetas_enc_ang(a_RTUData[1], a_RTUData[0])
+                self.actualizar_etiquetas_enc_ang(a_RTUData[1], a_RTUData[0], a_RTUDataRx[1], a_RTUDataRx[0])
             except:
                 pass
 
         if (b_simulador):
             try:
-                simu.refrescar_pos_actual(a_RTUData[1], a_RTUData[0])
+                simu.refrescar_pos_actual(np.deg2rad(a_RTUData[1]), np.deg2rad(a_RTUData[0]))
             except:
                 pass
 
@@ -1189,6 +1194,8 @@ class hmi_SM13():
     def cargar_archivos(self, button):
         global simu
         global b_simulador
+        global ui_pole_rdc_offset
+        global ui_arm_rdc_offset
 
         if self.b_beeps == True:
             zumbador.beep_primordial()
@@ -1265,9 +1272,12 @@ class hmi_SM13():
         offsets_file = open(self.s_project_path + "/hmi/cfg_files/Robots/robots_home_offsets.csv", "r")
         offsets_lines = offsets_file.readlines()
         offsets_file.close()
-        # Se extraen la variables que contendrán la dir IP y el PUERTO
-        trash, self.ui_pole_rdc_offset, self.ui_arm_rdc_offset = offsets_lines[1].split(";")
-        depurador(1, "HMI", "- Se cargó POLE offset: "+ str(self.ui_pole_rdc_offset) + ", ARM offset: " + str(self.ui_arm_rdc_offset))
+        # Se extraen la variables que contendrán los offset de los ejes, es decir, los valores de cuenta resolver para 0ª.
+        trash, ui_pole_rdc_offset, ui_arm_rdc_offset = offsets_lines[1].split(";")
+        ui_arm_rdc_offset = abs(int(ui_arm_rdc_offset))
+        ui_pole_rdc_offset = abs(int(ui_pole_rdc_offset))
+
+        depurador(1, "HMI", "- Se cargó POLE offset: "+ str(ui_pole_rdc_offset) + ", ARM offset: " + str(ui_arm_rdc_offset))
         depurador(1, "HMI", "- ")
         
         return True
@@ -1472,6 +1482,11 @@ class hmi_SM13():
     # @param button Boton Set Offset
     # @return none
     def cal_home_offset(self, button):
+        global a_RTUDataRx
+        global ui_pole_rdc_offset
+        global ui_arm_rdc_offset
+
+
         if self.b_beeps == True:
             zumbador.beep_primordial()
 
@@ -1488,7 +1503,7 @@ class hmi_SM13():
         trash, s_x_pole_offset, s_x_arm_offset = offsets_lines[1].split(";")
         
         # Se comprueban cambios.
-        if (self.ui_rdcActPole == int(s_x_pole_offset) and self.ui_rdcActArm == int(s_x_arm_offset)):
+        if (a_RTUDataRx[1] == int(s_x_pole_offset) and a_RTUDataRx[0] == int(s_x_arm_offset)):
             # Si no hubo cambios en los nuevos offsets no se sobreescribe el archivo.
             depurador(1, "HMI", "- No se modificaron offsets")
             depurador(1, "HMI", "- POLE offset actual: "+ s_x_pole_offset + ", ARM offset actual: " + s_x_arm_offset)
@@ -1505,7 +1520,7 @@ class hmi_SM13():
             # Como hay cambios, se abre el archivo robots_home_offsets.csv en modo escritura,
             # se actualizan los cambios y se cierra. 
             new_offsets_file = open(self.s_project_path + "/hmi/cfg_files/Robots/robots_home_offsets.csv", "w+")
-            new_offsets_line = str(s_robot) + ";" + str(self.ui_rdcActPole) + ";" + str(self.ui_rdcActArm)
+            new_offsets_line = str(s_robot) + ";" + str(a_RTUDataRx[1]) + ";" + str(a_RTUDataRx[0])
             new_offsets_file.write("ROBOT;POLE HOME OFFSET;ARM HOME OFFSET\n")
             new_offsets_file.write(new_offsets_line)
             new_offsets_file.close()
@@ -1518,10 +1533,13 @@ class hmi_SM13():
             new_offsets_file.close()
             
             # Se actualizan la variables principales que contienen los valores de offset 
-            trash, self.ui_pole_rdc_offset, self.ui_arm_rdc_offset = new_offsets_lines[1].split(";")
+            trash, ui_pole_rdc_offset, ui_arm_rdc_offset = new_offsets_lines[1].split(";")
+
+            ui_pole_rdc_offset = int(ui_pole_rdc_offset)
+            ui_arm_rdc_offset = int(ui_arm_rdc_offset)
         
             depurador(1, "HMI", "- POLE offset anterior: "+ s_x_pole_offset + ",     ARM offset anterior: " + s_x_arm_offset)
-            depurador(1, "HMI", "- POLE offset nuevo   : "+ self.ui_pole_rdc_offset + ", ARM offset nuevo   : " + self.ui_arm_rdc_offset)
+            depurador(1, "HMI", "- POLE offset nuevo   : "+ str(ui_pole_rdc_offset) + ", ARM offset nuevo   : " + str(ui_arm_rdc_offset))
         
         return True
     
@@ -1582,27 +1600,27 @@ class hmi_SM13():
     # @param self puntero al objeto HMI
     # @param f_ang_pole ángulo de la articulación POLE en grados
     # @param f_ang_arm ángulo de la articulación ARM en grados
+    # @param ui_res_act_pole valor de cuenta actual del resolver POLE (se tiene en cuenta offset)
+    # @param ui_res_act_arm valor de cuenta actual del resolver ARM (se tiene en cuenta offset)
     # @return none
-    def actualizar_etiquetas_enc_ang(self, f_ang_pole, f_ang_arm):
-        
-        self.ui_encActArm = int((f_ang_arm/self.f_MAX_GRADOS)*self.ui_MAX_CUENTAS)
-        self.ui_encActPole = int((f_ang_pole/self.f_MAX_GRADOS)*self.ui_MAX_CUENTAS)
-        
-        self.fr_etiqueta_valor_ang_arm.set_text(str(round(f_ang_arm, 3)))
-        self.manual_etiqueta_valor_ang_arm.set_text(str(round(f_ang_arm, 3)))
-        self.inspection_etiqueta_valor_ang_arm.set_text(str(round(f_ang_arm, 3)))
+
+    def actualizar_etiquetas_enc_ang(self, f_ang_act_pole, f_ang_act_arm, ui_res_act_pole, ui_res_act_arm):
+                
+        self.fr_etiqueta_valor_ang_arm.set_text(str(round(f_ang_act_arm, 3)))
+        self.manual_etiqueta_valor_ang_arm.set_text(str(round(f_ang_act_arm, 3)))
+        self.inspection_etiqueta_valor_ang_arm.set_text(str(round(f_ang_act_arm, 3)))
                     
-        self.fr_etiqueta_valor_enc_arm.set_text(str(round(self.ui_encActArm, 0)))
-        self.manual_etiqueta_valor_enc_arm.set_text(str(round(self.ui_encActArm, 0)))
-        self.inspection_etiqueta_valor_enc_arm.set_text(str(round(self.ui_encActArm, 0)))
+        self.fr_etiqueta_valor_enc_arm.set_text(str(round(ui_res_act_arm, 0)))
+        self.manual_etiqueta_valor_enc_arm.set_text(str(round(ui_res_act_arm, 0)))
+        self.inspection_etiqueta_valor_enc_arm.set_text(str(round(ui_res_act_arm, 0)))
                     
-        self.fr_etiqueta_valor_ang_pole.set_text(str(round(f_ang_pole, 3)))
-        self.manual_etiqueta_valor_ang_pole.set_text(str(round(f_ang_pole, 3)))
-        self.inspection_etiqueta_valor_ang_pole.set_text(str(round(f_ang_pole, 3)))
+        self.fr_etiqueta_valor_ang_pole.set_text(str(round(f_ang_act_pole, 3)))
+        self.manual_etiqueta_valor_ang_pole.set_text(str(round(f_ang_act_pole, 3)))
+        self.inspection_etiqueta_valor_ang_pole.set_text(str(round(f_ang_act_pole, 3)))
                     
-        self.fr_etiqueta_valor_enc_pole.set_text(str(round(self.ui_encActPole, 0)))
-        self.manual_etiqueta_valor_enc_pole.set_text(str(round(self.ui_encActPole, 0)))
-        self.inspection_etiqueta_valor_enc_pole.set_text(str(round(self.ui_encActPole, 0)))
+        self.fr_etiqueta_valor_enc_pole.set_text(str(round(ui_res_act_pole, 0)))
+        self.manual_etiqueta_valor_enc_pole.set_text(str(round(ui_res_act_pole, 0)))
+        self.inspection_etiqueta_valor_enc_pole.set_text(str(round(ui_res_act_pole, 0)))
         
         return True
     
@@ -1639,10 +1657,15 @@ class hmi_SM13():
     ##
     # @brief Función que implementa el botón "Modificar" en ventana de configuración
     # de red. Luego actualiza el archivo de texto network.csv y las variables IP y puerto.
+    # Las variables s_ip y s_puerto se hacen globales para que sean visibles tanto por el 
+    # thread del HMI como por el del TM.
     # @param self Puntero al objeto HMI
     # @param button Botón "modificar"
     # @return none
     def modificar_red(self, button):
+        global s_port
+        global s_ip
+
         if self.b_beeps == True:
             zumbador.beep_primordial()
 
@@ -2412,7 +2435,71 @@ class hmi_SM13():
 
             self.b_print_status = False
 
-        return True       
+        return True
+
+
+##
+# @brief Función que convierte de ángulo a cuenta y viceversa según la indicación de s_msg.
+# Se tiene en cuenta la calibración de offset para cada eje, es decir, el valor de cuenta resolver para 0ª
+# @param ui_res_act_pole valor de conversión real del RDC POLE que llega de RTU y se que desea converti a ángulo
+# @param ui_res_act_arm valor de conversión real del RDC ARM que llega de RTU y se que desea converti a ángulo
+# @param f_ang_cmd_pole ángulo comandado POLE que se quiere convertir a cuentas resolver para enviar por trama
+# @param f_ang_cmd_arm ángulo comandado ARM que se quiere convertir a cuentas resolver para enviar por trama
+# @param s_msg tipo de conversión (angulo_a_cuenta o cuenta_a_angulo)
+# @return f_ang_act_pole ángulo convertido (en grados) actuales del eje POLE 
+# @return f_ang_act_arm ángulo convertido (en grados) actuales del eje ARM
+# @return ui_res_cmd_pole cuenta convertida para comandar el eje POLE
+# @return ui_res_cmd_arm cuenta convertida para comandar el eje ARM
+def conversor(ui_res_act_pole, ui_res_act_arm, f_ang_cmd_pole, f_ang_cmd_arm, s_msg):
+    global ui_pole_rdc_offset
+    global ui_arm_rdc_offset
+
+    ui_MAX_CUENTAS = 65535
+    f_MAX_GRADOS = 359.999
+    ui_PENDIENTE_RES_ARM = 182.148 # (ctas/grados)
+    ui_PENDIENTE_RES_POLE = 182.148 # (ctas/grados)
+
+    if(s_msg == "cuenta_a_angulo"):
+        # Se verifica el valor actual de encorder para saber qué valor de cruce por cero utilizar.
+        # Más info en RDCvsANG.xls
+        if ui_res_act_arm >= 0 and ui_res_act_arm < ui_arm_rdc_offset:
+            ui_cruce_por_cero_res_arm = ui_arm_rdc_offset - ui_MAX_CUENTAS
+        elif ui_res_act_arm >= ui_arm_rdc_offset and ui_res_act_arm <= ui_MAX_CUENTAS:
+            ui_cruce_por_cero_res_arm = ui_arm_rdc_offset
+
+        if ui_res_act_pole >= 0 and ui_res_act_pole < ui_pole_rdc_offset:
+            ui_cruce_por_cero_res_pole = ui_pole_rdc_offset - ui_MAX_CUENTAS
+        elif ui_res_act_pole >= ui_arm_rdc_offset and ui_res_act_pole <= ui_MAX_CUENTAS:
+            ui_cruce_por_cero_res_pole = ui_pole_rdc_offset
+
+        # angulo = (Nres - intersecciòn)/pendiente
+        f_ang_act_arm = float((ui_res_act_arm - ui_cruce_por_cero_res_arm)/ui_PENDIENTE_RES_ARM)
+        f_ang_act_pole = float((ui_res_act_pole - ui_cruce_por_cero_res_pole)/ui_PENDIENTE_RES_POLE) 
+
+        return f_ang_act_pole, f_ang_act_arm   
+
+    elif(s_msg == "angulo_a_cuenta"):
+
+        f_ang_arm_offset = float((ui_MAX_CUENTAS - ui_arm_rdc_offset)/ui_PENDIENTE_RES_ARM)
+        f_ang_pole_offset = float((ui_MAX_CUENTAS - ui_pole_rdc_offset)/ui_PENDIENTE_RES_POLE)
+                
+        # según el ángulo que se quiera convertir se deberá distinguir qué valor de cruce por cero usar.
+        # Más info en RDCvsANG.xls
+        if f_ang_cmd_arm >= 0 and f_ang_cmd_arm <= f_ang_arm_offset:
+            ui_cruce_por_cero_res_arm = ui_arm_rdc_offset
+        elif f_ang_cmd_arm > f_ang_arm_offset and f_ang_cmd_arm <= f_MAX_GRADOS :
+            ui_cruce_por_cero_res_arm = ui_arm_rdc_offset - ui_MAX_CUENTAS
+
+        if f_ang_cmd_pole >= 0 and f_ang_cmd_pole <= f_ang_pole_offset:
+            ui_cruce_por_cero_res_pole = ui_pole_rdc_offset 
+        elif f_ang_cmd_pole > f_ang_pole_offset and f_ang_cmd_pole <= f_MAX_GRADOS :
+            ui_cruce_por_cero_res_pole = ui_pole_rdc_offset - ui_MAX_CUENTAS
+
+        # cuenta = pendiente*cuenta + interseccióm
+        ui_res_cmd_arm  = abs(int(float(ui_PENDIENTE_RES_ARM)*f_ang_cmd_arm + ui_cruce_por_cero_res_arm))
+        ui_res_cmd_pole = abs(int(float(ui_PENDIENTE_RES_POLE)*f_ang_cmd_pole + ui_cruce_por_cero_res_pole))   
+
+        return int(ui_res_cmd_pole), int(ui_res_cmd_arm) 
 
 ##
 # @brief Función que se ejecuta en un hilo separado del HMI. Inicia la conexión con RTU
@@ -2421,6 +2508,7 @@ class hmi_SM13():
 # @return None Comunica los datos recibidos desde RTU al HMI mediante array global
 def tm():
     global a_RTUData
+    global a_RTUDataRx
     global a_HMIDataByte
     global a_HMIDataString
     global b_connect
@@ -2428,21 +2516,31 @@ def tm():
     global s_port
     global s_ip
     global b_simulador
+    global ui_pole_rdc_offset
+    global ui_arm_rdc_offset
 
     ui_PERIODO_ms_TRAMA = 10 # (mili-segundos)
-    ui_PERIODO_ms_ANGULOS_SIMULADOS = 300
-    f_ERROR_ANGULOS_SIMULADOS = 0.125
-    f_INCREMENTO_ANGULOS_SIMULADOS = 0.025
+    ui_PERIODO_ms_ANGULOS_SIMULADOS = 150
+    f_ERROR_ANGULOS_SIMULADOS = 3 # [grados]
+    f_INCREMENTO_ANGULOS_SIMULADOS = 1 # [grados]
+
+    a_HMIDataByte[0] = 0
+    a_HMIDataByte[1] = 0
+
+    a_HMIDataByteTx=[0, 0, 0 ,0]
+    a_RTUDataRx=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
 
     while(True):
         # Código de simulación de variación en ángulos actuales, sólo funciona off-line
         # Pemite que si no está activo el simulador y no hay conexión, intente reconectar más rápido.
         if (b_connect == False and b_simulador == False):
-            a_RTUData[1] = np.deg2rad(a_HMIDataByte[1])
-            a_RTUData[0] = np.deg2rad(a_HMIDataByte[0])
+            a_RTUData[1] = a_HMIDataByte[1]
+            a_RTUData[0] = a_HMIDataByte[0]
 
         # Si no hay conexión con RTU y el operador quiere simular el SM-13 se le da más prioridad que
         # la reconexión
+        
         if (b_connect == False and b_simulador == True):
             try:
                 if a_HMIDataByte[1] < 0:
@@ -2450,35 +2548,35 @@ def tm():
                 if a_HMIDataByte[0] < 0:
                     a_HMIDataByte[0] = a_HMIDataByte[0] + 360
 
-                if a_RTUData[0] == np.deg2rad(a_HMIDataByte[0]):
+                if a_RTUData[0] == a_HMIDataByte[0]:
                     pass
                 else:
-                    if np.abs(np.deg2rad(a_HMIDataByte[0])) > a_RTUData[0]:
+                    if np.abs(a_HMIDataByte[0]) > a_RTUData[0]:
                         a_RTUData[0] += f_INCREMENTO_ANGULOS_SIMULADOS
-                        if a_RTUData[0] >= np.deg2rad(360):
+                        if a_RTUData[0] >= 360:
                             a_RTUData[0] = 0
-                    elif np.abs(np.deg2rad(a_HMIDataByte[0])) < a_RTUData[0]:
+                    elif np.abs(a_HMIDataByte[0]) < a_RTUData[0]:
                         a_RTUData[0] -= f_INCREMENTO_ANGULOS_SIMULADOS
                         if a_RTUData[0] < 0:
                             a_RTUData[0] = 0
 
-                    if np.abs(a_RTUData[0] - np.deg2rad(a_HMIDataByte[0])) <= f_ERROR_ANGULOS_SIMULADOS:
-                        a_RTUData[0] = np.deg2rad(a_HMIDataByte[0])
+                    if np.abs(a_RTUData[0] - a_HMIDataByte[0]) <= f_ERROR_ANGULOS_SIMULADOS:
+                        a_RTUData[0] = a_HMIDataByte[0]
 
-                if a_RTUData[1] == np.deg2rad(a_HMIDataByte[1]):
+                if a_RTUData[1] == a_HMIDataByte[1]:
                     pass
                 else:
-                    if np.abs(np.deg2rad(a_HMIDataByte[1])) > a_RTUData[1]:
+                    if np.abs(a_HMIDataByte[1]) > a_RTUData[1]:
                         a_RTUData[1] += f_INCREMENTO_ANGULOS_SIMULADOS
-                        if a_RTUData[1] >= np.deg2rad(360):
+                        if a_RTUData[1] >= 360:
                             a_RTUData[1] = 0
-                    elif np.abs(np.deg2rad(a_HMIDataByte[1])) < a_RTUData[1]:
+                    elif np.abs(a_HMIDataByte[1]) < a_RTUData[1]:
                         a_RTUData[1] -= f_INCREMENTO_ANGULOS_SIMULADOS
                         if a_RTUData[1] < 0:
                             a_RTUData[1] = 0
 
-                    if np.abs(a_RTUData[1] - np.deg2rad(a_HMIDataByte[1])) <= f_ERROR_ANGULOS_SIMULADOS:
-                        a_RTUData[1] = np.deg2rad(a_HMIDataByte[1])
+                    if np.abs(a_RTUData[1] - a_HMIDataByte[1]) <= f_ERROR_ANGULOS_SIMULADOS:
+                        a_RTUData[1] = a_HMIDataByte[1]
                 # fin código de simulación de ángulos actuales SM-13
             except:
                 pass
@@ -2487,7 +2585,7 @@ def tm():
         
         # Si no se está jugando con el simulador de ángulos actuales y no hay conexión, se le da 
         # prioridad a la reconexión.
-        if (b_connect == False and a_RTUData[1] == np.deg2rad(a_HMIDataByte[1]) and a_RTUData[0] == np.deg2rad(a_HMIDataByte[0])):
+        if (b_connect == False and a_RTUData[1] == a_HMIDataByte[1] and a_RTUData[0] == a_HMIDataByte[0]):
             # Cuando no hay conexión con RTU intenta 
             depurador(1, "TM", "****************************************")
             depurador(1, "TM", "- Intentando conectar con RTU...")
@@ -2505,12 +2603,72 @@ def tm():
 
         elif (b_connect == True):
             try:
-                # Se envían los paquetes DataBytes y DataStrings hacia RTU y se recibe un paquete proveniente de RTU 
-                a_RTUData, b_connect, s_sock = enviar_a_y_recibir_de_rtu(a_HMIDataByte, a_HMIDataString, b_connect, s_sock, s_ip, s_port)#'192.168.0.193', 5020)
-                depurador(2, "TM", "--> Paquete Data_Byte  : " + str(a_HMIDataByte))
+                depurador(3, "TM", "- OFFSETs POLE, ARM: " + str(ui_pole_rdc_offset) + ", " + str(ui_arm_rdc_offset)) 
                 depurador(2, "TM", "--> Paquete Data_String: " + str(a_HMIDataString))
-                depurador(2, "TM", "<-- Paquete RTU_Data   : " + str(a_RTUData))                      
-                    
+
+                # ***************************************************************************************************************************
+                # Antes de enviar los ángulos comandandos en a_HMIDataByte[0]/[1] se deben convertir a cuentas de resolver
+                a_HMIDataByteTx[1], a_HMIDataByteTx[0] = conversor(0, 0, a_HMIDataByte[1], a_HMIDataByte[0], "angulo_a_cuenta")
+                
+                # Se envían los paquetes DataBytes y DataStrings hacia RTU y se recibe un paquete proveniente de RTU 
+                a_RTUDataRx, b_connect, s_sock = enviar_a_y_recibir_de_rtu(a_HMIDataByteTx, a_HMIDataString, b_connect, s_sock, s_ip, s_port)#'192.168.0.193', 5020)
+
+                # Apenas se actualiza a_RTUData se convierten los elementos [0] y [1] de cuentas resolver a ángulos.
+                a_RTUData[1], a_RTUData[0] = conversor(a_RTUDataRx[1], a_RTUDataRx[0], 0, 0, "cuenta_a_angulo")
+                # ***************************************************************************************************************************
+
+                depurador(1, "TM", "****************************************")
+                if a_HMIDataByteTx[1] < 10:
+                    depurador(2, "TM", "- POLE pos cmd [res] : " +"0000"+ str(a_HMIDataByteTx[1]) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
+                if a_HMIDataByteTx[1] >= 10 and a_HMIDataByteTx[1] < 100:
+                    depurador(2, "TM", "- POLE pos cmd [res] : " +"000" + str(a_HMIDataByteTx[1]) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
+                if a_HMIDataByteTx[1] >= 100 and a_HMIDataByteTx[1] < 1000:
+                    depurador(2, "TM", "- POLE pos cmd [res] : " +"00"+ str(a_HMIDataByteTx[1]) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
+                if a_HMIDataByteTx[1] >= 1000 and a_HMIDataByteTx[1] < 10000:
+                    depurador(2, "TM", "- POLE pos cmd [res] : " +"0"+ str(a_HMIDataByteTx[1]) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
+                if a_HMIDataByteTx[1] >= 10000:
+                    depurador(2, "TM", "- POLE pos cmd [res] : " +str(a_HMIDataByteTx[1]) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
+
+                if a_RTUDataRx[1] < 10:
+                    depurador(2, "TM", "- POLE pos act [res] : " +"0000"+ str(a_RTUDataRx[1]) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
+                if a_RTUDataRx[1] >= 10 and a_RTUDataRx[1] < 100:
+                    depurador(2, "TM", "- POLE pos act [res] : " +"000" + str(a_RTUDataRx[1]) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
+                if a_RTUDataRx[1] >= 100 and a_RTUDataRx[1] < 1000:
+                    depurador(2, "TM", "- POLE pos act [res] : " +"00"+ str(a_RTUDataRx[1]) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
+                if a_RTUDataRx[1] >= 1000 and a_RTUDataRx[1] < 10000:
+                    depurador(2, "TM", "- POLE pos act [res] : " +"0"+ str(a_RTUDataRx[1]) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
+                if a_RTUDataRx[1] >= 10000:
+                    depurador(2, "TM", "- POLE pos act [res] : " +str(a_RTUDataRx[1]) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
+
+                depurador(2, "TM", "- POLE vel cmd : " +str(a_HMIDataByte[3]) + "\t\t| POLE vel act: " + str(a_RTUData[3]))
+                
+                depurador(2, "TM", " ")
+                
+                if a_HMIDataByteTx[0] < 10:
+                    depurador(2, "TM", "- ARM  pos cmd [res] : " +"0000"+ str(a_HMIDataByteTx[0]) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
+                if a_HMIDataByteTx[0] >= 10 and a_HMIDataByteTx[0] < 100:
+                    depurador(2, "TM", "- ARM  pos cmd [res] : " +"000"+ str(a_HMIDataByteTx[0]) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
+                if a_HMIDataByteTx[0] >= 100 and a_HMIDataByteTx[0] < 1000:
+                    depurador(2, "TM", "- ARM  pos cmd [res] : " +"00"+ str(a_HMIDataByteTx[0]) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
+                if a_HMIDataByteTx[0] >= 1000 and a_HMIDataByteTx[1] < 10000:
+                    depurador(2, "TM", "- ARM  pos cmd [res] : " +"0"+ str(a_HMIDataByteTx[0]) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
+                if a_HMIDataByteTx[0] >= 10000:
+                    depurador(2, "TM", "- ARM  pos cmd [res] : " + str(a_HMIDataByteTx[0]) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
+
+                if a_RTUDataRx[0] < 10:
+                    depurador(2, "TM", "- ARM  pos act [res] : " +"0000"+ str(a_RTUDataRx[0]) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
+                if a_RTUDataRx[0] >= 10 and a_RTUDataRx[0] < 100:
+                    depurador(2, "TM", "- ARM  pos act [res] : " +"000"+ str(a_RTUDataRx[0]) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
+                if a_RTUDataRx[0] >= 100 and a_RTUDataRx[0] < 1000:
+                    depurador(2, "TM", "- ARM  pos act [res] : " +"00"+ str(a_RTUDataRx[0]) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
+                if a_RTUDataRx[0] >= 1000 and a_RTUDataRx[1] < 10000:
+                    depurador(2, "TM", "- ARM  pos act [res] : " +"0"+ str(a_RTUDataRx[0]) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
+                if a_RTUDataRx[0] >= 10000:
+                    depurador(2, "TM", "- ARM  pos act [res] : " + str(a_RTUDataRx[0]) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
+
+                depurador(2, "TM", "- ARM  vel cmd: " +str(a_HMIDataByte[2]) + "\t\t\t|  ARM  vel act: " + str(a_RTUData[2]))
+                depurador(2, "TM", " ")    
+
             except Exception as e:
                 b_connect = False
                 depurador(1, "TM", "****************************************")
@@ -2520,7 +2678,7 @@ def tm():
                 depurador(3, "TM", "- IP : " + str(s_ip))
                 depurador(3, "TM", "- PORT : " + str(s_port))
                 depurador(1, "TM", " ")
-
+            
         # Esta porción de código permite que no se detenga el HMI con la llegada de
         # alguna trama corrupta+
         for x in range(0, 11):
@@ -2533,7 +2691,7 @@ def tm():
                 ## Variable global contiene la lista de datos que llegan desde RTU:
                 # [f_posActArm, f_posActPole, f_velActArm, f_velActPole, 
                 # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, ui_status]
-                a_RTUData = [0, 4.712, 0, 0, False, False, False, False, False, False, False, 0]  
+                a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False, 0]  
                 pass  
         
                 

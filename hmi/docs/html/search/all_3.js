@@ -7,5 +7,6 @@ var searchData=
   ['control_5ffree_5frun_35',['control_free_run',['../classhmi__SM13_1_1hmi__SM13.html#a07ba3619c5a7534b73c5f44eb0f5d7e3',1,'hmi_SM13::hmi_SM13']]],
   ['control_5flift_36',['control_lift',['../classhmi__SM13_1_1hmi__SM13.html#a62a343d5616ee7505367319f6d5bcde3',1,'hmi_SM13::hmi_SM13']]],
   ['control_5fmanual_37',['control_manual',['../classhmi__SM13_1_1hmi__SM13.html#a72f38fd9b1aade5458ab810275a1684d',1,'hmi_SM13::hmi_SM13']]],
-  ['control_5fzumbador_38',['control_zumbador',['../classhmi__SM13_1_1hmi__SM13.html#a2e44d7152b5ec8a12786f489895749e2',1,'hmi_SM13::hmi_SM13']]]
+  ['control_5fzumbador_38',['control_zumbador',['../classhmi__SM13_1_1hmi__SM13.html#a2e44d7152b5ec8a12786f489895749e2',1,'hmi_SM13::hmi_SM13']]],
+  ['conversor_39',['conversor',['../namespacehmi__SM13.html#aae380138559bdba98fcf72dcde6c582a',1,'hmi_SM13']]]
 ];
