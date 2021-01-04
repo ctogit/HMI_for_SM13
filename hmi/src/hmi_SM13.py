@@ -27,7 +27,6 @@
 #   b_limitUp       <--     a_RTUData[8] *
 #   b_limitDown     <--     a_RTUData[9] *
 #   b_stallAlm      <--     a_RTUData[10] *
-#   ui_status       <--     a_RTUData[11] *
 #
 #
 #   TX TO RTU                           
@@ -105,8 +104,8 @@ class hmi_SM13():
         # Se inicializan variables globales comartidas por HMI y TM
         ## Variable global contiene la lista de datos que llegan desde RTU:
         # [f_posActArm, f_posActPole, f_velActArm, f_velActPole, 
-        # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, ui_status]
-        a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False, 0]
+        # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm]
+        a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False]
         ## Variable global para que la vea HMI y el hilo TM. Almacena los datos 
         # de ángulos y velocidad comandados hacia la RTU:
         # [f_posCmdArm, f_posCmdPole, ui_velCmdArm, ui_velCmdPole]
@@ -1598,8 +1597,8 @@ class hmi_SM13():
     # @brief Función que actualiza todas las etiquetas enc y ang de las solapas
     # free run, manual e inspection.
     # @param self puntero al objeto HMI
-    # @param f_ang_pole ángulo de la articulación POLE en grados
-    # @param f_ang_arm ángulo de la articulación ARM en grados
+    # @param f_ang_act_pole ángulo de la articulación POLE en grados
+    # @param f_ang_act_arm ángulo de la articulación ARM en grados
     # @param ui_res_act_pole valor de cuenta actual del resolver POLE (se tiene en cuenta offset)
     # @param ui_res_act_arm valor de cuenta actual del resolver ARM (se tiene en cuenta offset)
     # @return none
@@ -1856,9 +1855,9 @@ class hmi_SM13():
 
         a_HMIDataString[0] = "STOP"
         
-        depurador(1, "HMI", "****************************************")
-        depurador(1, "HMI", "- Modo: " + a_HMIDataString[0])
-        depurador(1, "HMI", " ")
+        depurador(4, "HMI", "****************************************")
+        depurador(4, "HMI", "- Modo: " + a_HMIDataString[0])
+        depurador(4, "HMI", " ")
         
         self.actualizar_etiquetas_msg("Stopping movement...")
     
@@ -1984,7 +1983,7 @@ class hmi_SM13():
             
             if(a_RTUData[6] == True):
                 a_HMIDataString[0] = "STOP"
-                self_etiqueta_msg.set_text("POLE CW limit alarm!")
+                self.fr_etiqueta_msg.set_text("POLE CW limit alarm!")
                 depurador(1, "HMI", "****************************************")
                 depurador(1, "HMI", "- Límite horario alcanzado en POLE")
                 depurador(1, "HMI", " ")
@@ -2042,7 +2041,12 @@ class hmi_SM13():
         if (s_boton_fr == "fr_toggle_arm_cw"):
             # se verifica si el botón esta presionado o suelto
             b_toggle_arm_cw = button.get_active()
-            if (b_toggle_arm_cw == True):
+
+            if (b_toggle_arm_cw == False):
+                self.detener_movimientos()
+                return True
+
+            elif (b_toggle_arm_cw == True):
                 # Si se activó un toggle_tot primero aseguro que el opuesto
                 # se desactive
                 self.b_boton_toggle_arm_ccw.set_active(False)
@@ -2058,11 +2062,12 @@ class hmi_SM13():
                     if self.b_beeps == True:
                         zumbador.beep_stop()
 
-                    return
-                
+                    return True
+
                 if(a_RTUData[4] == True):
                     a_HMIDataString[0] = "STOP"
                     self.fr_etiqueta_msg.set_text("ARM CW limit alarm!")
+
                     depurador(1, "HMI", "****************************************")
                     depurador(1, "HMI", "- Límite horario alcanzado en ARM")
                     depurador(1, "HMI", " ")
@@ -2070,7 +2075,11 @@ class hmi_SM13():
                     if self.b_beeps == True:
                         zumbador.beep_alarm()
 
-                    return
+                    # Se desactiva botón toggle para que no quede coloreado
+                    self.b_boton_toggle_arm_cw.set_active(False)
+
+                    return True
+
                 else:
                     # si no hay alarmas de límite por software desde RTU se mueve ARM CW
                     a_HMIDataString[0] = "FREE_RUN"
@@ -2079,15 +2088,16 @@ class hmi_SM13():
 
                     if self.b_beeps == True:
                         zumbador.beep_button()
-
-            if (b_toggle_arm_cw == False):
-                self.detener_movimientos()
-                return
                 
         elif (s_boton_fr == "fr_toggle_arm_ccw"):
             # se verifica si el botón esta presionado o suelto
             b_toggle_arm_ccw = button.get_active()
-            if (b_toggle_arm_ccw == True):
+
+            if (b_toggle_arm_ccw == False):
+                self.detener_movimientos()
+                return True
+
+            elif (b_toggle_arm_ccw == True):
                 # Si se activó un toggle_tot primero aseguro que el opuesto
                 # se desactive
                 self.b_boton_toggle_arm_cw.set_active(False)
@@ -2103,7 +2113,7 @@ class hmi_SM13():
                     if self.b_beeps == True:
                         zumbador.beep_stop()
 
-                    return
+                    return True
                 
                 elif(a_RTUData[5] == True):
                     a_HMIDataString[0] = "STOP"
@@ -2115,7 +2125,10 @@ class hmi_SM13():
                     if self.b_beeps == True:
                         zumbador.beep_alarm()
 
-                    return
+                    # Se desactiva botón toggle para que no quede coloreado
+                    self.b_boton_toggle_arm_ccw.set_active(False)
+
+                    return True
                 else:
                     # si no hay alarmas de límite por software desde RTU se mueve ARM CCW
                     a_HMIDataString[0] = "FREE_RUN"
@@ -2124,15 +2137,16 @@ class hmi_SM13():
 
                     if self.b_beeps == True:
                         zumbador.beep_button()
-
-            if (b_toggle_arm_ccw == False):
-                self.detener_movimientos()
-                return
             
         if (s_boton_fr == "fr_toggle_pole_cw"):
             # se verifica si el botón esta presionado o suelto
             b_toggle_pole_cw = button.get_active()
-            if (b_toggle_pole_cw == True):
+
+            if (b_toggle_pole_cw == False):
+                self.detener_movimientos()
+                return
+
+            elif (b_toggle_pole_cw == True):
                 # Si se activó un toggle_tot primero aseguro que el opuesto
                 # se desactive
                 self.b_boton_toggle_pole_ccw.set_active(False)
@@ -2148,7 +2162,7 @@ class hmi_SM13():
                     if self.b_beeps == True:
                         zumbador.beep_stop()
 
-                    return
+                    return True
                 
                 elif(a_RTUData[6] == True):
                     a_HMIDataString[0] = "STOP"
@@ -2160,7 +2174,10 @@ class hmi_SM13():
                     if self.b_beeps == True:
                         zumbador.beep_alarm()
 
-                    return
+                    # Se desactiva botón toggle para que no quede coloreado
+                    self.b_boton_toggle_pole_cw.set_active(False)
+
+                    return True
                 else:
                     # si no hay alarmas de límite por software desde RTU se mueve POLE CW
                     a_HMIDataString[0] = "FREE_RUN"
@@ -2169,15 +2186,16 @@ class hmi_SM13():
 
                     if self.b_beeps == True:
                         zumbador.beep_button()
-
-            if (b_toggle_pole_cw == False):
-                self.detener_movimientos()
-                return
                 
         elif (s_boton_fr == "fr_toggle_pole_ccw"):
             # se verifica si el botón esta presionado o suelto
             b_toggle_pole_ccw = button.get_active()
-            if (b_toggle_pole_ccw == True):
+
+            if (b_toggle_pole_ccw == False):
+                self.detener_movimientos()
+                return
+
+            elif (b_toggle_pole_ccw == True):
                 # Si se activó un toggle_tot primero aseguro que el opuesto
                 # se desactive
                 self.b_boton_toggle_pole_cw.set_active(False)
@@ -2193,7 +2211,7 @@ class hmi_SM13():
                     if self.b_beeps == True:
                         zumbador.beep_stop()
 
-                    return
+                    return True
                 
                 if(a_RTUData[7] == True):
                     a_HMIDataString[0] = "STOP"
@@ -2205,7 +2223,10 @@ class hmi_SM13():
                     if self.b_beeps == True:
                         zumbador.beep_alarm()
 
-                    return
+                    # Se desactiva botón toggle para que no quede coloreado
+                    self.b_boton_toggle_pole_ccw.set_active(False)
+
+                    return True
                 else:
                     # si no hay alarmas de límite por software desde RTU se mueve POLE CCW
                     a_HMIDataString[0] = "FREE_RUN"
@@ -2214,10 +2235,6 @@ class hmi_SM13():
 
                     if self.b_beeps == True:
                         zumbador.beep_button()
-
-            if (b_toggle_pole_ccw == False):
-                self.detener_movimientos()
-                return
             
         depurador(1, "HMI", "****************************************")
         depurador(1, "HMI", "- Moviendo "+ a_HMIDataString[1] + " en sentido " + a_HMIDataString[2])
@@ -2613,8 +2630,12 @@ def tm():
                 # Se envían los paquetes DataBytes y DataStrings hacia RTU y se recibe un paquete proveniente de RTU 
                 a_RTUDataRx, b_connect, s_sock = enviar_a_y_recibir_de_rtu(a_HMIDataByteTx, a_HMIDataString, b_connect, s_sock, s_ip, s_port)#'192.168.0.193', 5020)
 
-                # Apenas se actualiza a_RTUData se convierten los elementos [0] y [1] de cuentas resolver a ángulos.
+                # Apenas se actualiza a_RTUDataRx se convierten los elementos [0] y [1] de cuentas resolver a ángulos.
                 a_RTUData[1], a_RTUData[0] = conversor(a_RTUDataRx[1], a_RTUDataRx[0], 0, 0, "cuenta_a_angulo")
+                # y también se actualizan los demás datos
+                for i in range(2, 11):
+                    a_RTUData[i] = a_RTUDataRx[i]
+
                 # ***************************************************************************************************************************
 
                 depurador(1, "TM", "****************************************")
@@ -2681,7 +2702,7 @@ def tm():
             
         # Esta porción de código permite que no se detenga el HMI con la llegada de
         # alguna trama corrupta+
-        for x in range(0, 11):
+        for x in range(0, 10):
             try:
                 if a_RTUData[x] == True:
                     pass
@@ -2691,7 +2712,7 @@ def tm():
                 ## Variable global contiene la lista de datos que llegan desde RTU:
                 # [f_posActArm, f_posActPole, f_velActArm, f_velActPole, 
                 # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, ui_status]
-                a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False, 0]  
+                a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False]  
                 pass  
         
                 

@@ -469,7 +469,7 @@ Atributos públicos</h2></td></tr>
 <tr class="memdesc:a2818690ee3900a0fe7ad8012daf8f54c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contiene la dirección del puerto.  <a href="classhmi__SM13_1_1hmi__SM13.html#a2818690ee3900a0fe7ad8012daf8f54c">Más...</a><br /></td></tr>
 <tr class="separator:a2818690ee3900a0fe7ad8012daf8f54c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a56f48338b3846058e7f75a6a40cdef"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhmi__SM13_1_1hmi__SM13.html#a2a56f48338b3846058e7f75a6a40cdef">ui_REFRESCO_ms_RELOJ</a></td></tr>
-<tr class="memdesc:a2a56f48338b3846058e7f75a6a40cdef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Variable global contiene la lista de datos que llegan desde RTU: [f_posActArm, f_posActPole, f_velActArm, f_velActPole, b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, ui_status].  <a href="classhmi__SM13_1_1hmi__SM13.html#a2a56f48338b3846058e7f75a6a40cdef">Más...</a><br /></td></tr>
+<tr class="memdesc:a2a56f48338b3846058e7f75a6a40cdef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Variable global contiene la lista de datos que llegan desde RTU: [f_posActArm, f_posActPole, f_velActArm, f_velActPole, b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm].  <a href="classhmi__SM13_1_1hmi__SM13.html#a2a56f48338b3846058e7f75a6a40cdef">Más...</a><br /></td></tr>
 <tr class="separator:a2a56f48338b3846058e7f75a6a40cdef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa738e2d608f37055619876422fb9df6c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhmi__SM13_1_1hmi__SM13.html#aa738e2d608f37055619876422fb9df6c">ui_REFRESCO_ms_SIMULADOR</a></td></tr>
 <tr class="memdesc:aa738e2d608f37055619876422fb9df6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constante contiene el tiempo de refresco de valores actuales de ángulos POLE y ARM del simulador.  <a href="classhmi__SM13_1_1hmi__SM13.html#aa738e2d608f37055619876422fb9df6c">Más...</a><br /></td></tr>
@@ -554,8 +554,8 @@ Atributos públicos</h2></td></tr>
 <dl class="params"><dt>Parámetros</dt><dd>
   <table class="params">
     <tr><td class="paramname">self</td><td>puntero al objeto HMI </td></tr>
-    <tr><td class="paramname">f_ang_pole</td><td>ángulo de la articulación POLE en grados </td></tr>
-    <tr><td class="paramname">f_ang_arm</td><td>ángulo de la articulación ARM en grados </td></tr>
+    <tr><td class="paramname">f_ang_act_pole</td><td>ángulo de la articulación POLE en grados </td></tr>
+    <tr><td class="paramname">f_ang_act_arm</td><td>ángulo de la articulación ARM en grados </td></tr>
     <tr><td class="paramname">ui_res_act_pole</td><td>valor de cuenta actual del resolver POLE (se tiene en cuenta offset) </td></tr>
     <tr><td class="paramname">ui_res_act_arm</td><td>valor de cuenta actual del resolver ARM (se tiene en cuenta offset) </td></tr>
   </table>
@@ -3262,7 +3262,7 @@ Atributos públicos</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Variable global contiene la lista de datos que llegan desde RTU: [f_posActArm, f_posActPole, f_velActArm, f_velActPole, b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, ui_status]. </p>
+<p>Variable global contiene la lista de datos que llegan desde RTU: [f_posActArm, f_posActPole, f_velActArm, f_velActPole, b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm]. </p>
 <p>Variable global para que la vea HMI y el hilo TM. Almacena los datos de ángulos y velocidad comandados hacia la RTU: [f_posCmdArm, f_posCmdPole, ui_velCmdArm, ui_velCmdPole] Variable global para que la vea HMI y el hilo TM. Almacena una lista de <br  />
  eventos que surguen desde HMI y son comunicados a RTU: [s_mode, s_freeRunAxis, s_freeRunDir, s_ctrlEn, s_stallEn, s_liftDir] Variable global la ve tanto HMI como TM. Contiene el estado del simulador 0: simulador inactivo 1: simulador activo Variable contiene el valor de offset para el eje POLE configurado al inicio cuando levanta el archivo robots_home_offsets.csv Variable contiene el valor de offset para el eje ARM configurado al inicio cuando levanta el archivo robots_home_offsets.csv Constante contiene el tiempo para actualizar etiquetas del reloj </p>
 

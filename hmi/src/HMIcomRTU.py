@@ -65,10 +65,9 @@ def enviar_a_y_recibir_de_rtu(a_HMIDataByte, a_HMIDataString, b_connect, s_sock,
     a_RTUData, b_connect, s_sock = DataTxRx(a_HMIDataByte, a_HMIDataString, s_CLIENT_ID, s_sock, b_connect)
 
     depurador(2, "HMIcomRTU", "****************************************")
-    depurador(2, "HMIcomRTU", "- Enviando y recibiendo...")
+    depurador(2, "HMIcomRTU", "- Enviando...")
     depurador(2, "HMIcomRTU", "- Tx--> HMIDataByte: " + str(a_HMIDataByte))
     depurador(2, "HMIcomRTU", "- Tx--> HMIDataString: " + str(a_HMIDataString))
-    depurador(2, "HMIcomRTU", "- Rx<-- RTUData: " + str(a_RTUData))
     depurador(2, "HMIcomRTU", " ")
         
     # Valores de salida para módulo HMIcomRTU
@@ -292,42 +291,38 @@ def HMITranslate(a_HMIDataString, a_HMIDataByte):
 def RTUTranslate(a_RTUDataRx):
     b_connect = True
     # Destramado
-    a_RTUDataRx = list(a_RTUDataRx)
+    # Se juntan los datos numéricos de resolver y velocidad en una lista-.
+    a_RTUDataByte = list(a_RTUDataRx[0:6])
+    # Se convierten los datos de -Byte- a -String- mediante -decode()-.
+    a_RTUDataString = a_RTUDataRx[6:].decode()
 
-    #depurador(3, "HMIcomRTU", "****************************************")
-    #depurador(3, "HMIcomRTU","- length a_RTUData:" + len(str(a_RTUDataRx)))
+    depurador(2, "HMIcomRTU", "****************************************")
+    depurador(2, "HMIcomRTU", "- Recibiendo...")
+    depurador(3, "HMIcomRTU","- Rx<-- RTUDataByte   :" + str(a_RTUDataByte))
+    depurador(3, "HMIcomRTU","- Rx<-- RTUDataString :" + str(a_RTUDataString))
     
         # Conversión del resultado de resolver a ángulos. -Byte- a -Float-
     #if(True):
     try:   
         # Conversión: -uint16- a -float- para angulo y velocidades recibidos de los resolvers.
         #   -- posAct --
-        f_posActArm_MSB = int(a_RTUDataRx[0]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
-        f_posActArm_LSB = int(a_RTUDataRx[1]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
+        f_posActArm_MSB = int(a_RTUDataByte[0]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
+        f_posActArm_LSB = int(a_RTUDataByte[1]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
         f_posActArm = f_posActArm_MSB*255 + f_posActArm_LSB
 
-        f_posActPole_MSB = int(a_RTUDataRx[2]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
-        f_posActPole_LSB = int(a_RTUDataRx[3]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
+        f_posActPole_MSB = int(a_RTUDataByte[2]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
+        f_posActPole_LSB = int(a_RTUDataByte[3]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
         f_posActPole = f_posActPole_MSB*255 + f_posActPole_LSB
         #   -- velAct --
-        f_velActArm = int(a_RTUDataRx[4])
-        f_velActPole = int(a_RTUDataRx[5])
+        f_velActArm = int(a_RTUDataByte[4])
+        f_velActPole = int(a_RTUDataByte[5])
         
-        # Se convierten los datos de -Byte- a -String- mediante -decode()-.
-        b_cwLimitArm = int(a_RTUDataRx[6])#.decode()
-        b_ccwLimitArm = int(a_RTUDataRx[7])#.decode()
-        b_cwLimitPole = int(a_RTUDataRx[8])#.decode()
-        b_ccwLimitPole = int(a_RTUDataRx[9])#.decode()
-        b_limitUp = int(a_RTUDataRx[10])#.decode()
-        b_limitDown = int(a_RTUDataRx[11])#.decode()
-        b_stallAlm = int(a_RTUDataRx[12])#.decode()
-        status = int(a_RTUDataRx[13])
-        
+        b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitDown, b_limitUp, b_stallAlm, status = a_RTUDataString.split(";")
+
         # Conversion de comandos. -Char- a -Bool-.
-            # b_cwLimitArm
-        if b_cwLimitArm  == "ACW_RUN;":
+        if b_cwLimitArm  == "ACW_RUN":
             b_cwLimitArm = False
-        elif b_cwLimitArm  == "ACW_LIM;":
+        elif b_cwLimitArm  == "ACW_LIM":
             b_cwLimitArm = True
         else: 
             depurador(2, "HMI", "****************************************")
@@ -335,84 +330,79 @@ def RTUTranslate(a_RTUDataRx):
             depurador(2, "HMI", " ")
             # Conversion de comandos. -Char- a -Bool-.
             # b_ccwLimitArm
-        if b_ccwLimitArm  == "ACC_RUN;":
+        if b_ccwLimitArm  == "ACC_RUN":
             b_ccwLimitArm = False
-        elif b_ccwLimitArm  == "ACC_LIM;":
+        elif b_ccwLimitArm  == "ACC_LIM":
             b_ccwLimitArm = True
         else: 
              depurador(2, "HMI", "****************************************")
              depurador(2, "HMIcomRTU","error -b_ccwLimitArm- RTUTranslate")
              depurador(2, "HMI", " ")
-
             # Conversion de comandos. -Char- a -Bool-.
             # b_cwLimitPole
-        if b_cwLimitPole  == "PCW_RUN;":
+        if b_cwLimitPole  == "PCW_RUN":
             b_cwLimitPole = False
-        elif b_cwLimitPole  == "PCW_LIM;":
+        elif b_cwLimitPole  == "PCW_LIM":
             b_cwLimitPole = True
         else: 
              depurador(2, "HMI", "****************************************")
              depurador(2, "HMIcomRTU","error -b_cwLimitPole- RTUTranslate")
              depurador(2, "HMI", " ")
-
             # Conversion de comandos. -Char- a -Bool-.
             # b_ccwLimitPole
-        if b_ccwLimitPole  == "PCC_RUN;":
+        if b_ccwLimitPole  == "PCC_RUN":
             b_ccwLimitPole = False
-        elif b_ccwLimitPole  == "PCC_LIM;":
+        elif b_ccwLimitPole  == "PCC_LIM":
             b_ccwLimitPole = True
         else: 
              depurador(2, "HMI", "****************************************")
              depurador(2, "HMIcomRTU","error -b_ccwLimitPole- RTUTranslate")
              depurador(2, "HMI", " ")
-
-            # Conversion de comandos. -Char- a -Bool-.
-            # b_limitUp
-        if b_limitUp  == "LUP_RUN;":
+        # Conversion de comandos. -Char- a -Bool-.
+        # b_limitUp
+        if b_limitUp  == "LUP_RUN":
             b_limitUp = False
-        elif b_limitUp  == "LUP_LIM;":
+        elif b_limitUp  == "LUP_LIM":
             b_limitUp = True
         else: 
              depurador(2, "HMI", "****************************************")
              depurador(2, "HMIcomRTU","error -b_limitUp- RTUTranslate")
              depurador(2, "HMI", " ")
-
-            # Conversion de comandos. -Char- a -Bool-.
-            # b_limitDown
-        if b_limitDown  == "LDW_RUN;":
+        # Conversion de comandos. -Char- a -Bool-.
+        # b_limitDown
+        if b_limitDown  == "LDW_RUN":
             b_limitDown = False
-        elif b_limitDown  == "LDW_LIM;":
+        elif b_limitDown  == "LDW_LIM":
             b_limitDown = True
         else: 
              depurador(2, "HMI", "****************************************")
              depurador(2, "HMIcomRTU","error -b_limitDown- RTUTranslate")
              depurador(2, "HMI", " ")
-
             # Conversion de comandos. -Char- a -Bool-.
             # b_stallAlm
-        if b_stallAlm  == "STL_RUN;":
+        if b_stallAlm  == "STL_RUN":
             b_stallAlm = False
-        elif b_stallAlm  == "STL_ALM;":
+        elif b_stallAlm  == "STL_ALM":
             b_stallAlm = True
         else: 
              depurador(2, "HMI", "****************************************")
              depurador(2, "HMIcomRTU","error -b_stallAlm- RTUTranslate")
              depurador(2, "HMI", " ")
-
             # Manejo de errores de conexión 
-        if status == 0x81:
+        if status == "81":
             depurador(2, "HMI", "****************************************")
             depurador(2, "HMIcomRTU","- ClientId incorrecto - Desconectando RTU.")
             depurador(2, "HMI", " ")
             b_connect = False
-        elif status == 0x42:
+        elif status == "42":
             depurador(2, "HMIcomRTU","- Se recibió trama vacía")
-        elif status == 0x43:
+        elif status == "43":
             depurador(2, "HMI", "****************************************")
             depurador(2, "HMIcomRTU","- No se pudo enviar trama desde RTU.")
             depurador(2, "HMI", " ")
-
-        a_RTUData = [f_posActArm, f_posActPole, f_velActArm, f_velActPole, b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, status]
+        
+        a_RTUDataOutput = [f_posActArm, f_posActPole, f_velActArm, f_velActPole, b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm]
+        #depurador(3, "HMIcomRTU","- output :" + str(a_RTUDataOutput))
 
     except Exception as err:
         depurador(4, "HMIcomRTU", "****************************************")
@@ -420,11 +410,11 @@ def RTUTranslate(a_RTUDataRx):
         depurador(4, "HMIcomRTU", " ")
         # status 
         sys.exit()
-        
+            
     finally:
         depurador(4, "HMIcomRTU","- Finalizando RTUTranslate()")
-        depurador(4, "HMIcomRTU","- a_RTUData: " + str(a_RTUData))
-        return a_RTUData, b_connect # DataTxRx
+        depurador(4, "HMIcomRTU","- Output: " + str(a_RTUDataOutput))
+        return a_RTUDataOutput, b_connect # DataTxRx
 
 ##
 # @brief Esta función se encarga de la conversíon para los valores de angulos expresados en grados 
