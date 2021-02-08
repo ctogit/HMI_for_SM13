@@ -1734,6 +1734,9 @@ class hmi_SM13():
         global a_RTUData
         global a_HMIDataString
 
+        # Retardo para que RTU vea tramas de STOP del botòn toggle opuesto
+        ui_DELAY_ms_TOGGLE = 100
+
         # Antes de mover verifica si está activado el control principal
         if (a_HMIDataString[3] == "DISABLE_CONTROL"):
 
@@ -1763,6 +1766,7 @@ class hmi_SM13():
         if (s_boton_lift == "lift_up"):
             if(a_RTUData[8] == True):
                 a_HMIDataString[0] = "STOP"
+                a_HMIDataString[5] = "LIFT_UP"
                 self.inspection_etiqueta_msg.set_text("Lift upper limit alarm!")
                 depurador(1, "HMI", "****************************************")
                 depurador(1, "HMI", "- Límite superior alcanzado en LIFT")
@@ -1772,11 +1776,12 @@ class hmi_SM13():
                 # si ZS no acusa alarma desde RTU se mueve lift
                 a_HMIDataString[0] = "LIFT"
                 a_HMIDataString[5] = "LIFT_UP"
-                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos)
+                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos, "LIFT_UP")
                 
         elif (s_boton_lift == "lift_down"):
             if(self.b_limitDwn == True):
                 a_HMIDataString[0] = "STOP"
+                a_HMIDataString[5] = "LIFT_DOWN"
                 self.inspection_etiqueta_msg.set_text("Lift lower limit alarm!")
                 depurador(1, "HMI", "****************************************")
                 depurador(1, "HMI", "- Límite inferior alcanzado en LIFT")
@@ -1786,7 +1791,7 @@ class hmi_SM13():
                 # si ZS no acusa alarma desde RTU se mueve lift
                 a_HMIDataString[0] = "LIFT"
                 a_HMIDataString[5] = "LIFT_DOWN"
-                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos)
+                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos, "LIFT_DOWN")
             
         # botones tipo toggle no afectados por temporizador            
         if (s_boton_lift == "lift_up_total"):
@@ -1795,11 +1800,17 @@ class hmi_SM13():
             if (b_boton_lift_up_tot == True):
                 # Si se activó un toggle_tot primero aseguro que el opuesto
                 # se desactive
+                a_HMIDataString[0] = "STOP"
+                a_HMIDataString[5] = "LIFT_DOWN"
+                #Damos tiempo para que se envíe al menos una trama y tome el comando la RTU
+                time.sleep(ui_DELAY_ms_TOGGLE/1000)
+
                 self.b_fr_boton_lift_down_total.set_active(False)
                 self.b_manual_boton_lift_down_total.set_active(False)
                 self.b_inspection_boton_lift_down_total.set_active(False)
                 if(a_RTUData[8] == True):
                     a_HMIDataString[0] = "STOP"
+                    a_HMIDataString[5] = "LIFT_UP"
                     self.inspection_etiqueta_msg.set_text("Lift upper limit alarm!")
                     depurador(1, "HMI", "****************************************")
                     depurador(1, "HMI", "- Límite superior alcanzado en LIFT")
@@ -1810,7 +1821,7 @@ class hmi_SM13():
                     a_HMIDataString[0] = "LIFT"
                     a_HMIDataString[5] = "LIFT_UP"
             if (b_boton_lift_up_tot == False):
-                self.detener_movimientos()
+                self.detener_movimientos("LIFT_UP")
                 return
                 
         elif (s_boton_lift == "lift_down_total"):
@@ -1819,11 +1830,17 @@ class hmi_SM13():
             if (b_boton_lift_down_tot == True):
                 # Si se activó un toggle_tot primero aseguro que el opuesto
                 # se desactive
+                a_HMIDataString[0] = "STOP"
+                a_HMIDataString[5] = "LIFT_UP"
+                #Damos tiempo para que se envíe al menos una trama y tome el comando la RTU
+                time.sleep(ui_DELAY_ms_TOGGLE/1000)
+
                 self.b_fr_boton_lift_up_total.set_active(False)
                 self.b_manual_boton_lift_up_total.set_active(False)
                 self.b_inspection_boton_lift_up_total.set_active(False)
                 if(self.b_limitDwn == True):
                     a_HMIDataString[0] = "STOP"
+                    a_HMIDataString[5] = "LIFT_DOWN"
                     self.actualizar_etiquetas_msg("Lift lower limit alarm!")
                     depurador(1, "HMI", "****************************************")
                     depurador(1, "HMI", "- Límite inferior alcanzado en LIFT")
@@ -1834,7 +1851,7 @@ class hmi_SM13():
                     a_HMIDataString[0] = "LIFT"
                     a_HMIDataString[5] = "LIFT_DOWN"
             if (b_boton_lift_down_tot == False):
-                self.detener_movimientos()
+                self.detener_movimientos("LIFT_DOWN")
                 return
             
         depurador(1, "HMI", "****************************************")
@@ -1850,16 +1867,45 @@ class hmi_SM13():
     # al eje LIFT mediante el retorno de un False.
     # @param self Puntero al objeto HMI
     # @return False y detiene el GLib.timeout_add() que creo la tarea.
-    def detener_movimientos(self):
+    def detener_movimientos(self, s_FR_Axis):
         global a_HMIDataString
 
-        a_HMIDataString[0] = "STOP"
+        if s_FR_Axis == "POLE":
+            a_HMIDataString[0] = "STOP"
+            a_HMIDataString[1] = "POLE"
+        if s_FR_Axis == "ARM":
+            a_HMIDataString[0] = "STOP"
+            a_HMIDataString[1] = "ARM"
+        if s_FR_Axis == "BOTH":
+            a_HMIDataString[0] = "STOP"
+            a_HMIDataString[1] = "POLE"
+            #TODO: solo se puede stopear un eje por llamado a la función, no estaría funcionando así.
+            a_HMIDataString[0] = "STOP"
+            a_HMIDataString[1] = "ARM"
+        if s_FR_Axis == "LIFT_UP":
+            a_HMIDataString[0] = "STOP"
+            a_HMIDataString[5] = "LIFT_UP"
+        if s_FR_Axis == "LIFT_DOWN":
+            a_HMIDataString[0] = "STOP"
+            a_HMIDataString[5] = "LIFT_DOWN"
+        if s_FR_Axis == "TOTAL":
+            a_HMIDataString[0] = "STOP"
+            a_HMIDataString[1] = "POLE"
+            #TODO: solo se puede stopear un eje por llamado a la función, no estaría funcionando así.
+            a_HMIDataString[0] = "STOP"
+            a_HMIDataString[1] = "ARM"
+            #TODO: solo se puede stopear un eje por llamado a la función, no estaría funcionando así.
+            a_HMIDataString[0] = "STOP"
+            a_HMIDataString[5] = "LIFT_UP"
+            #TODO: solo se puede stopear un eje por llamado a la función, no estaría funcionando así.
+            a_HMIDataString[0] = "STOP"
+            a_HMIDataString[5] = "LIFT_DOWN"
         
         depurador(4, "HMI", "****************************************")
         depurador(4, "HMI", "- Modo: " + a_HMIDataString[0])
         depurador(4, "HMI", " ")
         
-        self.actualizar_etiquetas_msg("Stopping movement...")
+        self.actualizar_etiquetas_msg("Stopping movement..." + s_FR_Axis)
     
         # retorna False para detener el temporizador
         return False
@@ -1875,6 +1921,8 @@ class hmi_SM13():
         global a_RTUData
         global a_HMIDataByte
         global a_HMIDataString
+
+        ui_DELAY_ms_TOGGLE = 100
 
         # Antes de mover verifica si está activado el control principal
         if (a_HMIDataString[3] == "DISABLE_CONTROL"):
@@ -1903,7 +1951,8 @@ class hmi_SM13():
         if (s_boton_fr == "fr_push_arm_cw"):
             # Si la velocidad seteada es 0 no hay nada que hacer aquí
             if(a_HMIDataByte[2] == 0):
-                a_HMIDataString[0] = "STOP"            
+                a_HMIDataString[0] = "STOP"   
+                a_HMIDataString[1] = "ARM"         
                 self.fr_etiqueta_msg.set_text("The set speed is 0 for this movement...")
 
                 if self.b_beeps == True:
@@ -1914,6 +1963,7 @@ class hmi_SM13():
             # Si hay un límite de movimiento por software se cancela el movimiento
             elif(a_RTUData[4] == True):
                 a_HMIDataString[0] = "STOP"
+                a_HMIDataString[1] = "ARM"
                 self.fr_etiqueta_msg.set_text("ARM CW limit alarm!")
                 depurador(1, "HMI", "****************************************")
                 depurador(1, "HMI", "- Límite horario alcanzado en ARM")
@@ -1933,13 +1983,14 @@ class hmi_SM13():
                 if self.b_beeps == True:
                     zumbador.beep_button()
 
-                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos)
+                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos, "ARM")
                 
         elif (s_boton_fr == "fr_push_arm_ccw"):
             
             # Si la velocidad seteada es 0 no hay nada que hacer aquí
             if(a_HMIDataByte[2] == 0):
                 a_HMIDataString[0] = "STOP"
+                a_HMIDataString[1] = "ARM"
                 self.fr_etiqueta_msg.set_text("The set speed is 0 for this movement...")
 
                 if self.b_beeps == True:
@@ -1949,6 +2000,7 @@ class hmi_SM13():
                 
             elif (a_RTUData[5] == True):
                 a_HMIDataString[0] = "STOP"
+                a_HMIDataString[1] = "ARM"
                 self.fr_etiqueta_msg.set_text("ARM CCW limit alarm!")
                 depurador(1, "HMI", "****************************************")
                 depurador(1, "HMI", "- Límite anti-horario alcanzado en ARM")
@@ -1968,12 +2020,13 @@ class hmi_SM13():
                 if self.b_beeps == True:
                     zumbador.beep_button()
 
-                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos)
+                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos, "ARM")
                 
         if (s_boton_fr == "fr_push_pole_cw"):
             # Si la velocidad seteada es 0 no hay nada que hacer aquí
             if(a_HMIDataByte[3] == 0):
                 a_HMIDataString[0] = "STOP"
+                a_HMIDataString[1] = "POLE"
 
                 if self.b_beeps == True:
                     zumbador.beep_stop()
@@ -1983,6 +2036,7 @@ class hmi_SM13():
             
             if(a_RTUData[6] == True):
                 a_HMIDataString[0] = "STOP"
+                a_HMIDataString[1] = "POLE"
                 self.fr_etiqueta_msg.set_text("POLE CW limit alarm!")
                 depurador(1, "HMI", "****************************************")
                 depurador(1, "HMI", "- Límite horario alcanzado en POLE")
@@ -2002,12 +2056,13 @@ class hmi_SM13():
                 if self.b_beeps == True:
                     zumbador.beep_button()
 
-                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos)
+                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos, "POLE")
                 
         elif (s_boton_fr == "fr_push_pole_ccw"):
             # Si la velocidad seteada es 0 no hay nada que hacer aquí
             if(a_HMIDataByte[3] == 0):
                 a_HMIDataString[0] = "STOP"
+                a_HMIDataString[1] = "POLE"
                 self.fr_etiqueta_msg.set_text("The set speed is 0 for this movement...")
 
                 if self.b_beeps == True:
@@ -2017,6 +2072,7 @@ class hmi_SM13():
             
             elif (a_RTUData[7] == True):
                 a_HMIDataString[0] = "STOP"
+                a_HMIDataString[1] = "POLE"
                 self.fr_etiqueta_msg.set_text("POLE CCW limit alarm!")
                 depurador(1, "HMI", "****************************************")
                 depurador(1, "HMI", "- Límite anti-horario alcanzado en POLE")
@@ -2035,7 +2091,7 @@ class hmi_SM13():
                 if self.b_beeps == True:
                     zumbador.beep_button()
 
-                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos)
+                GLib.timeout_add(self.ui_DELAY_ms_PULSADOR, self.detener_movimientos, "POLE")
             
         # botones tipo toggle NO afectados por temporizador            
         if (s_boton_fr == "fr_toggle_arm_cw"):
@@ -2043,17 +2099,23 @@ class hmi_SM13():
             b_toggle_arm_cw = button.get_active()
 
             if (b_toggle_arm_cw == False):
-                self.detener_movimientos()
+                self.detener_movimientos("ARM")
                 return True
 
             elif (b_toggle_arm_cw == True):
                 # Si se activó un toggle_tot primero aseguro que el opuesto
                 # se desactive
+                a_HMIDataString[0] = "STOP"
+                a_HMIDataString[1] = "ARM"
+                # se asegura que se envíe al menos una trama antes de enviar el siguiente STOP sino la RTU no se va a enterar
+                time.sleep(ui_DELAY_ms_TOGGLE/1000) 
+
                 self.b_boton_toggle_arm_ccw.set_active(False)
+
                 # Si la velocidad seteada es 0 no hay nada que hacer aquí
                 if(a_HMIDataByte[2] == 0):
                     a_HMIDataString[0] = "STOP"
-
+                    a_HMIDataString[1] = "ARM"
                     # Si no hay velocidad seleccionada aseguramos que no quede presionado el toggle
                     self.b_boton_toggle_arm_cw.set_active(False)
 
@@ -2066,6 +2128,7 @@ class hmi_SM13():
 
                 if(a_RTUData[4] == True):
                     a_HMIDataString[0] = "STOP"
+                    a_HMIDataString[1] = "ARM"
                     self.fr_etiqueta_msg.set_text("ARM CW limit alarm!")
 
                     depurador(1, "HMI", "****************************************")
@@ -2094,16 +2157,23 @@ class hmi_SM13():
             b_toggle_arm_ccw = button.get_active()
 
             if (b_toggle_arm_ccw == False):
-                self.detener_movimientos()
+                self.detener_movimientos("ARM")
                 return True
 
             elif (b_toggle_arm_ccw == True):
                 # Si se activó un toggle_tot primero aseguro que el opuesto
                 # se desactive
+                a_HMIDataString[0] = "STOP"
+                a_HMIDataString[1] = "ARM"
+                # se asegura que se envíe al menos una trama antes de enviar el siguiente STOP sino la RTU no se va a enterar
+                time.sleep(ui_DELAY_ms_TOGGLE/1000)
+
                 self.b_boton_toggle_arm_cw.set_active(False)
+
                 # Si la velocidad seteada es 0 no hay nada que hacer aquí
                 if(a_HMIDataByte[2] == 0):
                     a_HMIDataString[0] = "STOP"
+                    a_HMIDataString[1] = "ARM"
 
                     # Si no hay velocidad seleccionada aseguramos que no quede presionado el toggle
                     self.b_boton_toggle_arm_ccw.set_active(False)
@@ -2117,6 +2187,7 @@ class hmi_SM13():
                 
                 elif(a_RTUData[5] == True):
                     a_HMIDataString[0] = "STOP"
+                    a_HMIDataString[1] = "ARM"
                     self.fr_etiqueta_msg.set_text("ARM CCW limit alarm!")
                     depurador(1, "HMI", "****************************************")
                     depurador(1, "HMI", "- Límite anti-horario alcanzado en ARM")
@@ -2143,17 +2214,22 @@ class hmi_SM13():
             b_toggle_pole_cw = button.get_active()
 
             if (b_toggle_pole_cw == False):
-                self.detener_movimientos()
+                self.detener_movimientos("POLE")
                 return
 
             elif (b_toggle_pole_cw == True):
                 # Si se activó un toggle_tot primero aseguro que el opuesto
                 # se desactive
+                a_HMIDataString[0] = "STOP"
+                a_HMIDataString[1] = "POLE"
+                # se asegura que se envíe al menos una trama antes de enviar el siguiente STOP sino la RTU no se va a enterar
+                time.sleep(ui_DELAY_ms_TOGGLE/1000)
+
                 self.b_boton_toggle_pole_ccw.set_active(False)
                 # Si la velocidad seteada es 0 no hay nada que hacer aquí
                 if(a_HMIDataByte[3] == 0):
                     a_HMIDataString[0] = "STOP"
-
+                    a_HMIDataString[1] = "POLE"
                     # Si no hay velocidad seleccionada aseguramos que no quede presionado el toggle
                     self.b_boton_toggle_pole_cw.set_active(False)
 
@@ -2166,6 +2242,7 @@ class hmi_SM13():
                 
                 elif(a_RTUData[6] == True):
                     a_HMIDataString[0] = "STOP"
+                    a_HMIDataString[1] = "POLE"
                     self.fr_etiqueta_msg.set_text("POLE CW limit alarm!")
                     depurador(1, "HMI", "****************************************")
                     depurador(1, "HMI", "- Límite horario alcanzado en POLE")
@@ -2192,16 +2269,23 @@ class hmi_SM13():
             b_toggle_pole_ccw = button.get_active()
 
             if (b_toggle_pole_ccw == False):
-                self.detener_movimientos()
+                self.detener_movimientos("POLE")
                 return
 
             elif (b_toggle_pole_ccw == True):
                 # Si se activó un toggle_tot primero aseguro que el opuesto
                 # se desactive
+                a_HMIDataString[0] = "STOP"
+                a_HMIDataString[1] = "POLE"
+                # se asegura que se envíe al menos una trama antes de enviar el siguiente STOP sino la RTU no se va a enterar
+                time.sleep(ui_DELAY_ms_TOGGLE/1000)
+
                 self.b_boton_toggle_pole_cw.set_active(False)
+
                 # Si la velocidad seteada es 0 no hay nada que hacer aquí
                 if(a_HMIDataByte[3] == 0):
                     a_HMIDataString[0] = "STOP"
+                    a_HMIDataString[1] = "POLE"
 
                     # Si no hay velocidad seleccionada aseguramos que no quede presionado el toggle
                     self.b_boton_toggle_pole_ccw.set_active(False)
@@ -2215,6 +2299,7 @@ class hmi_SM13():
                 
                 if(a_RTUData[7] == True):
                     a_HMIDataString[0] = "STOP"
+                    a_HMIDataString[1] = "POLE"
                     self.fr_etiqueta_msg.set_text("POLE CCW limit alarm!")
                     depurador(1, "HMI", "****************************************")
                     depurador(1, "HMI", "- Límite anti-horario alcanzado en POLE")
@@ -2626,7 +2711,9 @@ def tm():
                 # ***************************************************************************************************************************
                 # Antes de enviar los ángulos comandandos en a_HMIDataByte[0]/[1] se deben convertir a cuentas de resolver
                 a_HMIDataByteTx[1], a_HMIDataByteTx[0] = conversor(0, 0, a_HMIDataByte[1], a_HMIDataByte[0], "angulo_a_cuenta")
-                
+                a_HMIDataByteTx[2] = a_HMIDataByte[2]
+                a_HMIDataByteTx[3] = a_HMIDataByte[3]
+
                 # Se envían los paquetes DataBytes y DataStrings hacia RTU y se recibe un paquete proveniente de RTU 
                 a_RTUDataRx, b_connect, s_sock = enviar_a_y_recibir_de_rtu(a_HMIDataByteTx, a_HMIDataString, b_connect, s_sock, s_ip, s_port)#'192.168.0.193', 5020)
 
@@ -2699,6 +2786,8 @@ def tm():
                 depurador(3, "TM", "- IP : " + str(s_ip))
                 depurador(3, "TM", "- PORT : " + str(s_port))
                 depurador(1, "TM", " ")
+
+            #time.sleep(ui_PERIODO_ms_TRAMA/1000)
             
         # Esta porción de código permite que no se detenga el HMI con la llegada de
         # alguna trama corrupta+
