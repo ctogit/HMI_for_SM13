@@ -292,32 +292,32 @@ def RTUTranslate(a_RTUDataRx):
     b_connect = True
     # Destramado
     # Se juntan los datos numéricos de resolver y velocidad en una lista-.
-    a_RTUDataByte = list(a_RTUDataRx[0:6])
-    # Se convierten los datos de -Byte- a -String- mediante -decode()-.
-    a_RTUDataString = a_RTUDataRx[6:].decode()
-
+    a_RTUDataRx = a_RTUDataRx.split()
+   
     depurador(2, "HMIcomRTU", "****************************************")
     depurador(2, "HMIcomRTU", "- Recibiendo...")
-    depurador(3, "HMIcomRTU","- Rx<-- RTUDataByte   :" + str(a_RTUDataByte))
-    depurador(3, "HMIcomRTU","- Rx<-- RTUDataString :" + str(a_RTUDataString))
+    depurador(3, "HMIcomRTU","- Rx<-- RTUDataByte   :" + str(a_RTUDataRx))
     
         # Conversión del resultado de resolver a ángulos. -Byte- a -Float-
     #if(True):
-    try:   
+    try:    
         # Conversión: -uint16- a -float- para angulo y velocidades recibidos de los resolvers.
         #   -- posAct --
-        f_posActArm_MSB = int(a_RTUDataByte[0]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
-        f_posActArm_LSB = int(a_RTUDataByte[1]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
-        f_posActArm = f_posActArm_MSB*255 + f_posActArm_LSB
-
-        f_posActPole_MSB = int(a_RTUDataByte[2]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
-        f_posActPole_LSB = int(a_RTUDataByte[3]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
-        f_posActPole = f_posActPole_MSB*255 + f_posActPole_LSB
+        f_posActArm = (int(a_RTUDataRx[0]))##/i_MAX_CUENTAS)*f_MAX_GRADOS
+        f_posActPole = (int(a_RTUDataRx[1]))##/i_MAX_CUENTAS)*f_MAX_GRADOS
         #   -- velAct --
-        f_velActArm = int(a_RTUDataByte[4])
-        f_velActPole = int(a_RTUDataByte[5])
+        f_velActArm = int(a_RTUDataRx[2])
+        f_velActPole = int(a_RTUDataRx[3])
         
-        b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitDown, b_limitUp, b_stallAlm, status = a_RTUDataString.split(";")
+          # Se convierten los datos de -Byte- a -String- mediante -decode()-.
+        b_cwLimitArm = a_RTUDataRx[4].decode()
+        b_ccwLimitArm = a_RTUDataRx[5].decode()
+        b_cwLimitPole = a_RTUDataRx[6].decode()
+        b_ccwLimitPole = a_RTUDataRx[7].decode()
+        b_limitUp = a_RTUDataRx[8].decode()
+        b_limitDown = a_RTUDataRx[9].decode()
+        b_stallAlm = a_RTUDataRx[10].decode()
+        status = int(a_RTUDataRx[11])
 
         # Conversion de comandos. -Char- a -Bool-.
         if b_cwLimitArm  == "ACW_RUN":
