@@ -1127,6 +1127,7 @@
                             <property name="margin_top">10</property>
                             <property name="margin_bottom">10</property>
                             <property name="always_show_image">True</property>
+                            <signal name="clicked" handler="evento_pivot" swapped="no"/>
                             <child>
                               <object class="GtkImage" id="inicio_imagen_boton_pivot">
                                 <property name="visible">True</property>
@@ -5671,8 +5672,8 @@ Tube</property>
             <property name="margin_bottom">10</property>
             <property name="add_tearoffs">True</property>
             <items>
-              <item translatable="yes">_cne_moderador_3211_HX2</item>
-              <item translatable="yes">_cne_moderador_3211_HX1</item>
+              <item translatable="yes">_cne_moderador_3211-HX2</item>
+              <item translatable="yes">_cne_moderador_3211-HX1</item>
               <item translatable="yes">_cne_refrigerador_3341-HX1</item>
               <item translatable="yes">_cne_purificador_3335-HX2</item>
             </items>

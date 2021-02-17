@@ -127,7 +127,27 @@ def leer_datos_SM13(s_hx_type, s_fixture_file, ui_montaje = 0):
             depurador(3, "Datos_SM13", "- Montaje en Y = "+str(a_medidas[19])+" in")
                         
             return float(a_medidas[18]), float(a_medidas[19]), float(a_medidas[0]), float(a_medidas[1]), float(a_medidas[2]), float(a_medidas[3])
+
+    if (s_hx_type == "_cne_purificador_3335_HX2"): 
+        if (ui_montaje == 1):
+            
+            depurador(3, "Datos_SM13", "- Archivo de datos SM-13")
+            depurador(3, "Datos_SM13", "- Largo POLE = "+str(a_medidas[0])+" in")
+            depurador(3, "Datos_SM13", "- Largo ARM  = "+str(a_medidas[1])+" in")
+            depurador(3, "Datos_SM13", "- Montaje en X = "+str(a_medidas[20])+" in")
+            depurador(3, "Datos_SM13", "- Montaje en Y = "+str(a_medidas[21])+" in")
+            
+            return float(a_medidas[20]), float(a_medidas[21]), float(a_medidas[0]), float(a_medidas[1]), float(a_medidas[2]), float(a_medidas[3])
         
+        if (ui_montaje == 2):
+            
+            depurador(3, "Datos_SM13", "- Archivo de datos SM-13")
+            depurador(3, "Datos_SM13", "- Largo POLE = "+str(a_medidas[0])+" in")
+            depurador(3, "Datos_SM13", "- Largo ARM  = "+str(a_medidas[1])+" in")
+            depurador(3, "Datos_SM13", "- Montaje en X = "+str(a_medidas[22])+" in")
+            depurador(3, "Datos_SM13", "- Montaje en Y = "+str(a_medidas[23])+" in")
+            
+            return float(a_medidas[22]), float(a_medidas[23]), float(a_medidas[0]), float(a_medidas[1]), float(a_medidas[2]), float(a_medidas[3])
     
     depurador(2, "Datos_SM13", " ")
 #if __name__ == "__main__":

@@ -35,11 +35,39 @@ def leer_plan(s_plan_file):
         depurador(3, "Plan de Inspección", " ")
           
         i=0
+        
         for data in plan:
-            a_row_plan.append(int(data[0]))
+            print(data[0])
+            a_row_plan.append(str(data[0]))
             a_col_plan.append(int(data[1]))
             a_tube_plan.append(data[2])
+
+            # Algunos HX tienen filas nombradas con letras así que antes de retornar 
+            # se pasan a entero para que no haya problemas
+            if (a_row_plan[i] == "A"):
+                a_row_plan[i] = int(1)
+            if (a_row_plan[i] == "B"):
+                a_row_plan[i] = int(2)
+            if (a_row_plan[i] == "C"):
+                a_row_plan[i] = int(3)
+            if (a_row_plan[i] == "D"):
+                a_row_plan[i] = int(4)
+            if (a_row_plan[i] == "E"):
+                a_row_plan[i] = int(5)
+            if (a_row_plan[i] == "F"):
+                a_row_plan[i] = int(6)
+            if (a_row_plan[i] == "G"):
+                a_row_plan[i] = int(7)
+            if (a_row_plan[i] == "H"):
+                a_row_plan[i] = int(8)
+            if (a_row_plan[i] == "I"):
+                a_row_plan[i] = int(9)
+            if (a_row_plan[i] == "J"):
+                a_row_plan[i] = int(10)
+            if (a_row_plan[i] == "K"):
+                a_row_plan[i] = int(11)
             i += 1
+
             
     return a_row_plan, a_col_plan, a_tube_plan
         

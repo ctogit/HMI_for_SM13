@@ -1149,6 +1149,11 @@ class hmi_SM13():
             combo_plan.append_text("_cne_moderador_3211_HX2/InspPlan6_M_3")
             combo_plan.append_text("_cne_moderador_3211_HX2/InspPlan7_M_4")
             combo_plan.append_text("_cne_moderador_3211_HX2/InspPlan8_M_4")
+        if str(self.s_hx_type) == "_cne_purificador_3335_HX2":
+            combo_plan.append_text("_cne_purificador_3335_HX2/InspPlan1_M_1")
+            combo_plan.append_text("_cne_purificador_3335_HX2/InspPlan2_M_1")
+            combo_plan.append_text("_cne_purificador_3335_HX2/InspPlan3_M_2")
+            combo_plan.append_text("_cne_purificador_3335_HX2/InspPlan4_M_2")
 
         
         return True

@@ -5674,8 +5674,8 @@ Tube</property>
             <items>
               <item translatable="yes">_cne_moderador_3211_HX2</item>
               <item translatable="yes">_cne_moderador_3211_HX1</item>
-              <item translatable="yes">_cne_refrigerador_3341-HX1</item>
-              <item translatable="yes">_cne_purificador_3335-HX2</item>
+              <item translatable="yes">_cne_refrigerador_3341_HX1</item>
+              <item translatable="yes">_cne_purificador_3335_HX2</item>
             </items>
             <signal name="changed" handler="evento_seleccion_hx" swapped="no"/>
           </object>

@@ -34,6 +34,30 @@ def leer_archivo_hx(ui_col_input, ui_row_input, s_hx_file):
     f_px_output = 0.0
     f_py_output = 0.0
     b_error = 1
+
+# Algunos HX tienen filas nombradas con letras así que antes se pasan a entero para que no haya problemas
+    if (ui_row_input == "A"):
+        ui_row_input = int(1)
+    if (ui_row_input == "B"):
+        ui_row_input = int(2)
+    if (ui_row_input == "C"):
+        ui_row_input = int(3)
+    if (ui_row_input == "D"):
+        ui_row_input = int(4)
+    if (ui_row_input == "E"):
+        ui_row_input = int(5)
+    if (ui_row_input == "F"):
+        ui_row_input = int(6)
+    if (ui_row_input == "G"):
+        ui_row_input = int(7)
+    if (ui_row_input == "H"):
+        aui_row_input = int(8)
+    if (ui_row_input == "I"):
+        ui_row_input = int(9)
+    if (ui_row_input == "J"):
+        ui_row_input = int(10)
+    if (ui_row_input == "K"):
+        ui_row_input = int(11)
     
     #h, hxData = read_spreadsheet("ArchivosCfg/hx3211.xls",csv_dialect="CToDialect", header_size=2) 
     #h, planData = read_spreadsheet(/ArchivosCfg/planInspecion,csv_dialect=CSVDialect, header_size=0)
@@ -57,6 +81,31 @@ def leer_archivo_hx(ui_col_input, ui_row_input, s_hx_file):
             a_py_list.append(data[3])
             a_tube_list.append(data[4])
             
+            # Algunos HX tienen filas nombradas con letras así que antes las paso a entero para que no haya problemas
+            if (a_yrow_list[i] == "A"):
+                a_yrow_list[i] = int(1)
+            if (a_yrow_list[i] == "B"):
+                a_yrow_list[i] = int(2)
+            if (a_yrow_list[i] == "C"):
+                a_yrow_list[i] = int(3)
+            if (a_yrow_list[i] == "D"):
+                a_yrow_list[i] = int(4)
+            if (a_yrow_list[i] == "E"):
+                a_yrow_list[i] = int(5)
+            if (a_yrow_list[i] == "F"):
+                a_yrow_list[i] = int(6)
+            if (a_yrow_list[i] == "G"):
+                a_yrow_list[i] = int(7)
+            if (a_yrow_list[i] == "H"):
+                a_yrow_list[i] = int(8)
+            if (a_yrow_list[i] == "I"):
+                a_yrow_list[i] = int(9)
+            if (a_yrow_list[i] == "J"):
+                a_yrow_list[i] = int(10)
+            if (a_yrow_list[i] == "K"):
+                a_yrow_list[i] = int(11)
+
+
             # Se selecciona la coordenada X,Y del archivo en base a COL,ROW de entrada. 
             if (int(a_xcol_list[i]) == ui_col_input) and (int(a_yrow_list[i]) == ui_row_input):           
                 f_px_output = float(a_px_list[i])

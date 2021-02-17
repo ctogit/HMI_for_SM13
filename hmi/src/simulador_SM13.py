@@ -95,10 +95,18 @@ class simulador_SM13(object):
         
         # Add SM-13 base plate
         ax.add_patch(Rectangle((self.f_Lx-f_w/2, self.f_Ly-f_h/2), width=f_w, height=f_h, facecolor='c', alpha=1))
+        """
+        # Add fingers to SM-13 base plate for 3211-HX1/2
         circulo_no = plt.Circle((self.f_Lx-8*f_x_pitch, self.f_Ly-4*f_y_pitch), f_tube_od/2, ls='-', fill=True, color='k')
         circulo_ne = plt.Circle((self.f_Lx+8*f_x_pitch, self.f_Ly-4*f_y_pitch), f_tube_od/2, ls='-', fill=True, color='k')
         circulo_so = plt.Circle((self.f_Lx-8*f_x_pitch, self.f_Ly+4*f_y_pitch), f_tube_od/2, ls='-', fill=True, color='k')
         circulo_se = plt.Circle((self.f_Lx+8*f_x_pitch, self.f_Ly+4*f_y_pitch), f_tube_od/2, ls='-', fill=True, color='k')
+        """
+        # Add fingers to SM-13 base plate for 3335-HX2
+        circulo_no = plt.Circle((self.f_Lx-5*f_x_pitch, self.f_Ly-5*f_y_pitch), f_tube_od/2, ls='-', fill=True, color='k')
+        circulo_ne = plt.Circle((self.f_Lx+5*f_x_pitch, self.f_Ly-5*f_y_pitch), f_tube_od/2, ls='-', fill=True, color='k')
+        circulo_so = plt.Circle((self.f_Lx-5*f_x_pitch, self.f_Ly+5*f_y_pitch), f_tube_od/2, ls='-', fill=True, color='k')
+        circulo_se = plt.Circle((self.f_Lx+5*f_x_pitch, self.f_Ly+5*f_y_pitch), f_tube_od/2, ls='-', fill=True, color='k')
         ax.add_artist(circulo_no)
         ax.add_artist(circulo_ne)
         ax.add_artist(circulo_so)

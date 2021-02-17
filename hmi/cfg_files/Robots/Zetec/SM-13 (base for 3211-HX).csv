@@ -1,8 +1,8 @@
-Dimensiones y Coordenadas de montaje SM-13 con base para 3335-HX2;Valor;Unidad
+Dimensiones y Coordenadas de montaje SM-13;Valor;Unidad
 longitud POLE (Lp); 9.5; in 
 longitud ARM (La); 15.25; in
-ancho_base (w); 7.637; in
-alto_base (h); 7.637; in
+ancho_base (w); 8.125; in
+alto_base (h); 7.036; in
 montaje 1 3211-HX1 en X (Lx) COL132; 16.625; in
 montaje 1 3211-HX1 en Y (Ly) ROW5  ; 3.518; in
 montaje 2 3211-HX1 en X (Lx) COL102; 28.812; in
@@ -19,7 +19,3 @@ montaje 3 3211-HX2 en X (Lx) COL102; 41.438; in
 montaje 3 3211-HX2 en Y (Ly) ROW5  ; 3.518; in
 montaje 4 3211-HX2 en X (Lx) COL132; 53.625; in
 montaje 4 3211-HX2 en Y (Ly) ROW5  ; 3.518; in
-montaje 1 3335-HX2 en X (Lx) COL14; 8.617; in
-montaje 1 3335-HX2 en Y (Ly) ROWF  ; 3.3145; in
-montaje 2 3335-HX2 en X (Lx) COL29; 28.812; in
-montaje 2 3335-HX2 en Y (Ly) ROWF  ; 3.518; in
