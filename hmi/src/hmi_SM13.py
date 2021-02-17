@@ -484,28 +484,14 @@ class hmi_SM13():
         ## Widget escala vel ARM
         self.ui_fr_escala_vel_arm = self.builder.get_object("fr_escala_vel_arm")
         # Se agregan las marcas de escala
-        self.ui_fr_escala_vel_arm.add_mark(8, Gtk.PositionType.LEFT, "8   ")
-        self.ui_fr_escala_vel_arm.add_mark(7, Gtk.PositionType.LEFT, "7   ")
-        self.ui_fr_escala_vel_arm.add_mark(6, Gtk.PositionType.LEFT, "6   ")
-        self.ui_fr_escala_vel_arm.add_mark(5, Gtk.PositionType.LEFT, "5   ")
-        self.ui_fr_escala_vel_arm.add_mark(4, Gtk.PositionType.LEFT, "4   ")
-        self.ui_fr_escala_vel_arm.add_mark(3, Gtk.PositionType.LEFT, "3   ")
-        self.ui_fr_escala_vel_arm.add_mark(2, Gtk.PositionType.LEFT, "2   ")
-        self.ui_fr_escala_vel_arm.add_mark(1, Gtk.PositionType.LEFT, "1   ")
-        self.ui_fr_escala_vel_arm.add_mark(0, Gtk.PositionType.LEFT, "0   ")
+        for x in range(9):
+            self.ui_fr_escala_vel_arm.add_mark(x, Gtk.PositionType.LEFT, str(x).ljust(4, ' '))
         
         ## Widget escala vel
         self.ui_fr_escala_vel_pole = self.builder.get_object("fr_escala_vel_pole")
         # Se agregan las marcas de escala
-        self.ui_fr_escala_vel_pole.add_mark(8, Gtk.PositionType.RIGHT, "   8")
-        self.ui_fr_escala_vel_pole.add_mark(7, Gtk.PositionType.RIGHT, "   7")
-        self.ui_fr_escala_vel_pole.add_mark(6, Gtk.PositionType.RIGHT, "   6")
-        self.ui_fr_escala_vel_pole.add_mark(5, Gtk.PositionType.RIGHT, "   5")
-        self.ui_fr_escala_vel_pole.add_mark(4, Gtk.PositionType.RIGHT, "   4")
-        self.ui_fr_escala_vel_pole.add_mark(3, Gtk.PositionType.RIGHT, "   3")
-        self.ui_fr_escala_vel_pole.add_mark(2, Gtk.PositionType.RIGHT, "   2")
-        self.ui_fr_escala_vel_pole.add_mark(1, Gtk.PositionType.RIGHT, "   1")
-        self.ui_fr_escala_vel_pole.add_mark(0, Gtk.PositionType.RIGHT, "   0")
+        for x in range(9):
+            self.ui_fr_escala_vel_pole.add_mark(x, Gtk.PositionType.RIGHT, str(x).rjust(4, ' '))
 
         # Warning: deprecated!
         #self.window2.override_background_color(0, Gdk.RGBA(0.9,0.0,0.0,1.0))
@@ -2731,54 +2717,13 @@ def tm():
                 # ***************************************************************************************************************************
 
                 depurador(1, "TM", "****************************************")
-                if a_HMIDataByteTx[1] < 10:
-                    depurador(2, "TM", "- POLE pos cmd [res] : " +"0000"+ str(a_HMIDataByteTx[1]) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
-                if a_HMIDataByteTx[1] >= 10 and a_HMIDataByteTx[1] < 100:
-                    depurador(2, "TM", "- POLE pos cmd [res] : " +"000" + str(a_HMIDataByteTx[1]) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
-                if a_HMIDataByteTx[1] >= 100 and a_HMIDataByteTx[1] < 1000:
-                    depurador(2, "TM", "- POLE pos cmd [res] : " +"00"+ str(a_HMIDataByteTx[1]) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
-                if a_HMIDataByteTx[1] >= 1000 and a_HMIDataByteTx[1] < 10000:
-                    depurador(2, "TM", "- POLE pos cmd [res] : " +"0"+ str(a_HMIDataByteTx[1]) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
-                if a_HMIDataByteTx[1] >= 10000:
-                    depurador(2, "TM", "- POLE pos cmd [res] : " +str(a_HMIDataByteTx[1]) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
-
-                if a_RTUDataRx[1] < 10:
-                    depurador(2, "TM", "- POLE pos act [res] : " +"0000"+ str(a_RTUDataRx[1]) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
-                if a_RTUDataRx[1] >= 10 and a_RTUDataRx[1] < 100:
-                    depurador(2, "TM", "- POLE pos act [res] : " +"000" + str(a_RTUDataRx[1]) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
-                if a_RTUDataRx[1] >= 100 and a_RTUDataRx[1] < 1000:
-                    depurador(2, "TM", "- POLE pos act [res] : " +"00"+ str(a_RTUDataRx[1]) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
-                if a_RTUDataRx[1] >= 1000 and a_RTUDataRx[1] < 10000:
-                    depurador(2, "TM", "- POLE pos act [res] : " +"0"+ str(a_RTUDataRx[1]) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
-                if a_RTUDataRx[1] >= 10000:
-                    depurador(2, "TM", "- POLE pos act [res] : " +str(a_RTUDataRx[1]) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
-
+                depurador(2, "TM", "- POLE pos cmd [res] : " + str(a_HMIDataByteTx[1]).zfill(4) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
+                depurador(2, "TM", "- POLE pos act [res] : " + str(a_RTUDataRx[1]).zfill(4) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
                 depurador(2, "TM", "- POLE vel cmd : " +str(a_HMIDataByte[3]) + "\t\t| POLE vel act: " + str(a_RTUData[3]))
                 
-                depurador(2, "TM", " ")
-                
-                if a_HMIDataByteTx[0] < 10:
-                    depurador(2, "TM", "- ARM  pos cmd [res] : " +"0000"+ str(a_HMIDataByteTx[0]) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
-                if a_HMIDataByteTx[0] >= 10 and a_HMIDataByteTx[0] < 100:
-                    depurador(2, "TM", "- ARM  pos cmd [res] : " +"000"+ str(a_HMIDataByteTx[0]) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
-                if a_HMIDataByteTx[0] >= 100 and a_HMIDataByteTx[0] < 1000:
-                    depurador(2, "TM", "- ARM  pos cmd [res] : " +"00"+ str(a_HMIDataByteTx[0]) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
-                if a_HMIDataByteTx[0] >= 1000 and a_HMIDataByteTx[1] < 10000:
-                    depurador(2, "TM", "- ARM  pos cmd [res] : " +"0"+ str(a_HMIDataByteTx[0]) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
-                if a_HMIDataByteTx[0] >= 10000:
-                    depurador(2, "TM", "- ARM  pos cmd [res] : " + str(a_HMIDataByteTx[0]) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
-
-                if a_RTUDataRx[0] < 10:
-                    depurador(2, "TM", "- ARM  pos act [res] : " +"0000"+ str(a_RTUDataRx[0]) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
-                if a_RTUDataRx[0] >= 10 and a_RTUDataRx[0] < 100:
-                    depurador(2, "TM", "- ARM  pos act [res] : " +"000"+ str(a_RTUDataRx[0]) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
-                if a_RTUDataRx[0] >= 100 and a_RTUDataRx[0] < 1000:
-                    depurador(2, "TM", "- ARM  pos act [res] : " +"00"+ str(a_RTUDataRx[0]) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
-                if a_RTUDataRx[0] >= 1000 and a_RTUDataRx[1] < 10000:
-                    depurador(2, "TM", "- ARM  pos act [res] : " +"0"+ str(a_RTUDataRx[0]) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
-                if a_RTUDataRx[0] >= 10000:
-                    depurador(2, "TM", "- ARM  pos act [res] : " + str(a_RTUDataRx[0]) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
-
+                depurador(2, "TM", " ")                
+                depurador(2, "TM", "- ARM  pos cmd [res] : " + str(a_HMIDataByteTx[0]).zfill(4) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
+                depurador(2, "TM", "- ARM  pos act [res] : " + str(a_RTUDataRx[0]).zfill(4) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
                 depurador(2, "TM", "- ARM  vel cmd: " +str(a_HMIDataByte[2]) + "\t\t\t|  ARM  vel act: " + str(a_RTUData[2]))
                 depurador(2, "TM", " ")    
 
