@@ -263,15 +263,7 @@ def HMITranslate(a_HMIDataString, a_HMIDataByte):
          depurador(2, "HMIcomRTU","error - HMITranslate: a_HMIDataString")
          depurador(2, "HMI", " ")
 
-    #   -- a_HMIDataByte --.
-    # Transducción de los comandos HMI a valores de red, que conformarán la trama ethernet.
-    f_posCmdArm, f_posCmdPole, ui_velCmdArm, ui_velCmdPole = a_HMIDataByte 
-        # Conversión de tipo para ángulos ARM y Pole. -float- a -uint16-
-    ui_posCmdArm_LSB, ui_posCmdArm_MSB = LSB_MSB(f_posCmdArm)
-    ui_posCmdPole_LSB, ui_posCmdPole_MSB = LSB_MSB(f_posCmdPole)
-    a_HMIDataByte = ui_posCmdArm_LSB, ui_posCmdArm_MSB, ui_posCmdPole_LSB, ui_posCmdPole_MSB, ui_velCmdArm, ui_velCmdPole
-
-        # Retorna las variables traducidas para ser enviadas por ETH -Variables de red-
+    # Retorna las variables traducidas para ser enviadas por ETH -Variables de red-
     return a_HMIDataString, a_HMIDataByte
 
 ##
@@ -415,32 +407,5 @@ def RTUTranslate(a_RTUDataRx):
         depurador(4, "HMIcomRTU","- Finalizando RTUTranslate()")
         depurador(4, "HMIcomRTU","- Output: " + str(a_RTUDataOutput))
         return a_RTUDataOutput, b_connect # DataTxRx
-
-##
-# @brief Esta función se encarga de la conversíon para los valores de angulos expresados en grados 
-# tipo -Float- a valores de resolver para ser enviados en la trama hacia la RTU. 
-# 
-#
-# @param ui_grd Variable tipo -uint- que convierte los valores de resolver recibidos en la trama a
-#  valores de angulos expresados en grados -Float-.
-#
-# @return ui_grd_LSB Variable tipo -uint- que retorna el byte menos significativo a ser enviado en
-# trama hacia RTU. 
-# @return ui_grd_MSB Variable tipo -uint- que retorna el byte más significativo a ser enviado en
-# trama hacia RTU. 
-# 
-##
-def LSB_MSB(ui_grd):
-    depurador(4, "HMIcomRTU", "****************************************")
-    #ui_grd = ui_grd/f_MAX_GRADOS
-    #ui_grd *= i_MAX_CUENTAS
-    ui_grd = int(ui_grd)
-    depurador(4, "HMIcomRTU","- Separando en 2 bytes: " + str(ui_grd))
-    ui_grd_MSB = int(ui_grd/256)
-    ui_grd_LSB = ui_grd - (256*ui_grd_MSB)
-    depurador(4, "HMIcomRTU","- Byte MSB: " + str(ui_grd_MSB))
-    depurador(4, "HMIcomRTU","- Byte LSB: " + str(ui_grd_LSB))
-    depurador(4, "HMIcomRTU", " ")
-    return ui_grd_LSB, ui_grd_MSB
     
 

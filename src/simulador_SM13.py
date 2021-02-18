@@ -6,6 +6,7 @@ from leer_specs_tubos import *
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import numpy as np
+import matplotlib.image as mpimg
 import math
 import time
 from depurador import *
@@ -62,9 +63,13 @@ class simulador_SM13(object):
         
         # Initialize plot and line objects for target, end effector, and arm.
         # Turn on interactive plotting and show plot.   
-        self.fig, ax = plt.subplots(figsize=(6,4.7))
+        self.fig, ax = plt.subplots(figsize=(6,4.7), dpi=100)
+        #self.fig, ax = plt.subplots(figsize=(5,5), dpi=100)
+        self.fig.canvas.set_window_title('SM-13 on HX selected')
+    
         self.fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
         ax.grid(False)
+        
         
         self.codo_cmd, = ax.plot([], [], marker='o', ls='dashed', c='r', lw=2)
         self.codo_act, = ax.plot([], [], marker='o', c='g', lw=4)
@@ -138,8 +143,10 @@ class simulador_SM13(object):
         elif img_hx == True:
         """
         try:
-            img = plt.imread(background)
-            ax.imshow(img, extent=[f_xmin, f_xmax, f_ymax, f_ymin])
+            img = mpimg.imread(background)
+            # Hanning permite que la imagen del HX de fondo se vea nítida, 
+            # con Origin se puede usar la imagen invertida (upper o lower)
+            ax.imshow(img, extent=[f_xmin, f_xmax, f_ymax, f_ymin], interpolation='hanning', cmap='hot', origin='upper')
         except:
             depurador(1, "Simulador", "****************************************")
             depurador(1, "Simulador", "- Error al cargar imagen del HX")
