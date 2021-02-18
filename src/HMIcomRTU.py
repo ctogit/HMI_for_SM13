@@ -263,7 +263,15 @@ def HMITranslate(a_HMIDataString, a_HMIDataByte):
          depurador(2, "HMIcomRTU","error - HMITranslate: a_HMIDataString")
          depurador(2, "HMI", " ")
 
-    # Retorna las variables traducidas para ser enviadas por ETH -Variables de red-
+    #   -- a_HMIDataByte --.
+    # Transducción de los comandos HMI a valores de red, que conformarán la trama ethernet.
+    f_posCmdArm, f_posCmdPole, ui_velCmdArm, ui_velCmdPole = a_HMIDataByte 
+        # Conversión de tipo para ángulos ARM y Pole. -float- a -uint16-
+    ui_posCmdArm_LSB, ui_posCmdArm_MSB = LSB_MSB(f_posCmdArm)
+    ui_posCmdPole_LSB, ui_posCmdPole_MSB = LSB_MSB(f_posCmdPole)
+    a_HMIDataByte = ui_posCmdArm_LSB, ui_posCmdArm_MSB, ui_posCmdPole_LSB, ui_posCmdPole_MSB, ui_velCmdArm, ui_velCmdPole
+
+        # Retorna las variables traducidas para ser enviadas por ETH -Variables de red-
     return a_HMIDataString, a_HMIDataByte
 
 ##
@@ -284,32 +292,32 @@ def RTUTranslate(a_RTUDataRx):
     b_connect = True
     # Destramado
     # Se juntan los datos numéricos de resolver y velocidad en una lista-.
-    a_RTUDataRx = a_RTUDataRx.split()
-   
+    a_RTUDataByte = list(a_RTUDataRx[0:6])
+    # Se convierten los datos de -Byte- a -String- mediante -decode()-.
+    a_RTUDataString = a_RTUDataRx[6:].decode()
+
     depurador(2, "HMIcomRTU", "****************************************")
     depurador(2, "HMIcomRTU", "- Recibiendo...")
-    depurador(3, "HMIcomRTU","- Rx<-- RTUDataByte   :" + str(a_RTUDataRx))
+    depurador(3, "HMIcomRTU","- Rx<-- RTUDataByte   :" + str(a_RTUDataByte))
+    depurador(3, "HMIcomRTU","- Rx<-- RTUDataString :" + str(a_RTUDataString))
     
         # Conversión del resultado de resolver a ángulos. -Byte- a -Float-
     #if(True):
-    try:    
+    try:   
         # Conversión: -uint16- a -float- para angulo y velocidades recibidos de los resolvers.
         #   -- posAct --
-        f_posActArm = (int(a_RTUDataRx[0]))##/i_MAX_CUENTAS)*f_MAX_GRADOS
-        f_posActPole = (int(a_RTUDataRx[1]))##/i_MAX_CUENTAS)*f_MAX_GRADOS
+        f_posActArm_MSB = int(a_RTUDataByte[0]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
+        f_posActArm_LSB = int(a_RTUDataByte[1]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
+        f_posActArm = f_posActArm_MSB*255 + f_posActArm_LSB
+
+        f_posActPole_MSB = int(a_RTUDataByte[2]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
+        f_posActPole_LSB = int(a_RTUDataByte[3]) #/i_MAX_CUENTAS)*f_MAX_GRADOS
+        f_posActPole = f_posActPole_MSB*255 + f_posActPole_LSB
         #   -- velAct --
-        f_velActArm = int(a_RTUDataRx[2])
-        f_velActPole = int(a_RTUDataRx[3])
+        f_velActArm = int(a_RTUDataByte[4])
+        f_velActPole = int(a_RTUDataByte[5])
         
-          # Se convierten los datos de -Byte- a -String- mediante -decode()-.
-        b_cwLimitArm = a_RTUDataRx[4].decode()
-        b_ccwLimitArm = a_RTUDataRx[5].decode()
-        b_cwLimitPole = a_RTUDataRx[6].decode()
-        b_ccwLimitPole = a_RTUDataRx[7].decode()
-        b_limitUp = a_RTUDataRx[8].decode()
-        b_limitDown = a_RTUDataRx[9].decode()
-        b_stallAlm = a_RTUDataRx[10].decode()
-        status = int(a_RTUDataRx[11])
+        b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitDown, b_limitUp, b_stallAlm, status = a_RTUDataString.split(";")
 
         # Conversion de comandos. -Char- a -Bool-.
         if b_cwLimitArm  == "ACW_RUN":
@@ -407,5 +415,32 @@ def RTUTranslate(a_RTUDataRx):
         depurador(4, "HMIcomRTU","- Finalizando RTUTranslate()")
         depurador(4, "HMIcomRTU","- Output: " + str(a_RTUDataOutput))
         return a_RTUDataOutput, b_connect # DataTxRx
+
+##
+# @brief Esta función se encarga de la conversíon para los valores de angulos expresados en grados 
+# tipo -Float- a valores de resolver para ser enviados en la trama hacia la RTU. 
+# 
+#
+# @param ui_grd Variable tipo -uint- que convierte los valores de resolver recibidos en la trama a
+#  valores de angulos expresados en grados -Float-.
+#
+# @return ui_grd_LSB Variable tipo -uint- que retorna el byte menos significativo a ser enviado en
+# trama hacia RTU. 
+# @return ui_grd_MSB Variable tipo -uint- que retorna el byte más significativo a ser enviado en
+# trama hacia RTU. 
+# 
+##
+def LSB_MSB(ui_grd):
+    depurador(4, "HMIcomRTU", "****************************************")
+    #ui_grd = ui_grd/f_MAX_GRADOS
+    #ui_grd *= i_MAX_CUENTAS
+    ui_grd = int(ui_grd)
+    depurador(4, "HMIcomRTU","- Separando en 2 bytes: " + str(ui_grd))
+    ui_grd_MSB = int(ui_grd/256)
+    ui_grd_LSB = ui_grd - (256*ui_grd_MSB)
+    depurador(4, "HMIcomRTU","- Byte MSB: " + str(ui_grd_MSB))
+    depurador(4, "HMIcomRTU","- Byte LSB: " + str(ui_grd_LSB))
+    depurador(4, "HMIcomRTU", " ")
+    return ui_grd_LSB, ui_grd_MSB
     
 
