@@ -81,6 +81,7 @@ global a_RTUDataRx
 global a_HMIDataByte
 global a_HMIDataString
 global b_connect
+global b_on_condition
 global s_sock
 global s_port
 global s_ip
@@ -94,6 +95,7 @@ class hmi_SM13():
         global a_HMIDataByte
         global a_HMIDataString
         global b_connect
+        global b_on_condition
         global s_sock
         global s_port
         global s_ip
@@ -118,6 +120,10 @@ class hmi_SM13():
         # 0: simulador inactivo
         # 1: simulador activo
         b_simulador = 0
+        ## Variable global la ve tanto HMI como TM. Indica si hay poco error de cuenta entre CMD y ACT
+        # 0: diferencia mayor que ui_CMD_ACT_ERROR
+        # 1: Fixture is ON_CONDITION (diferencia menor que ui_CMD_ACT_ERROR)
+        b_on_condition = False
         ## Variable contiene el valor de offset para el eje POLE configurado al inicio cuando levanta
         # el archivo robots_home_offsets.csv 
         ui_pole_rdc_offset = 0
@@ -128,7 +134,7 @@ class hmi_SM13():
 
         # CONSTANTES DEL SISTEMA
         ## Constante contiene el tiempo para actualizar etiquetas del reloj
-        self.ui_REFRESCO_ms_RELOJ = 5000
+        self.ui_REFRESCO_ms_RELOJ = 2000
         ## Constante contiene el tiempo de refresco de valores actuales de ángulos POLE y ARM del 
         # simulador
         self.ui_REFRESCO_ms_SIMULADOR = 1000
@@ -2509,6 +2515,7 @@ class hmi_SM13():
     # @param self Puntero al objeto HMI
     def leer_reloj(self):
         global b_connect
+        global b_on_condition
 
         s_fecha, s_hora = str(dt.datetime.now()).split(' ')
         s_anio, s_mes, s_dia = s_fecha.split('-')
@@ -2529,6 +2536,9 @@ class hmi_SM13():
             self.actualizar_etiquetas_msg("HMI connected to NFC !")
 
             self.b_print_status = False
+
+        if (b_on_condition == True):
+            self.actualizar_etiquetas_msg("Fixture is ON CONDITION")
 
         return True
 
@@ -2609,6 +2619,7 @@ def tm():
     global a_HMIDataByte
     global a_HMIDataString
     global b_connect
+    global b_on_condition
     global s_sock
     global s_port
     global s_ip
@@ -2620,12 +2631,18 @@ def tm():
     ui_PERIODO_ms_ANGULOS_SIMULADOS = 150
     f_ERROR_ANGULOS_SIMULADOS = 3 # [grados]
     f_INCREMENTO_ANGULOS_SIMULADOS = 1 # [grados]
+    ui_CMD_ACT_ERROR = 1000 # (cuentas)
+    ui_STABLE_CONTROL = 300 # (cantidad de tramas para determinar si el control es estable)
 
     a_HMIDataByte[0] = 0
     a_HMIDataByte[1] = 0
 
     a_HMIDataByteTx=[0, 0, 0 ,0]
     a_RTUDataRx=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    # Variable local. Si el error CMD-ACT está debajo del umbral luego de muchas tramas,
+    # este contador alcanza el valor ui_STABLE_CONTROL y se establece el ON CONDITION
+    ui_on_condition_counter = 0
 
 
     while(True):
@@ -2698,6 +2715,8 @@ def tm():
             depurador(1, "TM", "- Estado conexión con RTU: " + str(b_connect))
             depurador(1, "TM", " ")
 
+            b_on_condition = False
+
         elif (b_connect == True):
             try:
                 depurador(3, "TM", "- OFFSETs POLE, ARM: " + str(ui_pole_rdc_offset) + ", " + str(ui_arm_rdc_offset)) 
@@ -2717,6 +2736,29 @@ def tm():
                 # y también se actualizan los demás datos
                 for i in range(2, 11):
                     a_RTUData[i] = a_RTUDataRx[i]
+
+                # Se monitorean continuamente los valores de cuenta comandada y recibida para establecer o no
+                # el estado de ON_CONDITION del FH.
+                try:
+                    ui_error_control_arm = abs(int(a_HMIDataByteTx[0]) - int(a_RTUDataRx[0]))
+                    ui_error_control_pole = abs(int(a_HMIDataByteTx[1]) - int(a_RTUDataRx[1]))
+                except:
+                    ui_error_control_arm = ui_CMD_ACT_ERROR
+                    ui_error_control_pole = ui_CMD_ACT_ERROR
+
+                # Solo ON CONDITION si el FH no está en STOW
+                if (a_HMIDataByteTx[0] != 0):# TODO: and a_HMIDataByteTx[1] != 0):
+                    if (ui_error_control_arm < ui_CMD_ACT_ERROR): # TODO and ui_error_control_pole < ui_CMD_ACT_ERROR):
+                        ui_on_condition_counter += 1
+                        # Si luego de muchas tramas el CMD ACT error se mantiene por debajo del umbral se establece el ON CONDITION
+                        if (ui_on_condition_counter >= ui_STABLE_CONTROL):
+                                b_on_condition = True
+                                # Si el FH alcanzó el ON CONDITION se pasa el modo de AUTO a STOP (RTU debería hacer lo mismo desde su lado)
+                                a_HMIDataString[0] = "STOP"
+                                ui_on_condition_counter = 0
+                    else:
+                        b_on_condition = False
+                        ui_on_condition_counter = 0
 
                 # ***************************************************************************************************************************
 
