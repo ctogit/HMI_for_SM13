@@ -2715,7 +2715,9 @@ def tm():
             depurador(1, "TM", "- Estado conexión con RTU: " + str(b_connect))
             depurador(1, "TM", " ")
 
+            # Se asegura que ante una desconexión el modo esté en STOP 
             b_on_condition = False
+            a_HMIDataString[0] = "STOP"
 
         elif (b_connect == True):
             try:
