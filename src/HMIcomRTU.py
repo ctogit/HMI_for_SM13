@@ -296,7 +296,8 @@ def RTUTranslate(a_RTUDataRx):
 
     depurador(2, "HMIcomRTU", "****************************************")
     depurador(2, "HMIcomRTU", "- Recibiendo...")
-    depurador(3, "HMIcomRTU","- Rx<-- RTUDataRx   :" + str(a_RTUDataRx))
+    depurador(3, "HMIcomRTU","- Rx<-- RTUDataRx  :" + str(a_RTUDataRx))
+
     #depurador(3, "HMIcomRTU","- Rx<-- RTUDataString :" + str(a_RTUDataString))
     
         # Conversión del resultado de resolver a ángulos. -Byte- a -Float-
