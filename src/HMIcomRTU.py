@@ -296,8 +296,8 @@ def RTUTranslate(a_RTUDataRx):
 
     depurador(2, "HMIcomRTU", "****************************************")
     depurador(2, "HMIcomRTU", "- Recibiendo...")
-    depurador(3, "HMIcomRTU","- Rx<-- RTUDataByte   :" + str(a_RTUDataByte))
-    depurador(3, "HMIcomRTU","- Rx<-- RTUDataString :" + str(a_RTUDataString))
+    depurador(3, "HMIcomRTU","- Rx<-- RTUDataRx   :" + str(a_RTUDataRx))
+    #depurador(3, "HMIcomRTU","- Rx<-- RTUDataString :" + str(a_RTUDataString))
     
         # Conversión del resultado de resolver a ángulos. -Byte- a -Float-
     #if(True):
@@ -310,7 +310,7 @@ def RTUTranslate(a_RTUDataRx):
         f_velActArm = int(a_RTUDataRx[2])
         f_velActPole = int(a_RTUDataRx[3])
         
-         # Se convierten los datos de -Byte- a -String- mediante -decode()-.
+         # Se convierten lose datos de -Byte- a -String- mediante -decode()-.
         b_cwLimitArm = a_RTUDataRx[4].decode()
         b_ccwLimitArm = a_RTUDataRx[5].decode()
         b_cwLimitPole = a_RTUDataRx[6].decode()
