@@ -814,7 +814,7 @@ class hmi_SM13():
             # se actualizan las variables posCmd así las toma el módulo HMIcomRTU y las envía a RTU.    
             a_HMIDataByte[1] = self.f_pole
             a_HMIDataByte[0] = self.f_arm
-            a_HMIDataString[0] = "AUTO"
+            a_HMIDataString[0] = "AUTOMATIC"
 
             # Al presionar botón "Select Tube" se envían los ángulos al robot y se igualan 
             # los valores de COL y ROW desedos con actuales.
@@ -942,7 +942,7 @@ class hmi_SM13():
             # se actualizan las variables posCmd así las toma el módulo HMIcomRTU y las envía a RTU.    
             a_HMIDataByte[1] = self.f_pole
             a_HMIDataByte[0] = self.f_arm
-            a_HMIDataString[0] = "AUTO"
+            a_HMIDataString[0] = "AUTOMATIC"
 
             # Al presionar botón "Next Tube" se envían los ángulos al robot y se igualan 
             # los valores de COL y ROW desedos con actuales.
