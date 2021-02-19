@@ -2551,6 +2551,8 @@ def conversor(ui_res_act_pole, ui_res_act_arm, f_ang_cmd_pole, f_ang_cmd_arm, s_
     f_MAX_GRADOS = 359.999
     ui_PENDIENTE_RES_ARM = 182.148 # (ctas/grados)
     ui_PENDIENTE_RES_POLE = 182.148 # (ctas/grados)
+    ui_cruce_por_cero_res_pole = 0;
+    ui_cruce_por_cero_res_arm = 0;
 
     if(s_msg == "cuenta_a_angulo"):
         # Se verifica el valor actual de encorder para saber qué valor de cruce por cero utilizar.
