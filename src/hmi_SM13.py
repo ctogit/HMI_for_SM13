@@ -814,6 +814,7 @@ class hmi_SM13():
             # se actualizan las variables posCmd así las toma el módulo HMIcomRTU y las envía a RTU.    
             a_HMIDataByte[1] = self.f_pole
             a_HMIDataByte[0] = self.f_arm
+            a_HMIDataString[0] = "AUTO"
 
             # Al presionar botón "Select Tube" se envían los ángulos al robot y se igualan 
             # los valores de COL y ROW desedos con actuales.
@@ -941,6 +942,7 @@ class hmi_SM13():
             # se actualizan las variables posCmd así las toma el módulo HMIcomRTU y las envía a RTU.    
             a_HMIDataByte[1] = self.f_pole
             a_HMIDataByte[0] = self.f_arm
+            a_HMIDataString[0] = "AUTO"
 
             # Al presionar botón "Next Tube" se envían los ángulos al robot y se igualan 
             # los valores de COL y ROW desedos con actuales.
@@ -2551,11 +2553,11 @@ def conversor(ui_res_act_pole, ui_res_act_arm, f_ang_cmd_pole, f_ang_cmd_arm, s_
     f_MAX_GRADOS = 359.999
     ui_PENDIENTE_RES_ARM = 182.148 # (ctas/grados)
     ui_PENDIENTE_RES_POLE = 182.148 # (ctas/grados)
-    ui_cruce_por_cero_res_pole = 0;
-    ui_cruce_por_cero_res_arm = 0;
+    ui_cruce_por_cero_res_pole = 0
+    ui_cruce_por_cero_res_arm = 0
 
     if(s_msg == "cuenta_a_angulo"):
-        # Se verifica el valor actual de encorder para saber qué valor de cruce por cero utilizar.
+        # Se verifica el valor actual de encoder para saber qué valor de cruce por cero utilizar.
         # Más info en RDCvsANG.xls
         if ui_res_act_arm >= 0 and ui_res_act_arm < ui_arm_rdc_offset:
             ui_cruce_por_cero_res_arm = ui_arm_rdc_offset - ui_MAX_CUENTAS
