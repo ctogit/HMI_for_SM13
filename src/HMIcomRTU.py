@@ -31,6 +31,8 @@ import sys
 import time
 from depurador import *
 
+global a_HMIDataString_old
+a_HMIDataString_old = ""
 
     #   -- Constantes --
 s_CLIENT_ID = "SM13;" 
@@ -146,12 +148,22 @@ def DataTxRx(a_HMIDataByte, a_HMIDataString, s_CLIENT_ID, s_sock, b_connect):
 
     a_HMIDataString += s_CLIENT_ID
 
+    s_cmdSet = "CMD_NOP;"
+    
+    global a_HMIDataString_old
+    
+    if a_HMIDataString_old != a_HMIDataString:
+        s_cmdSet = "CMD_SET;"
+        
+    a_HMIDataStringPlusCmdSet = a_HMIDataString + s_cmdSet
+
     # Define tiempo de espera 500 mseg para envío y recepción de tramas.
     s_sock.settimeout(10)
    
     # Realiza el envío de la trama compuesta por los dos tipos de datos -int- y -string- convirtiendolos al tipo -byte-.
     try:
-        s_sock.send(bytes(a_HMIDataByte) + a_HMIDataString.encode())
+        s_sock.send(bytes(a_HMIDataByte) + a_HMIDataStringPlusCmdSet.encode())
+        a_HMIDataString_old = a_HMIDataString
     except socket.error as err:
         b_connect = False # Se desconectó, o la conexión tiene latencia, dando lugar a TimeOut
         depurador(2, "HMIcomRTU", "****************************************")
@@ -160,7 +172,7 @@ def DataTxRx(a_HMIDataByte, a_HMIDataString, s_CLIENT_ID, s_sock, b_connect):
     else: 
         # Recepción de datos desde RTU. Desentrama y devuelve los datos de red traducidos al formato HMI.
         try:    
-            a_RTUDataRx = s_sock.recv(i_BUFFER_RCV)
+            a_RTUDataRx = s_sock.recv(i_BUFFER_RCV) 
         except socket.error as err: # Al producirse desconexión, no retorna los datos, y b_connect=0
             b_connect = False
             depurador(2, "HMIcomRTU", "****************************************")
