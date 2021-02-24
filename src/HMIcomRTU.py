@@ -322,9 +322,9 @@ def RTUTranslate(a_RTUDataRx):
         status = int(a_RTUDataRx[11])
 
         # Conversion de comandos. -Char- a -Bool-.
-        if b_cwLimitArm  == "ACW_RUN":
+        if b_cwLimitArm  == "ACW_RUN;":
             b_cwLimitArm = False
-        elif b_cwLimitArm  == "ACW_LIM":
+        elif b_cwLimitArm  == "ACW_LIM;":
             b_cwLimitArm = True
         else: 
             depurador(2, "HMI", "****************************************")
@@ -332,9 +332,9 @@ def RTUTranslate(a_RTUDataRx):
             depurador(2, "HMI", " ")
             # Conversion de comandos. -Char- a -Bool-.
             # b_ccwLimitArm
-        if b_ccwLimitArm  == "ACC_RUN":
+        if b_ccwLimitArm  == "ACC_RUN;":
             b_ccwLimitArm = False
-        elif b_ccwLimitArm  == "ACC_LIM":
+        elif b_ccwLimitArm  == "ACC_LIM;":
             b_ccwLimitArm = True
         else: 
              depurador(2, "HMI", "****************************************")
@@ -342,9 +342,9 @@ def RTUTranslate(a_RTUDataRx):
              depurador(2, "HMI", " ")
             # Conversion de comandos. -Char- a -Bool-.
             # b_cwLimitPole
-        if b_cwLimitPole  == "PCW_RUN":
+        if b_cwLimitPole  == "PCW_RUN;":
             b_cwLimitPole = False
-        elif b_cwLimitPole  == "PCW_LIM":
+        elif b_cwLimitPole  == "PCW_LIM;":
             b_cwLimitPole = True
         else: 
              depurador(2, "HMI", "****************************************")
@@ -352,9 +352,9 @@ def RTUTranslate(a_RTUDataRx):
              depurador(2, "HMI", " ")
             # Conversion de comandos. -Char- a -Bool-.
             # b_ccwLimitPole
-        if b_ccwLimitPole  == "PCC_RUN":
+        if b_ccwLimitPole  == "PCC_RUN;":
             b_ccwLimitPole = False
-        elif b_ccwLimitPole  == "PCC_LIM":
+        elif b_ccwLimitPole  == "PCC_LIM;":
             b_ccwLimitPole = True
         else: 
              depurador(2, "HMI", "****************************************")
@@ -362,9 +362,9 @@ def RTUTranslate(a_RTUDataRx):
              depurador(2, "HMI", " ")
         # Conversion de comandos. -Char- a -Bool-.
         # b_limitUp
-        if b_limitUp  == "LUP_RUN":
+        if b_limitUp  == "LUP_RUN;":
             b_limitUp = False
-        elif b_limitUp  == "LUP_LIM":
+        elif b_limitUp  == "LUP_LIM;":
             b_limitUp = True
         else: 
              depurador(2, "HMI", "****************************************")
@@ -372,9 +372,9 @@ def RTUTranslate(a_RTUDataRx):
              depurador(2, "HMI", " ")
         # Conversion de comandos. -Char- a -Bool-.
         # b_limitDown
-        if b_limitDown  == "LDW_RUN":
+        if b_limitDown  == "LDW_RUN;":
             b_limitDown = False
-        elif b_limitDown  == "LDW_LIM":
+        elif b_limitDown  == "LDW_LIM;":
             b_limitDown = True
         else: 
              depurador(2, "HMI", "****************************************")
@@ -382,9 +382,9 @@ def RTUTranslate(a_RTUDataRx):
              depurador(2, "HMI", " ")
             # Conversion de comandos. -Char- a -Bool-.
             # b_stallAlm
-        if b_stallAlm  == "STL_RUN":
+        if b_stallAlm  == "STL_RUN;":
             b_stallAlm = False
-        elif b_stallAlm  == "STL_ALM":
+        elif b_stallAlm  == "STL_ALM;":
             b_stallAlm = True
         else: 
              depurador(2, "HMI", "****************************************")
