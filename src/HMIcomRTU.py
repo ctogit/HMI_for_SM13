@@ -31,6 +31,8 @@ import sys
 import time
 from depurador import *
 
+global a_HMIDataString_old
+a_HMIDataString_old = ""
 
     #   -- Constantes --
 s_CLIENT_ID = "SM13;" 
@@ -146,12 +148,22 @@ def DataTxRx(a_HMIDataByte, a_HMIDataString, s_CLIENT_ID, s_sock, b_connect):
 
     a_HMIDataString += s_CLIENT_ID
 
+    s_cmdSet = "CMD_NOP;"
+    
+    global a_HMIDataString_old
+    
+    if a_HMIDataString_old != a_HMIDataString:
+        s_cmdSet = "CMD_SET;"
+        
+    a_HMIDataStringPlusCmdSet = a_HMIDataString + s_cmdSet
+
     # Define tiempo de espera 500 mseg para envío y recepción de tramas.
     s_sock.settimeout(10)
    
     # Realiza el envío de la trama compuesta por los dos tipos de datos -int- y -string- convirtiendolos al tipo -byte-.
     try:
-        s_sock.send(bytes(a_HMIDataByte) + a_HMIDataString.encode())
+        s_sock.send(bytes(a_HMIDataByte) + a_HMIDataStringPlusCmdSet.encode())
+        a_HMIDataString_old = a_HMIDataString
     except socket.error as err:
         b_connect = False # Se desconectó, o la conexión tiene latencia, dando lugar a TimeOut
         depurador(2, "HMIcomRTU", "****************************************")
@@ -160,7 +172,7 @@ def DataTxRx(a_HMIDataByte, a_HMIDataString, s_CLIENT_ID, s_sock, b_connect):
     else: 
         # Recepción de datos desde RTU. Desentrama y devuelve los datos de red traducidos al formato HMI.
         try:    
-            a_RTUDataRx = s_sock.recv(i_BUFFER_RCV)
+            a_RTUDataRx = s_sock.recv(i_BUFFER_RCV) 
         except socket.error as err: # Al producirse desconexión, no retorna los datos, y b_connect=0
             b_connect = False
             depurador(2, "HMIcomRTU", "****************************************")
@@ -322,9 +334,9 @@ def RTUTranslate(a_RTUDataRx):
         status = int(a_RTUDataRx[11])
 
         # Conversion de comandos. -Char- a -Bool-.
-        if b_cwLimitArm  == "ACW_RUN":
+        if b_cwLimitArm  == "ACW_RUN;":
             b_cwLimitArm = False
-        elif b_cwLimitArm  == "ACW_LIM":
+        elif b_cwLimitArm  == "ACW_LIM;":
             b_cwLimitArm = True
         else: 
             depurador(2, "HMI", "****************************************")
@@ -332,9 +344,9 @@ def RTUTranslate(a_RTUDataRx):
             depurador(2, "HMI", " ")
             # Conversion de comandos. -Char- a -Bool-.
             # b_ccwLimitArm
-        if b_ccwLimitArm  == "ACC_RUN":
+        if b_ccwLimitArm  == "ACC_RUN;":
             b_ccwLimitArm = False
-        elif b_ccwLimitArm  == "ACC_LIM":
+        elif b_ccwLimitArm  == "ACC_LIM;":
             b_ccwLimitArm = True
         else: 
              depurador(2, "HMI", "****************************************")
@@ -342,9 +354,9 @@ def RTUTranslate(a_RTUDataRx):
              depurador(2, "HMI", " ")
             # Conversion de comandos. -Char- a -Bool-.
             # b_cwLimitPole
-        if b_cwLimitPole  == "PCW_RUN":
+        if b_cwLimitPole  == "PCW_RUN;":
             b_cwLimitPole = False
-        elif b_cwLimitPole  == "PCW_LIM":
+        elif b_cwLimitPole  == "PCW_LIM;":
             b_cwLimitPole = True
         else: 
              depurador(2, "HMI", "****************************************")
@@ -352,9 +364,9 @@ def RTUTranslate(a_RTUDataRx):
              depurador(2, "HMI", " ")
             # Conversion de comandos. -Char- a -Bool-.
             # b_ccwLimitPole
-        if b_ccwLimitPole  == "PCC_RUN":
+        if b_ccwLimitPole  == "PCC_RUN;":
             b_ccwLimitPole = False
-        elif b_ccwLimitPole  == "PCC_LIM":
+        elif b_ccwLimitPole  == "PCC_LIM;":
             b_ccwLimitPole = True
         else: 
              depurador(2, "HMI", "****************************************")
@@ -362,9 +374,9 @@ def RTUTranslate(a_RTUDataRx):
              depurador(2, "HMI", " ")
         # Conversion de comandos. -Char- a -Bool-.
         # b_limitUp
-        if b_limitUp  == "LUP_RUN":
+        if b_limitUp  == "LUP_RUN;":
             b_limitUp = False
-        elif b_limitUp  == "LUP_LIM":
+        elif b_limitUp  == "LUP_LIM;":
             b_limitUp = True
         else: 
              depurador(2, "HMI", "****************************************")
@@ -372,9 +384,9 @@ def RTUTranslate(a_RTUDataRx):
              depurador(2, "HMI", " ")
         # Conversion de comandos. -Char- a -Bool-.
         # b_limitDown
-        if b_limitDown  == "LDW_RUN":
+        if b_limitDown  == "LDW_RUN;":
             b_limitDown = False
-        elif b_limitDown  == "LDW_LIM":
+        elif b_limitDown  == "LDW_LIM;":
             b_limitDown = True
         else: 
              depurador(2, "HMI", "****************************************")
@@ -382,9 +394,9 @@ def RTUTranslate(a_RTUDataRx):
              depurador(2, "HMI", " ")
             # Conversion de comandos. -Char- a -Bool-.
             # b_stallAlm
-        if b_stallAlm  == "STL_RUN":
+        if b_stallAlm  == "STL_RUN;":
             b_stallAlm = False
-        elif b_stallAlm  == "STL_ALM":
+        elif b_stallAlm  == "STL_ALM;":
             b_stallAlm = True
         else: 
              depurador(2, "HMI", "****************************************")
