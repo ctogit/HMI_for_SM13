@@ -31,8 +31,10 @@ import sys
 import time
 from depurador import *
 
-global a_HMIDataString_old
-a_HMIDataString_old = ""
+global a_HMIData_old
+global a_HMIData
+a_HMIData_old = ""
+a_HMIData = ""
 
     #   -- Constantes --
 s_CLIENT_ID = "SM13;" 
@@ -80,7 +82,7 @@ def enviar_a_y_recibir_de_rtu(a_HMIDataByte, a_HMIDataString, b_connect, s_sock,
 
 # @brief Esta función implementa la creación y posterior conexión del socket con la RTU. 
 # Se establece el tiempo de respuesta máximo -time out- para establecer conexión, los 
-# tamaños de buffer para recepción/emisión, y tipo de socket. 
+# tamaños de buffea_HMIDatar para recepción/emisión, y tipo de socket. 
 # 
 # @param b_connect Variable tipo boleana que indica el estado de la conexión con la RTU
 # 0: Desconexión
@@ -150,9 +152,13 @@ def DataTxRx(a_HMIDataByte, a_HMIDataString, s_CLIENT_ID, s_sock, b_connect):
 
     s_cmdSet = "CMD_NOP;"
     
-    global a_HMIDataString_old
+    global a_HMIData_old
     
-    if a_HMIDataString_old != a_HMIDataString:
+    global a_HMIData
+   
+    a_HMIData =  bytes(a_HMIDataByte) + a_HMIDataString.encode()
+    
+    if a_HMIData_old != a_HMIData:
         s_cmdSet = "CMD_SET;"
         
     a_HMIDataStringPlusCmdSet = a_HMIDataString + s_cmdSet
@@ -163,7 +169,7 @@ def DataTxRx(a_HMIDataByte, a_HMIDataString, s_CLIENT_ID, s_sock, b_connect):
     # Realiza el envío de la trama compuesta por los dos tipos de datos -int- y -string- convirtiendolos al tipo -byte-.
     try:
         s_sock.send(bytes(a_HMIDataByte) + a_HMIDataStringPlusCmdSet.encode())
-        a_HMIDataString_old = a_HMIDataString
+        a_HMIData_old = a_HMIData
     except socket.error as err:
         b_connect = False # Se desconectó, o la conexión tiene latencia, dando lugar a TimeOut
         depurador(2, "HMIcomRTU", "****************************************")
