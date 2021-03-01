@@ -776,17 +776,26 @@ class hmi_SM13():
             self.f_px_tubo = self.f_Lx - self.f_incremento_acumulado_jog_col*self.f_x_pitch
             self.f_py_tubo = self.f_Ly - self.f_Lp + self.f_La - self.f_incremento_acumulado_jog_row*self.f_y_pitch
 
-        # Calcula los ángulos de los ejes POLE y ARM en base a la distancia que hay que alcanzar
-        self.f_pole, self.f_arm, self.b_ik_success = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, self.s_pivot_type)
-        
-        # Se convierten los ágnulos de las articulaciones a grados y se redondea a 3 decimales
-        self.f_pole = round(np.rad2deg(self.f_pole), 3)
-        self.f_arm = round(np.rad2deg(self.f_arm), 3)
-        # A veces pasa que la conversión da números negativos así que se corrige 
-        if self.f_pole < 0:
-            self.f_pole = self.f_pole + 360
-        if self.f_arm < 0:
-            self.f_arm = self.f_arm + 360
+        # Si no existe coordenada X,Y para la selección COL,ROW no se ingresa al algoritmo de cinemática inversa
+        # a calcular nuevos ángulos.
+        if not b_error_coordenada:
+            # Calcula los ángulos de los ejes POLE y ARM en base a la distancia que hay que alcanzar
+            self.f_pole, self.f_arm, self.b_ik_success = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, self.s_pivot_type)
+            
+            # Se convierten los ágnulos de las articulaciones a grados y se redondea a 3 decimales
+            self.f_pole = round(np.rad2deg(self.f_pole), 3)
+            self.f_arm = round(np.rad2deg(self.f_arm), 3)
+            # A veces pasa que la conversión da números negativos así que se corrige 
+            if self.f_pole < 0:
+                self.f_pole = self.f_pole + 360
+            if self.f_arm < 0:
+                self.f_arm = self.f_arm + 360
+        else:
+            if self.b_beeps == True:
+                zumbador.beep_stop()
+
+            self.actualizar_etiquetas_msg("Can not reach that position...")
+            return True
 
 
         if not self.b_ik_success:
@@ -820,7 +829,20 @@ class hmi_SM13():
             # se actualizan las variables posCmd así las toma el módulo HMIcomRTU y las envía a RTU.    
             a_HMIDataByte[1] = self.f_pole
             a_HMIDataByte[0] = self.f_arm
-            a_HMIDataString[0] = "AUTOMATIC"
+
+           
+            # Si todo salió bien, se activa el modo Automático, pero antes se asegura aparagar motor LIFT
+            if a_HMIDataString[0] == "LIFT":
+                a_HMIDataString[0] = "STOP"
+                self.actualizar_etiquetas_msg("Stopping LIFT first, try again...")
+                self.b_fr_boton_lift_up_total.set_active(False)
+                self.b_fr_boton_lift_down_total.set_active(False)
+                self.b_manual_boton_lift_up_total.set_active(False)
+                self.b_manual_boton_lift_down_total.set_active(False)
+                self.b_inspection_boton_lift_up_total.set_active(False)
+                self.b_inspection_boton_lift_down_total.set_active(False)
+            else:
+                a_HMIDataString[0] = "AUTOMATIC"
 
             # Al presionar botón "Select Tube" se envían los ángulos al robot y se igualan 
             # los valores de COL y ROW desedos con actuales.
@@ -948,7 +970,19 @@ class hmi_SM13():
             # se actualizan las variables posCmd así las toma el módulo HMIcomRTU y las envía a RTU.    
             a_HMIDataByte[1] = self.f_pole
             a_HMIDataByte[0] = self.f_arm
-            a_HMIDataString[0] = "AUTOMATIC"
+
+            # Si todo salió bien, se activa el modo Automático, pero antes se asegura aparagar motor LIFT
+            if a_HMIDataString[0] == "LIFT":
+                a_HMIDataString[0] = "STOP"
+                self.actualizar_etiquetas_msg("Stopping LIFT first, try again...")
+                self.b_fr_boton_lift_up_total.set_active(False)
+                self.b_fr_boton_lift_down_total.set_active(False)
+                self.b_manual_boton_lift_up_total.set_active(False)
+                self.b_manual_boton_lift_down_total.set_active(False)
+                self.b_inspection_boton_lift_up_total.set_active(False)
+                self.b_inspection_boton_lift_down_total.set_active(False)
+            else:
+                a_HMIDataString[0] = "AUTOMATIC"
 
             # Al presionar botón "Next Tube" se envían los ángulos al robot y se igualan 
             # los valores de COL y ROW desedos con actuales.
@@ -1289,6 +1323,9 @@ class hmi_SM13():
     # @return none
     def seleccion_incremento_jog(self, button):
         global a_HMIDataByte
+        global a_HMIDataString
+        global simu
+        global b_simulador
 
         if button.get_active():
             if (button.get_label() == "off"):
@@ -1331,6 +1368,20 @@ class hmi_SM13():
                 # se actualizan las variables posCmd así las toma el módulo HMIcomRTU y las envía a RTU.    
                 a_HMIDataByte[1] = self.f_pole
                 a_HMIDataByte[0] = self.f_arm
+
+                # Si todo salió bien, se activa el modo Automático para
+                # resetear el jog, pero antes se asegura apagar motor LIFT (si se encontrara activado)
+                if a_HMIDataString[0] == "LIFT":
+                    a_HMIDataString[0] = "STOP"
+                    self.actualizar_etiquetas_msg("Stopping LIFT first, try again...")
+                    self.b_fr_boton_lift_up_total.set_active(False)
+                    self.b_fr_boton_lift_down_total.set_active(False)
+                    self.b_manual_boton_lift_up_total.set_active(False)
+                    self.b_manual_boton_lift_down_total.set_active(False)
+                    self.b_inspection_boton_lift_up_total.set_active(False)
+                    self.b_inspection_boton_lift_down_total.set_active(False)
+                else:
+                    a_HMIDataString[0] = "AUTOMATIC"
                 
                 # Se resetea el Jog acumulado y se actualizan las etiquetas
                 self.f_incremento_acumulado_jog_col = 0.0
@@ -1435,7 +1486,7 @@ class hmi_SM13():
             
         # Calcula los ángulos de los ejes POLE y ARM en base al corrimiento
         self.f_pole, self.f_arm, self.b_ik_success = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, self.s_pivot_type)   
-        
+
         # Se convierten los ágnulos de las articulaciones a grados y se redondea a 3 decimales
         self.f_pole = round(np.rad2deg(self.f_pole), 3)
         self.f_arm = round(np.rad2deg(self.f_arm), 3)
@@ -1461,15 +1512,32 @@ class hmi_SM13():
         
         depurador(1, "HMI", "****************************************")
         depurador(1, "HMI", "- Ajustando fino con incremento jog: "+str(self.f_incremento_jog))
-        depurador(1, "HMI", "- Jog acumulado en COL: "+str(self.f_incremento_acumulado_jog_col))
+        depurador(0, "HMI", "- Jog acumulado en COL: "+str(self.f_incremento_acumulado_jog_col))
         depurador(1, "HMI", "- Jog acumulado en ROW: "+str(self.f_incremento_acumulado_jog_row))
         depurador(1, "HMI", "- Se calcularon ángulos POLE = "+str(self.f_pole)+"°"+", ARM = "+str(self.f_arm)+"°")
         depurador(1, "HMI", "- Para ubicar boquilla en Px = "+str(round(self.f_px_tubo, 3))+" in"+", Py = "+str(round(self.f_py_tubo, 3))+" in")
         depurador(1, "HMI", " ") 
         
+
         # se actualizan las variables posCmd con el JOG aplicado.    
         a_HMIDataByte[1] = self.f_pole
         a_HMIDataByte[0] = self.f_arm
+
+        # Si todo salió bien, se activa el modo Automático para
+        # realizar el jog, pero antes se asegura apagar motor LIFT (si se encontrara activado)
+        if a_HMIDataString[0] == "LIFT":
+            a_HMIDataString[0] = "STOP"
+            self.actualizar_etiquetas_msg("Stopping LIFT first, try again...")
+            self.b_fr_boton_lift_up_total.set_active(False)
+            self.b_fr_boton_lift_down_total.set_active(False)
+            self.b_manual_boton_lift_up_total.set_active(False)
+            self.b_manual_boton_lift_down_total.set_active(False)
+            self.b_inspection_boton_lift_up_total.set_active(False)
+            self.b_inspection_boton_lift_down_total.set_active(False)
+
+            return True
+
+        a_HMIDataString[0] = "AUTOMATIC"
         
         return True
     
@@ -1753,7 +1821,25 @@ class hmi_SM13():
             self.b_inspection_boton_lift_up_total.set_active(False)
             self.b_inspection_boton_lift_down_total.set_active(False)
 
-            return True        
+            return True   
+
+        # Si el SM-13 está moviendo ARM y/o POLE no se permite el movimiento LIFT.
+        if (a_HMIDataString[0] == "FREE_RUN" or a_HMIDataString[0] == "AUTOMATIC"):
+            
+            # Se desactiva botón para que no se muestre presionado
+            self.b_fr_boton_lift_up_total.set_active(False)
+            self.b_fr_boton_lift_down_total.set_active(False)
+            self.b_manual_boton_lift_up_total.set_active(False)
+            self.b_manual_boton_lift_down_total.set_active(False)
+            self.b_inspection_boton_lift_up_total.set_active(False)
+            self.b_inspection_boton_lift_down_total.set_active(False)
+
+            self.actualizar_etiquetas_msg("Wait for ARM or POLE stop movement!")
+
+            if self.b_beeps == True:
+                zumbador.beep_stop()
+
+            return True     
         
         if self.b_beeps == True:
             zumbador.beep_button()
@@ -1772,6 +1858,15 @@ class hmi_SM13():
                 depurador(1, "HMI", " ")
                 return
             else:
+                # Se desactiva cualquier toggle que esté presionado
+                # Se desactiva botón para que no se muestre presionado
+                self.b_fr_boton_lift_up_total.set_active(False)
+                self.b_fr_boton_lift_down_total.set_active(False)
+                self.b_manual_boton_lift_up_total.set_active(False)
+                self.b_manual_boton_lift_down_total.set_active(False)
+                self.b_inspection_boton_lift_up_total.set_active(False)
+                self.b_inspection_boton_lift_down_total.set_active(False)
+
                 # si ZS no acusa alarma desde RTU se mueve lift
                 a_HMIDataString[0] = "LIFT"
                 a_HMIDataString[5] = "LIFT_UP"
@@ -1787,6 +1882,14 @@ class hmi_SM13():
                 depurador(1, "HMI", " ")
                 return
             else:
+                # Se desactiva cualquier toggle que esté presionado
+                # Se desactiva botón para que no se muestre presionado
+                self.b_fr_boton_lift_up_total.set_active(False)
+                self.b_fr_boton_lift_down_total.set_active(False)
+                self.b_manual_boton_lift_up_total.set_active(False)
+                self.b_manual_boton_lift_down_total.set_active(False)
+                self.b_inspection_boton_lift_up_total.set_active(False)
+                self.b_inspection_boton_lift_down_total.set_active(False)
                 # si ZS no acusa alarma desde RTU se mueve lift
                 a_HMIDataString[0] = "LIFT"
                 a_HMIDataString[5] = "LIFT_DOWN"
@@ -2749,31 +2852,39 @@ def tm():
                     ui_error_control_pole = ui_CMD_ACT_ERROR
 
                 # Solo ON CONDITION si el FH no está en STOW
-                if (a_HMIDataByteTx[0] != 0):# TODO: and a_HMIDataByteTx[1] != 0):
+                #if (a_HMIDataByteTx[0] != 0):# TODO: and a_HMIDataByteTx[1] != 0):
+
+                
+                # Esta porción de código manda un Stop en la trama cuando se alcanzó el umbral de control, en modo automático
+                # y se muestra msg ON CONDITION en HMI.
+                if (a_HMIDataString[0] == "AUTOMATIC"):   
                     if (ui_error_control_arm < ui_CMD_ACT_ERROR): # TODO and ui_error_control_pole < ui_CMD_ACT_ERROR):
                         ui_on_condition_counter += 1
                         # Si luego de muchas tramas el CMD ACT error se mantiene por debajo del umbral se establece el ON CONDITION
                         if (ui_on_condition_counter >= ui_STABLE_CONTROL):
-                                b_on_condition = True
-                                # Si el FH alcanzó el ON CONDITION se pasa el modo de AUTO a STOP (RTU debería hacer lo mismo desde su lado)
-                                a_HMIDataString[0] = "STOP"
-                                ui_on_condition_counter = 0
+                            b_on_condition = True
+                            # Si el FH alcanzó el ON CONDITION se pasa el modo de AUTO a STOP (RTU debería hacer lo mismo desde su lado)
+                            a_HMIDataString[0] = "STOP"
+                            ui_on_condition_counter = 0
                     else:
                         b_on_condition = False
                         ui_on_condition_counter = 0
 
+                elif (a_HMIDataString[0] == "FREE_RUN" or a_HMIDataString[0] == "LIFT"): 
+                    b_on_condition = False
+
                 # ***************************************************************************************************************************
 
                 depurador(1, "TM", "****************************************")
-                depurador(2, "TM", "- POLE pos cmd [res] : " + str(a_HMIDataByteTx[1]).zfill(4) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
-                depurador(2, "TM", "- POLE pos act [res] : " + str(a_RTUDataRx[1]).zfill(4) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
-                depurador(2, "TM", "- POLE vel cmd : " +str(a_HMIDataByte[3]) + "\t\t| POLE vel act: " + str(a_RTUData[3]))
+                depurador(1, "TM", "- POLE pos cmd [res] : " + str(a_HMIDataByteTx[1]).zfill(4) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
+                depurador(1, "TM", "- POLE pos act [res] : " + str(a_RTUDataRx[1]).zfill(4) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
+                depurador(1, "TM", "- POLE vel cmd : " +str(a_HMIDataByte[3]) + "\t\t| POLE vel act: " + str(a_RTUData[3]))
                 
-                depurador(2, "TM", " ")                
-                depurador(2, "TM", "- ARM  pos cmd [res] : " + str(a_HMIDataByteTx[0]).zfill(4) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
-                depurador(2, "TM", "- ARM  pos act [res] : " + str(a_RTUDataRx[0]).zfill(4) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
-                depurador(2, "TM", "- ARM  vel cmd: " +str(a_HMIDataByte[2]) + "\t\t\t|  ARM  vel act: " + str(a_RTUData[2]))
-                depurador(2, "TM", " ")    
+                depurador(1, "TM", " ")                
+                depurador(1, "TM", "- ARM  pos cmd [res] : " + str(a_HMIDataByteTx[0]).zfill(4) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
+                depurador(1, "TM", "- ARM  pos act [res] : " + str(a_RTUDataRx[0]).zfill(4) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
+                depurador(1, "TM", "- ARM  vel cmd: " +str(a_HMIDataByte[2]) + "\t\t\t|  ARM  vel act: " + str(a_RTUData[2]))
+                depurador(1, "TM", " ")    
 
             except Exception as e:
                 b_connect = False
