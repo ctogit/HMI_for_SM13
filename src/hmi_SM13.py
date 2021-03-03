@@ -64,6 +64,7 @@ from ik_SM13 import *
 from leer_archivo_hx import *
 from leer_plan import *
 from leer_specs_tubos import *
+from conversor import *
 from depurador import *
 from gi.repository import Pango
 import sys
@@ -85,6 +86,8 @@ global b_on_condition
 global s_sock
 global s_port
 global s_ip
+global ui_pole_rdc_offset
+global ui_arm_rdc_offset
 
 class hmi_SM13():   
     ## El constructor del HMI
@@ -396,6 +399,9 @@ class hmi_SM13():
         
         ## Etiqueta dinámica que muestra el estado de la función stall del telemanipulador
         self.inicio_etiqueta_estado_stall = self.builder.get_object("inicio_etiqueta_estado_stall")
+
+        ## Etiqueta dinámica que muestra el estado de conexión HMI-RTU
+        self.inicio_etiqueta_estado_red = self.builder.get_object("inicio_etiqueta_estado_red")
         
         ## Etiquetas dinámicas que muestran el valor de encoder del eje ARM
         self.fr_etiqueta_valor_enc_arm = self.builder.get_object("fr_etiqueta_valor_enc_arm")
@@ -517,6 +523,11 @@ class hmi_SM13():
         GLib.timeout_add(self.ui_REFRESCO_ms_SIMULADOR, self.refrescar_simulador)
        
 
+    ##
+    # @brief Función que implementa el botón "Sounds" para activar/desactivar alertas sonoras del sistema
+    # @param self Puntero al objeto HMI
+    # @param button "Sounds"
+    # @return none
     def control_zumbador(self, button):
         # se verifica si el botón esta presionado o suelto
         b_toggle_zumbador = button.get_active()
@@ -534,7 +545,7 @@ class hmi_SM13():
             self.b_beeps = False
             self.inicio_etiqueta_msg.set_text("HMI beeps disabled")
             self.inicio_etiqueta_toggle_zumbador.set_text("Sounds No ")
-            depurador(3, "HMI", "- zumbador desactivado")
+            depurador(1, "HMI", "- zumbador desactivado")
 
         depurador(1, "HMI", " ")
 
@@ -620,18 +631,25 @@ class hmi_SM13():
                 if self.b_beeps == True:
                     zumbador.beep_stop()
 
-                self.actualizar_etiquetas_msg("Fixture harness is stalled...")
+                # En caso de atasque, se desactiva el control principal, se despinta el botón y se advierte
+                a_HMIDataString[3] = "DISABLE_CONTROL"
+                self.inicio_toggle_fixture_control.set_active(False)
+                self.inicio_etiqueta_estado_main_control.set_text("Disabled")
+                # Se indica en todas las etiquetas de msg del hmi
+                self.actualizar_etiquetas_msg("Fixture harness is stalled, main control disabled...")
 
                 return True   
 
             else:
-                self.f_pole = 0
-                self.f_arm = 0
+                # Si se permite, se mueven los ejes POLE y ARM a la posición de reposo, teniendo en cuenta los ángulos.
+                self.f_pole, self.f_arm = conversor(ui_pole_rdc_offset, ui_pole_rdc_offset, 0, 0, ui_pole_rdc_offset, ui_arm_rdc_offset, "cuenta_a_angulo")
                 a_HMIDataByte[1] = self.f_pole
                 a_HMIDataByte[0] = self.f_arm
                 simu.refrescar_pos_comandada(np.deg2rad(self.f_pole), np.deg2rad(self.f_arm))
 
                 self.actualizar_etiquetas_msg("Moving robot to STOW position...")
+
+                a_HMIDataString[0] = "AUTOMATIC"
 
         elif (s_name == "fixture_pivot_button"):
             if self.b_beeps == True:
@@ -747,15 +765,6 @@ class hmi_SM13():
 
             return True
         
-        # Antes de mover verifica si no está atascado el telemanipulador
-        if (a_RTUData[10] == True and a_HMIDataString[4] == "STALL_ENABLE"):
-            if self.b_beeps == True:
-                zumbador.beep_stop()
-
-            self.actualizar_etiquetas_msg("Fixture harness is stalled...")
-
-            return True
-        
         # TODO chequear ZS también
 
         if self.b_beeps == True:
@@ -821,9 +830,9 @@ class hmi_SM13():
                 depurador(1, "HMI", " - Nuevo ángulo POLE = " + str(self.f_pole))
                 depurador(1, "HMI", " - Nuevo ángulo ARM  = " + str(self.f_arm))
                 simu.refrescar_pos_comandada(np.deg2rad(self.f_pole), np.deg2rad(self.f_arm))
-                depurador(1, "HMI", "****************************************")
-                depurador(1, "HMI", "- Refrescando simulador SM-13")
-                depurador(1, "HMI", " ")
+                depurador(3, "HMI", "****************************************")
+                depurador(3, "HMI", "- Refrescando simulador SM-13")
+                depurador(3, "HMI", " ")
             
             # Se convierten a [º] los ángulos POLE y ARM, se redondea a 3 decimales y
             # se actualizan las variables posCmd así las toma el módulo HMIcomRTU y las envía a RTU.    
@@ -882,15 +891,6 @@ class hmi_SM13():
                 zumbador.beep_stop()
 
             self.actualizar_etiquetas_msg("Fixture control is disabled...")
-
-            return True
-        
-        # Antes de mover verifica si no está atascado el telemanipulador
-        if (a_RTUData[10] == True and a_HMIDataString[4] == "STALL_ENABLE"):
-            if self.b_beeps == True:
-                zumbador.beep_stop()
-
-            self.actualizar_etiquetas_msg("Fixture harness is stalled...")
 
             return True
         
@@ -1400,7 +1400,7 @@ class hmi_SM13():
 
             depurador(1, "HMI", "****************************************")
             depurador(1, "HMI", "- Incremento jog: "+str(self.f_incremento_jog))
-            depurador(1, "HMI", " ")     
+            depurador(1, "HMI", "- ")     
         
         return True
     
@@ -1439,7 +1439,12 @@ class hmi_SM13():
             if self.b_beeps == True:
                 zumbador.beep_stop()
 
-            self.actualizar_etiquetas_msg("Fixture harness is stalled...")
+            # En caso de atasque, se desactiva el control principal, se despinta el botón y se advierte
+            a_HMIDataString[3] = "DISABLE_CONTROL"
+            self.inicio_toggle_fixture_control.set_active(False)
+            self.inicio_etiqueta_estado_main_control.set_text("Disabled")
+            # Se indica en todas las etiquetas de msg del hmi
+            self.actualizar_etiquetas_msg("Fixture harness is stalled, main control disabled...")
 
             return True
         
@@ -1512,7 +1517,7 @@ class hmi_SM13():
         
         depurador(1, "HMI", "****************************************")
         depurador(1, "HMI", "- Ajustando fino con incremento jog: "+str(self.f_incremento_jog))
-        depurador(0, "HMI", "- Jog acumulado en COL: "+str(self.f_incremento_acumulado_jog_col))
+        depurador(1, "HMI", "- Jog acumulado en COL: "+str(self.f_incremento_acumulado_jog_col))
         depurador(1, "HMI", "- Jog acumulado en ROW: "+str(self.f_incremento_acumulado_jog_row))
         depurador(1, "HMI", "- Se calcularon ángulos POLE = "+str(self.f_pole)+"°"+", ARM = "+str(self.f_arm)+"°")
         depurador(1, "HMI", "- Para ubicar boquilla en Px = "+str(round(self.f_px_tubo, 3))+" in"+", Py = "+str(round(self.f_py_tubo, 3))+" in")
@@ -1841,6 +1846,7 @@ class hmi_SM13():
 
             return True     
         
+        # Si se pasan todas las precondiciones, se procede con el movimiento
         if self.b_beeps == True:
             zumbador.beep_button()
 
@@ -1853,9 +1859,9 @@ class hmi_SM13():
                 a_HMIDataString[0] = "STOP"
                 a_HMIDataString[5] = "LIFT_UP"
                 self.inspection_etiqueta_msg.set_text("Lift upper limit alarm!")
-                depurador(1, "HMI", "****************************************")
-                depurador(1, "HMI", "- Límite superior alcanzado en LIFT")
-                depurador(1, "HMI", " ")
+                depurador(3, "HMI", "****************************************")
+                depurador(3, "HMI", "- Límite superior alcanzado en LIFT")
+                depurador(3, "HMI", " ")
                 return
             else:
                 # Se desactiva cualquier toggle que esté presionado
@@ -1877,9 +1883,9 @@ class hmi_SM13():
                 a_HMIDataString[0] = "STOP"
                 a_HMIDataString[5] = "LIFT_DOWN"
                 self.inspection_etiqueta_msg.set_text("Lift lower limit alarm!")
-                depurador(1, "HMI", "****************************************")
-                depurador(1, "HMI", "- Límite inferior alcanzado en LIFT")
-                depurador(1, "HMI", " ")
+                depurador(3, "HMI", "****************************************")
+                depurador(3, "HMI", "- Límite inferior alcanzado en LIFT")
+                depurador(3, "HMI", " ")
                 return
             else:
                 # Se desactiva cualquier toggle que esté presionado
@@ -1914,9 +1920,9 @@ class hmi_SM13():
                     a_HMIDataString[0] = "STOP"
                     a_HMIDataString[5] = "LIFT_UP"
                     self.inspection_etiqueta_msg.set_text("Lift upper limit alarm!")
-                    depurador(1, "HMI", "****************************************")
-                    depurador(1, "HMI", "- Límite superior alcanzado en LIFT")
-                    depurador(1, "HMI", " ")
+                    depurador(3, "HMI", "****************************************")
+                    depurador(3, "HMI", "- Límite superior alcanzado en LIFT")
+                    depurador(3, "HMI", " ")
                     return
                 else:
                     # si ZS no acusa alarma desde RTU se mueve lift
@@ -1944,9 +1950,9 @@ class hmi_SM13():
                     a_HMIDataString[0] = "STOP"
                     a_HMIDataString[5] = "LIFT_DOWN"
                     self.actualizar_etiquetas_msg("Lift lower limit alarm!")
-                    depurador(1, "HMI", "****************************************")
-                    depurador(1, "HMI", "- Límite inferior alcanzado en LIFT")
-                    depurador(1, "HMI", " ")
+                    depurador(3, "HMI", "****************************************")
+                    depurador(3, "HMI", "- Límite inferior alcanzado en LIFT")
+                    depurador(3, "HMI", " ")
                     return
                 else:
                     # si ZS no acusa alarma desde RTU se mueve lift
@@ -1968,6 +1974,7 @@ class hmi_SM13():
     # también sirve para detener el temporizado de los pulsadores asociados
     # al eje LIFT mediante el retorno de un False.
     # @param self Puntero al objeto HMI
+    # @param s_FR_Axis eje/s que se desee/n detener
     # @return False y detiene el GLib.timeout_add() que creo la tarea.
     def detener_movimientos(self, s_FR_Axis):
         global a_HMIDataString
@@ -1981,7 +1988,8 @@ class hmi_SM13():
         if s_FR_Axis == "BOTH":
             a_HMIDataString[0] = "STOP"
             a_HMIDataString[1] = "POLE"
-            #TODO: solo se puede stopear un eje por llamado a la función, no estaría funcionando así.
+            # Se esperan suficientes ms para dar tiempo a que la función de telemetría envíe el comando anterior
+            time.sleep(0.1)
             a_HMIDataString[0] = "STOP"
             a_HMIDataString[1] = "ARM"
         if s_FR_Axis == "LIFT_UP":
@@ -1993,15 +2001,38 @@ class hmi_SM13():
         if s_FR_Axis == "TOTAL":
             a_HMIDataString[0] = "STOP"
             a_HMIDataString[1] = "POLE"
-            #TODO: solo se puede stopear un eje por llamado a la función, no estaría funcionando así.
+            # Se esperan suficientes ms para dar tiempo a que la función de telemetría envíe el comando anterior
+            time.sleep(0.1)
             a_HMIDataString[0] = "STOP"
             a_HMIDataString[1] = "ARM"
-            #TODO: solo se puede stopear un eje por llamado a la función, no estaría funcionando así.
+            # Se esperan suficientes ms para dar tiempo a que la función de telemetría envíe el comando anterior
+            time.sleep(0.1)
             a_HMIDataString[0] = "STOP"
             a_HMIDataString[5] = "LIFT_UP"
-            #TODO: solo se puede stopear un eje por llamado a la función, no estaría funcionando así.
+            # Se esperan suficientes ms para dar tiempo a que la función de telemetría envíe el comando anterior
+            time.sleep(0.1)
             a_HMIDataString[0] = "STOP"
             a_HMIDataString[5] = "LIFT_DOWN"
+
+            a_HMIDataString[3] = "DISABLE_CONTROL"
+
+            # Cambia a OFF el widget del interruptor principal
+            self.inicio_toggle_fixture_control.set_active(False)
+            # Cambia el mensaje de la etiqueta del interruptor
+            self.inicio_etiqueta_estado_main_control.set_text("Disabled") 
+
+            # Si no está habilitado el control principal aseguramos que no queden 
+            # presionados los botones toggle de las diferentes solapas
+            self.b_fr_boton_lift_up_total.set_active(False)
+            self.b_fr_boton_lift_down_total.set_active(False)
+            self.b_manual_boton_lift_up_total.set_active(False)
+            self.b_manual_boton_lift_down_total.set_active(False)
+            self.b_inspection_boton_lift_up_total.set_active(False)
+            self.b_inspection_boton_lift_down_total.set_active(False)  
+            self.b_boton_toggle_arm_cw.set_active(False)
+            self.b_boton_toggle_arm_ccw.set_active(False)
+            self.b_boton_toggle_pole_cw.set_active(False)
+            self.b_boton_toggle_pole_ccw.set_active(False)
         
         depurador(4, "HMI", "****************************************")
         depurador(4, "HMI", "- Modo: " + a_HMIDataString[0])
@@ -2459,15 +2490,6 @@ class hmi_SM13():
 
             return True
         
-        # Antes de mover verifica si no está atascado el telemanipulador
-        if (a_RTUData[10]):
-            self.actualizar_etiquetas_msg("Fixture harness is stalled...")
-
-            if self.b_beeps == True:
-                zumbador.beep_stop()
-
-            return True
-        
         # TODO chequear ZS también
                 
         # Si no hay inhabilitaciones se prosigue...
@@ -2613,12 +2635,14 @@ class hmi_SM13():
         return True
 
     ##
-    # @brief Función se ejecuta cada un minuto para actualizar las etiquetas de hora,
+    # @brief Función se ejecuta cada ui_REFRESCO_ms_RELOJ para actualizar las etiquetas de hora,
     # fecha y de mensajes de estado de conexiòn con RTU
     # @param self Puntero al objeto HMI
     def leer_reloj(self):
         global b_connect
         global b_on_condition
+        global a_RTUData
+        global a_HMIDataString
 
         s_fecha, s_hora = str(dt.datetime.now()).split(' ')
         s_anio, s_mes, s_dia = s_fecha.split('-')
@@ -2632,20 +2656,30 @@ class hmi_SM13():
         if(b_connect  == False):
             self.actualizar_etiquetas_msg("Attempting to connect to NFC...")
             self.b_print_status = True
+            self.inicio_etiqueta_estado_red.set_text("Disconnected :-(")
         elif(b_connect == True and self.b_print_status == True):
             if(self.b_beeps == True):
                 zumbador.beep_primordial()
 
             self.actualizar_etiquetas_msg("HMI connected to NFC !")
-
+            self.inicio_etiqueta_estado_red.set_text("Connected :-)")
             self.b_print_status = False
 
         if (b_on_condition == True):
             self.actualizar_etiquetas_msg("Fixture is ON CONDITION")
 
+        # Se monitorea continuamente si viene alguna señal de atasque desde RTU
+        if (a_RTUData[10] == True and a_HMIDataString[4] == "STALL_ENABLE"):
+            if self.b_beeps == True:
+                zumbador.beep_stop()
+
+            self.detener_movimientos("TOTAL")
+            # Se indica en todas las etiquetas de msg del hmi
+            self.actualizar_etiquetas_msg("Fixture harness is stalled, main control disabled...")
+
         return True
 
-
+"""
 ##
 # @brief Función que convierte de ángulo a cuenta y viceversa según la indicación de s_msg.
 # Se tiene en cuenta la calibración de offset para cada eje, es decir, el valor de cuenta resolver para 0ª
@@ -2710,6 +2744,7 @@ def conversor(ui_res_act_pole, ui_res_act_arm, f_ang_cmd_pole, f_ang_cmd_arm, s_
         ui_res_cmd_pole = abs(int(float(ui_PENDIENTE_RES_POLE)*f_ang_cmd_pole + ui_cruce_por_cero_res_pole))   
 
         return int(ui_res_cmd_pole), int(ui_res_cmd_arm) 
+"""
 
 ##
 # @brief Función que se ejecuta en un hilo separado del HMI. Inicia la conexión con RTU
@@ -2746,7 +2781,6 @@ def tm():
     # Variable local. Si el error CMD-ACT está debajo del umbral luego de muchas tramas,
     # este contador alcanza el valor ui_STABLE_CONTROL y se establece el ON CONDITION
     ui_on_condition_counter = 0
-
 
     while(True):
         # Código de simulación de variación en ángulos actuales, sólo funciona off-line
@@ -2824,12 +2858,12 @@ def tm():
 
         elif (b_connect == True):
             try:
-                depurador(3, "TM", "- OFFSETs POLE, ARM: " + str(ui_pole_rdc_offset) + ", " + str(ui_arm_rdc_offset)) 
+                depurador(2, "TM", "- OFFSETs POLE, ARM: " + str(ui_pole_rdc_offset) + ", " + str(ui_arm_rdc_offset)) 
                 depurador(2, "TM", "--> Paquete Data_String: " + str(a_HMIDataString))
 
                 # ***************************************************************************************************************************
                 # Antes de enviar los ángulos comandandos en a_HMIDataByte[0]/[1] se deben convertir a cuentas de resolver
-                a_HMIDataByteTx[1], a_HMIDataByteTx[0] = conversor(0, 0, a_HMIDataByte[1], a_HMIDataByte[0], "angulo_a_cuenta")
+                a_HMIDataByteTx[1], a_HMIDataByteTx[0] = conversor(0, 0, a_HMIDataByte[1], a_HMIDataByte[0], ui_pole_rdc_offset, ui_arm_rdc_offset, "angulo_a_cuenta")
                 a_HMIDataByteTx[2] = a_HMIDataByte[2]
                 a_HMIDataByteTx[3] = a_HMIDataByte[3]
 
@@ -2837,7 +2871,7 @@ def tm():
                 a_RTUDataRx, b_connect, s_sock = enviar_a_y_recibir_de_rtu(a_HMIDataByteTx, a_HMIDataString, b_connect, s_sock, s_ip, s_port)#'192.168.0.193', 5020)
 
                 # Apenas se actualiza a_RTUDataRx se convierten los elementos [0] y [1] de cuentas resolver a ángulos.
-                a_RTUData[1], a_RTUData[0] = conversor(a_RTUDataRx[1], a_RTUDataRx[0], 0, 0, "cuenta_a_angulo")
+                a_RTUData[1], a_RTUData[0] = conversor(a_RTUDataRx[1], a_RTUDataRx[0], 0, 0, ui_pole_rdc_offset, ui_arm_rdc_offset, "cuenta_a_angulo")
                 # y también se actualizan los demás datos
                 for i in range(2, 11):
                     a_RTUData[i] = a_RTUDataRx[i]
@@ -2858,7 +2892,7 @@ def tm():
                 # Esta porción de código manda un Stop en la trama cuando se alcanzó el umbral de control, en modo automático
                 # y se muestra msg ON CONDITION en HMI.
                 if (a_HMIDataString[0] == "AUTOMATIC"):   
-                    if (ui_error_control_arm < ui_CMD_ACT_ERROR): # TODO and ui_error_control_pole < ui_CMD_ACT_ERROR):
+                    if (ui_error_control_pole < ui_CMD_ACT_ERROR): # TODO ui_error_control_arm < ui_CMD_ACT_ERROR and ):
                         ui_on_condition_counter += 1
                         # Si luego de muchas tramas el CMD ACT error se mantiene por debajo del umbral se establece el ON CONDITION
                         if (ui_on_condition_counter >= ui_STABLE_CONTROL):
@@ -2866,6 +2900,10 @@ def tm():
                             # Si el FH alcanzó el ON CONDITION se pasa el modo de AUTO a STOP (RTU debería hacer lo mismo desde su lado)
                             a_HMIDataString[0] = "STOP"
                             ui_on_condition_counter = 0
+                            depurador(1, "TM", "****************************************")
+                            depurador(1, "TM", "- Fixture is ON CONDITION ")
+                            depurador(1, "TM", "- ")
+
                     else:
                         b_on_condition = False
                         ui_on_condition_counter = 0
@@ -2875,28 +2913,28 @@ def tm():
 
                 # ***************************************************************************************************************************
 
-                depurador(1, "TM", "****************************************")
-                depurador(1, "TM", "- POLE pos cmd [res] : " + str(a_HMIDataByteTx[1]).zfill(4) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
-                depurador(1, "TM", "- POLE pos act [res] : " + str(a_RTUDataRx[1]).zfill(4) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
-                depurador(1, "TM", "- POLE vel cmd : " +str(a_HMIDataByte[3]) + "\t\t| POLE vel act: " + str(a_RTUData[3]))
+                depurador(2, "TM", "****************************************")
+                depurador(2, "TM", "- POLE pos cmd [res] : " + str(a_HMIDataByteTx[1]).zfill(4) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
+                depurador(2, "TM", "- POLE pos act [res] : " + str(a_RTUDataRx[1]).zfill(4) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
+                depurador(2, "TM", "- POLE vel cmd : " +str(a_HMIDataByte[3]) + "\t\t| POLE vel act: " + str(a_RTUData[3]))
                 
-                depurador(1, "TM", " ")                
-                depurador(1, "TM", "- ARM  pos cmd [res] : " + str(a_HMIDataByteTx[0]).zfill(4) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
-                depurador(1, "TM", "- ARM  pos act [res] : " + str(a_RTUDataRx[0]).zfill(4) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
-                depurador(1, "TM", "- ARM  vel cmd: " +str(a_HMIDataByte[2]) + "\t\t\t|  ARM  vel act: " + str(a_RTUData[2]))
-                depurador(1, "TM", " ")    
+                depurador(2, "TM", " ")                
+                depurador(2, "TM", "- ARM  pos cmd [res] : " + str(a_HMIDataByteTx[0]).zfill(4) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
+                depurador(2, "TM", "- ARM  pos act [res] : " + str(a_RTUDataRx[0]).zfill(4) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
+                depurador(2, "TM", "- ARM  vel cmd: " +str(a_HMIDataByte[2]) + "\t\t\t|  ARM  vel act: " + str(a_RTUData[2]))
+                depurador(2, "TM", " ")    
 
             except Exception as e:
                 b_connect = False
-                depurador(1, "TM", "****************************************")
-                depurador(1, "TM", "- Error durante la comunicación con RTU: " + str(e))
-                depurador(3, "TM", "- CONNECT : " + str(b_connect))
-                depurador(3, "TM", "- SOCKET : " + str(s_sock))
-                depurador(3, "TM", "- IP : " + str(s_ip))
-                depurador(3, "TM", "- PORT : " + str(s_port))
-                depurador(1, "TM", " ")
+                depurador(2, "TM", "****************************************")
+                depurador(2, "TM", "- Error durante la comunicación con RTU: " + str(e))
+                depurador(2, "TM", "- CONNECT : " + str(b_connect))
+                depurador(2, "TM", "- SOCKET : " + str(s_sock))
+                depurador(2, "TM", "- IP : " + str(s_ip))
+                depurador(2, "TM", "- PORT : " + str(s_port))
+                depurador(2, "TM", " ")
 
-            #time.sleep(ui_PERIODO_ms_TRAMA/1000)
+            time.sleep(ui_PERIODO_ms_TRAMA/1000)
             
         # Esta porción de código permite que no se detenga el HMI con la llegada de
         # alguna trama corrupta+
