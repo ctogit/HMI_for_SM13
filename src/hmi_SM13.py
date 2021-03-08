@@ -2677,6 +2677,12 @@ class hmi_SM13():
             # Se indica en todas las etiquetas de msg del hmi
             self.actualizar_etiquetas_msg("Fixture harness is stalled, main control disabled...")
 
+        depurador(1, "HMI", "- Límite CW POLE : " + str(a_RTUData[6])) 
+        depurador(1, "HMI", "- Límite CCW POLE: " + str(a_RTUData[7])) 
+        depurador(1, "HMI", "- Límite CW ARM  : " + str(a_RTUData[4])) 
+        depurador(1, "HMI", "- Límite CCW ARM : " + str(a_RTUData[5])) 
+        depurador(1, "HMI", "- ") 
+
         return True
 
 """
@@ -2769,7 +2775,7 @@ def tm():
     ui_PERIODO_ms_ANGULOS_SIMULADOS = 150
     f_ERROR_ANGULOS_SIMULADOS = 3 # [grados]
     f_INCREMENTO_ANGULOS_SIMULADOS = 1 # [grados]
-    ui_CMD_ACT_ERROR = 1000 # (cuentas)
+    ui_CMD_ACT_ERROR = 10 # (cuentas)
     ui_STABLE_CONTROL = 300 # (cantidad de tramas para determinar si el control es estable)
 
     a_HMIDataByte[0] = 0
@@ -2892,7 +2898,7 @@ def tm():
                 # Esta porción de código manda un Stop en la trama cuando se alcanzó el umbral de control, en modo automático
                 # y se muestra msg ON CONDITION en HMI.
                 if (a_HMIDataString[0] == "AUTOMATIC"):   
-                    if (ui_error_control_pole < ui_CMD_ACT_ERROR): # TODO ui_error_control_arm < ui_CMD_ACT_ERROR and ):
+                    if (ui_error_control_pole < ui_CMD_ACT_ERROR and ui_error_control_arm < ui_CMD_ACT_ERROR ):
                         ui_on_condition_counter += 1
                         # Si luego de muchas tramas el CMD ACT error se mantiene por debajo del umbral se establece el ON CONDITION
                         if (ui_on_condition_counter >= ui_STABLE_CONTROL):

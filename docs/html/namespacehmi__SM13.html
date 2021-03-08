@@ -78,9 +78,6 @@ Clases</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Funciones</h2></td></tr>
-<tr class="memitem:aae380138559bdba98fcf72dcde6c582a"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehmi__SM13.html#aae380138559bdba98fcf72dcde6c582a">conversor</a> (ui_res_act_pole, ui_res_act_arm, f_ang_cmd_pole, f_ang_cmd_arm, s_msg)</td></tr>
-<tr class="memdesc:aae380138559bdba98fcf72dcde6c582a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Función que convierte de ángulo a cuenta y viceversa según la indicación de s_msg.  <a href="namespacehmi__SM13.html#aae380138559bdba98fcf72dcde6c582a">Más...</a><br /></td></tr>
-<tr class="separator:aae380138559bdba98fcf72dcde6c582a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68d74fc287c135f5ae5b61b01cd4e50f"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehmi__SM13.html#a68d74fc287c135f5ae5b61b01cd4e50f">tm</a> ()</td></tr>
 <tr class="memdesc:a68d74fc287c135f5ae5b61b01cd4e50f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Función que se ejecuta en un hilo separado del HMI.  <a href="namespacehmi__SM13.html#a68d74fc287c135f5ae5b61b01cd4e50f">Más...</a><br /></td></tr>
 <tr class="separator:a68d74fc287c135f5ae5b61b01cd4e50f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -93,71 +90,6 @@ Variables</h2></td></tr>
 <tr class="separator:a12995c3a1f77f6d2d449da22ac8566e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Documentación de las funciones</h2>
-<a id="aae380138559bdba98fcf72dcde6c582a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aae380138559bdba98fcf72dcde6c582a">&#9670;&nbsp;</a></span>conversor()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">def hmi_SM13.conversor </td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>ui_res_act_pole</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>ui_res_act_arm</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>f_ang_cmd_pole</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>f_ang_cmd_arm</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>s_msg</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Función que convierte de ángulo a cuenta y viceversa según la indicación de s_msg. </p>
-<p>Se tiene en cuenta la calibración de offset para cada eje, es decir, el valor de cuenta resolver para 0ª </p><dl class="params"><dt>Parámetros</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">ui_res_act_pole</td><td>valor de conversión real del RDC POLE que llega de RTU y se que desea converti a ángulo </td></tr>
-    <tr><td class="paramname">ui_res_act_arm</td><td>valor de conversión real del RDC ARM que llega de RTU y se que desea converti a ángulo </td></tr>
-    <tr><td class="paramname">f_ang_cmd_pole</td><td>ángulo comandado POLE que se quiere convertir a cuentas resolver para enviar por trama </td></tr>
-    <tr><td class="paramname">f_ang_cmd_arm</td><td>ángulo comandado ARM que se quiere convertir a cuentas resolver para enviar por trama </td></tr>
-    <tr><td class="paramname">s_msg</td><td>tipo de conversión (angulo_a_cuenta o cuenta_a_angulo) </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Devuelve</dt><dd>f_ang_act_pole ángulo convertido (en grados) actuales del eje POLE </dd>
-<dd>
-f_ang_act_arm ángulo convertido (en grados) actuales del eje ARM </dd>
-<dd>
-ui_res_cmd_pole cuenta convertida para comandar el eje POLE </dd>
-<dd>
-ui_res_cmd_arm cuenta convertida para comandar el eje ARM </dd></dl>
-
-</div>
-</div>
 <a id="a68d74fc287c135f5ae5b61b01cd4e50f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a68d74fc287c135f5ae5b61b01cd4e50f">&#9670;&nbsp;</a></span>tm()</h2>
 
