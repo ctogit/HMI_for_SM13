@@ -118,8 +118,6 @@ def RTU_connect(b_connect, s_ip, s_port):
             depurador(2, "HMIcomRTU", "****************************************")
             depurador(2, "HMIcomRTU", "No se encuentra disponible la RTU con IP: %s, en el puerto %s" %(s_ip, s_port))
             depurador(2, "HMI", " ")
-        except:
-            print("aca")
         else:
             b_connect = True
     finally:
@@ -150,7 +148,7 @@ def DataTxRx(a_HMIDataByte, a_HMIDataString, s_CLIENT_ID, s_sock, b_connect):
 
     a_HMIDataString += s_CLIENT_ID
 
-    s_cmdSet = "CMD_NOP;"
+    s_cmdSet = "_CMD;"
     
     global a_HMIData_old
     
@@ -159,7 +157,7 @@ def DataTxRx(a_HMIDataByte, a_HMIDataString, s_CLIENT_ID, s_sock, b_connect):
     a_HMIData =  bytes(a_HMIDataByte) + a_HMIDataString.encode()
     
     if a_HMIData_old != a_HMIData:
-        s_cmdSet = "CMD_SET;"
+        s_cmdSet = "SET_;"
         
     a_HMIDataStringPlusCmdSet = a_HMIDataString + s_cmdSet
 
@@ -215,7 +213,7 @@ def HMITranslate(a_HMIDataString, a_HMIDataByte):
     
     #   -- a_HMIDataString --.
     # Transducción de los comandos HMI -tipo string- a valores de red, que conformarán la trama ethernet.
-    s_mode, s_freeRunAxis, s_freeRunDir, s_ctrlEn, s_stallEn, s_liftDir = a_HMIDataString
+    s_mode, s_freeRunAxis, s_freeRunDir, s_ctrlEn, s_stallEn, s_liftDir, s_setCal = a_HMIDataString
     #   -- s_mode --
     if s_mode == "STOP":
         s_mode = "STOP;"
@@ -274,8 +272,17 @@ def HMITranslate(a_HMIDataString, a_HMIDataByte):
         depurador(2, "HMI", "****************************************")
         depurador(2, "HMIcomRTU","error -lifDir-")
         depurador(2, "HMI", " ")
+        #   -- s_setCal --
+    if s_setCal == "NOP_CAL":
+        s_setCal = "NOP_;"
+    elif s_setCal == "CAL_SET":
+        s_setCal = "CAL_;"
+    else:  
+        depurador(2, "HMI", "****************************************")
+        depurador(2, "HMIcomRTU","error -lifDir-")
+        depurador(2, "HMI", " ")
     try:
-        a_HMIDataString = s_mode + s_freeRunAxis + s_freeRunDir + s_ctrlEn + s_stallEn + s_liftDir
+        a_HMIDataString = s_mode + s_freeRunAxis + s_freeRunDir + s_ctrlEn + s_stallEn + s_liftDir + s_setCal
     except:
          depurador(2, "HMI", "****************************************")
          depurador(2, "HMIcomRTU","error - HMITranslate: a_HMIDataString")
