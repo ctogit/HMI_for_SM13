@@ -213,7 +213,7 @@ def HMITranslate(a_HMIDataString, a_HMIDataByte):
     
     #   -- a_HMIDataString --.
     # Transducción de los comandos HMI -tipo string- a valores de red, que conformarán la trama ethernet.
-    s_mode, s_freeRunAxis, s_freeRunDir, s_ctrlEn, s_stallEn, s_liftDir, s_setCal = a_HMIDataString
+    s_mode, s_freeRunAxis, s_freeRunDir, s_ctrlEn, s_stallEn, s_liftDir = a_HMIDataString
     #   -- s_mode --
     if s_mode == "STOP":
         s_mode = "STOP;"
@@ -272,17 +272,8 @@ def HMITranslate(a_HMIDataString, a_HMIDataByte):
         depurador(2, "HMI", "****************************************")
         depurador(2, "HMIcomRTU","error -lifDir-")
         depurador(2, "HMI", " ")
-        #   -- s_setCal --
-    if s_setCal == "NOP_CAL":
-        s_setCal = "NOP_;"
-    elif s_setCal == "CAL_SET":
-        s_setCal = "CAL_;"
-    else:  
-        depurador(2, "HMI", "****************************************")
-        depurador(2, "HMIcomRTU","error -lifDir-")
-        depurador(2, "HMI", " ")
     try:
-        a_HMIDataString = s_mode + s_freeRunAxis + s_freeRunDir + s_ctrlEn + s_stallEn + s_liftDir + s_setCal
+        a_HMIDataString = s_mode + s_freeRunAxis + s_freeRunDir + s_ctrlEn + s_stallEn + s_liftDir
     except:
          depurador(2, "HMI", "****************************************")
          depurador(2, "HMIcomRTU","error - HMITranslate: a_HMIDataString")
