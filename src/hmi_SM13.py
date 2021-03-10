@@ -42,6 +42,9 @@
 #   a_HMIDataString[3]  <--     s_ctrlEn *
 #   a_HMIDataString[4]  <--     s_stallEn *
 #   a_HMIDataString[5]  <--     s_liftDir *
+#   a_HMIDataString[6]  <--     s_setCal *
+#   a_HMIDataString[7]  <--     s_cmdFlag *
+    
 #
 #   IMPORTANTE TENER EN CUENTA:
 #   HMI to RTU
@@ -118,7 +121,7 @@ class hmi_SM13():
         ## Variable global para que la vea HMI y el hilo TM. Almacena una lista de  
         #  eventos que surguen desde HMI y son comunicados a RTU:
         # [s_mode, s_freeRunAxis, s_freeRunDir, s_ctrlEn, s_stallEn, s_liftDir]
-        a_HMIDataString = ["STOP", "ARM", "DIR_CW", "DISABLE_CONTROL", "STALL_ENABLE", "LIFT_UP"]
+        a_HMIDataString = ["STOP", "ARM", "DIR_CW", "DISABLE_CONTROL", "STALL_ENABLE", "LIFT_UP","NOP_CAL"]
         ## Variable global la ve tanto HMI como TM. Contiene el estado del simulador
         # 0: simulador inactivo
         # 1: simulador activo
@@ -1658,7 +1661,10 @@ class hmi_SM13():
 
             ui_pole_rdc_offset = int(ui_pole_rdc_offset)
             ui_arm_rdc_offset = int(ui_arm_rdc_offset)
-        
+            
+            # Se envía el comando de "CAL_SET", para establecer la calibración del punto seleccionados en la RTU
+            a_HMIDataString[6] = "CAL_SET"
+            
             depurador(1, "HMI", "- POLE offset anterior: "+ s_x_pole_offset + ",     ARM offset anterior: " + s_x_arm_offset)
             depurador(1, "HMI", "- POLE offset nuevo   : "+ str(ui_pole_rdc_offset) + ", ARM offset nuevo   : " + str(ui_arm_rdc_offset))
 
