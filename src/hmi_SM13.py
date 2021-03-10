@@ -1620,9 +1620,10 @@ class hmi_SM13():
             ui_pole_rdc_offset = int(a_RTUDataRx[1] - self.ui_pole_res_for_cal + self.ui_MAX_CUENTAS)
             ui_arm_rdc_offset = int(a_RTUDataRx[0] - self.ui_arm_res_for_cal + self.ui_MAX_CUENTAS)
 
-        depurador(1, "HMI", "- Cálculo cuentas teoricas: ")
+        depurador(1, "HMI", "- Valor resolver teórico: ")
         depurador(1, "HMI", "- POLE res math: "+ str(self.ui_pole_res_for_cal) + ", ARM res math: " + str(self.ui_arm_res_for_cal))
-        depurador(1, "HMI", "- POLE res real: "+ str(a_RTUDataRx[1]) + ", ARM res real: " + str(a_RTUDataRx[1]))
+        depurador(1, "HMI", "- Valor resolver actual: ")
+        depurador(1, "HMI", "- POLE res real: "+ str(a_RTUDataRx[1]) + ", ARM res real: " + str(a_RTUDataRx[0]))
         depurador(1, "HMI", " ")
         
         # Se comprueban cambios.
@@ -1673,6 +1674,8 @@ class hmi_SM13():
             a_HMIDataByte[0] = 0
             a_HMIDataByte[1] = 0
             a_HMIDataString[6] = "CAL_SET"
+
+            self.actualizar_etiquetas_msg("Calibration point success at COL: "+ str(self.ui_plan_col) + ", ROW: "+ str(self.ui_plan_row))
         
         return True
     
