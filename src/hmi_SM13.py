@@ -169,6 +169,10 @@ class hmi_SM13():
         self.f_pole = 0.0
         ## Contiene el ángulo de rotación de la articulación ARM respecto a la base del telemanipulador.
         self.f_arm = 0.0
+        ## Contiene las cuentas "teóricas" del POLE respecto a la base del telemanipulador para propósitos de calibración
+        self.ui_pole_res_for_cal = 42400
+        ## Contiene las cuentas "teóricas" del ARM respecto a la base del telemanipulador para propósitos de calibración
+        self.ui_arm_res_for_cal = 42400
         ## Contiene la cantidad a incrementar por el Jog Control
         self.f_incremento_jog = 0.0
         ## Contiene el incremento acumulado por el jog control en columnas
@@ -643,9 +647,9 @@ class hmi_SM13():
             else:
                 # Si se permite, se mueven los ejes POLE y ARM a la posición de reposo, teniendo en cuenta los ángulos.
                 self.f_pole, self.f_arm = conversor(ui_pole_rdc_offset, ui_pole_rdc_offset, 0, 0, ui_pole_rdc_offset, ui_arm_rdc_offset, "cuenta_a_angulo")
-                a_HMIDataByte[1] = self.f_pole
-                a_HMIDataByte[0] = self.f_arm
-                simu.refrescar_pos_comandada(np.deg2rad(self.f_pole), np.deg2rad(self.f_arm))
+                a_HMIDataByte[1] = self.f_pole + 1 # para evitar que la cuenta de resolver rebalse, se evita mandar a 0º justo sino que se corta un poco antes
+                a_HMIDataByte[0] = self.f_arm + 1
+                simu.refrescar_pos_comandada(np.deg2rad(a_HMIDataByte[1]), np.deg2rad(a_HMIDataByte[0]))
 
                 self.actualizar_etiquetas_msg("Moving robot to STOW position...")
 
@@ -839,6 +843,11 @@ class hmi_SM13():
             a_HMIDataByte[1] = self.f_pole
             a_HMIDataByte[0] = self.f_arm
 
+            # Para propósitos de calibración se guarda el ángulo de un tubo que podría ser utilizado para calibrar el offset del sistema
+            # y se lo pasa a cuentas (considerando 0 cuentas en 0º)
+            self.ui_pole_res_for_cal = (self.f_pole*self.ui_MAX_CUENTAS)/self.f_MAX_GRADOS
+            self.ui_arm_res_for_cal = (self.f_arm*self.ui_MAX_CUENTAS)/self.f_MAX_GRADOS
+
            
             # Si todo salió bien, se activa el modo Automático, pero antes se asegura aparagar motor LIFT
             if a_HMIDataString[0] == "LIFT":
@@ -970,6 +979,11 @@ class hmi_SM13():
             # se actualizan las variables posCmd así las toma el módulo HMIcomRTU y las envía a RTU.    
             a_HMIDataByte[1] = self.f_pole
             a_HMIDataByte[0] = self.f_arm
+
+            # Para propósitos de calibración se guarda el ángulo de un tubo que podría ser utilizado para calibrar el offset del sistema
+            # y se lo pasa a cuentas (considerando 0 cuentas en 0º)
+            self.ui_pole_res_for_cal = (self.f_pole*self.ui_MAX_CUENTAS)/self.f_MAX_GRADOS
+            self.ui_arm_res_for_cal = (self.f_arm*self.ui_MAX_CUENTAS)/self.f_MAX_GRADOS
 
             # Si todo salió bien, se activa el modo Automático, pero antes se asegura aparagar motor LIFT
             if a_HMIDataString[0] == "LIFT":
@@ -1311,6 +1325,12 @@ class hmi_SM13():
 
         depurador(1, "HMI", "- Se cargó POLE offset: "+ str(ui_pole_rdc_offset) + ", ARM offset: " + str(ui_arm_rdc_offset))
         depurador(1, "HMI", "- ")
+
+        # Al comandar ángulo 0º en POLE y ARM, teniendo nuevos offsets y pasando por el conversor en TM, lo que se enviará por trama son 
+        # justamente los valores de offsets. RTU detectará la variable CAL_SET y fijará esos valores de resolver como los nuevos offset 
+        a_HMIDataByte[0] = 0
+        a_HMIDataByte[1] = 0
+        a_HMIDataString[6] = "CAL_SET"
         
         return True
     
@@ -1554,6 +1574,7 @@ class hmi_SM13():
     # @return none
     def cal_home_offset(self, button):
         global a_RTUDataRx
+        global a_HMIDataByte
         global ui_pole_rdc_offset
         global ui_arm_rdc_offset
 
@@ -1570,11 +1591,39 @@ class hmi_SM13():
         offsets_file = open(self.s_project_path + "/hmi/cfg_files/Robots/robots_home_offsets.csv", "r")
         offsets_lines = offsets_file.readlines()
         offsets_file.close()
+
+
+        # TUBE.1 pivot main
+        
+
+        # TUBE.1 pivot alternative
+        
         
         trash, s_x_pole_offset, s_x_arm_offset = offsets_lines[1].split(";")
+
+        # Se calculan los offset (trasladados a home) en base a la diferencia, en cuentas de resolver, de la posición real del tubo tomado como referencia y el 
+        # valor de cuenta resultante del cálculo matermático del mismo tubo.
+        if self.s_pivot_type == "main":
+            a_RTUDataRx[1] = 48000
+            a_RTUDataRx[0] = 63000
+
+            ui_pole_rdc_offset = int(a_RTUDataRx[1] - self.ui_pole_res_for_cal) 
+            ui_arm_rdc_offset = int(a_RTUDataRx[0] - self.ui_arm_res_for_cal)
+
+        if self.s_pivot_type == "alternative":
+            a_RTUDataRx[1] = 31851
+            a_RTUDataRx[0] = 20949
+
+            ui_pole_rdc_offset = int(a_RTUDataRx[1] - self.ui_pole_res_for_cal + self.ui_MAX_CUENTAS)
+            ui_arm_rdc_offset = int(a_RTUDataRx[0] - self.ui_arm_res_for_cal + self.ui_MAX_CUENTAS)
+
+        depurador(1, "HMI", "- Cálculo cuentas teoricas: ")
+        depurador(1, "HMI", "- POLE res math: "+ str(self.ui_pole_res_for_cal) + ", ARM res math: " + str(self.ui_arm_res_for_cal))
+        depurador(1, "HMI", "- POLE res real: "+ str(a_RTUDataRx[1]) + ", ARM res real: " + str(a_RTUDataRx[1]))
+        depurador(1, "HMI", " ")
         
         # Se comprueban cambios.
-        if (a_RTUDataRx[1] == int(s_x_pole_offset) and a_RTUDataRx[0] == int(s_x_arm_offset)):
+        if (ui_pole_rdc_offset == int(s_x_pole_offset) and ui_arm_rdc_offset == int(s_x_arm_offset)):
             # Si no hubo cambios en los nuevos offsets no se sobreescribe el archivo.
             depurador(1, "HMI", "- No se modificaron offsets")
             depurador(1, "HMI", "- POLE offset actual: "+ s_x_pole_offset + ", ARM offset actual: " + s_x_arm_offset)
@@ -1588,10 +1637,11 @@ class hmi_SM13():
             a_robot = self.s_archivo_fixture.rsplit("/",1)
             s_robot, trash = a_robot[1].split(".")
             
+
             # Como hay cambios, se abre el archivo robots_home_offsets.csv en modo escritura,
             # se actualizan los cambios y se cierra. 
             new_offsets_file = open(self.s_project_path + "/hmi/cfg_files/Robots/robots_home_offsets.csv", "w+")
-            new_offsets_line = str(s_robot) + ";" + str(a_RTUDataRx[1]) + ";" + str(a_RTUDataRx[0])
+            new_offsets_line = str(s_robot) + ";" + str(ui_pole_rdc_offset) + ";" + str(ui_arm_rdc_offset)
             new_offsets_file.write("ROBOT;POLE HOME OFFSET;ARM HOME OFFSET\n")
             new_offsets_file.write(new_offsets_line)
             new_offsets_file.close()
@@ -1611,6 +1661,12 @@ class hmi_SM13():
         
             depurador(1, "HMI", "- POLE offset anterior: "+ s_x_pole_offset + ",     ARM offset anterior: " + s_x_arm_offset)
             depurador(1, "HMI", "- POLE offset nuevo   : "+ str(ui_pole_rdc_offset) + ", ARM offset nuevo   : " + str(ui_arm_rdc_offset))
+
+            # Al comandar ángulo 0º en POLE y ARM, teniendo nuevos offsets y pasando por el conversor, lo que se enviará por trama son 
+            # justamente los valores de offsets. RTU detectará la variable CAL_SET y fijará esos valores de resolver como los nuevos offset 
+            a_HMIDataByte[0] = 0
+            a_HMIDataByte[1] = 0
+            a_HMIDataString[6] = "CAL_SET"
         
         return True
     
@@ -2677,80 +2733,7 @@ class hmi_SM13():
             # Se indica en todas las etiquetas de msg del hmi
             self.actualizar_etiquetas_msg("Fixture harness is stalled, main control disabled...")
 
-        depurador(1, "HMI", "- Límite CW POLE : " + str(a_RTUData[6])) 
-        depurador(1, "HMI", "- Límite CCW POLE: " + str(a_RTUData[7])) 
-        depurador(1, "HMI", "- Límite CW ARM  : " + str(a_RTUData[4])) 
-        depurador(1, "HMI", "- Límite CCW ARM : " + str(a_RTUData[5])) 
-        depurador(1, "HMI", "- ") 
-
         return True
-
-"""
-##
-# @brief Función que convierte de ángulo a cuenta y viceversa según la indicación de s_msg.
-# Se tiene en cuenta la calibración de offset para cada eje, es decir, el valor de cuenta resolver para 0ª
-# @param ui_res_act_pole valor de conversión real del RDC POLE que llega de RTU y se que desea converti a ángulo
-# @param ui_res_act_arm valor de conversión real del RDC ARM que llega de RTU y se que desea converti a ángulo
-# @param f_ang_cmd_pole ángulo comandado POLE que se quiere convertir a cuentas resolver para enviar por trama
-# @param f_ang_cmd_arm ángulo comandado ARM que se quiere convertir a cuentas resolver para enviar por trama
-# @param s_msg tipo de conversión (angulo_a_cuenta o cuenta_a_angulo)
-# @return f_ang_act_pole ángulo convertido (en grados) actuales del eje POLE 
-# @return f_ang_act_arm ángulo convertido (en grados) actuales del eje ARM
-# @return ui_res_cmd_pole cuenta convertida para comandar el eje POLE
-# @return ui_res_cmd_arm cuenta convertida para comandar el eje ARM
-def conversor(ui_res_act_pole, ui_res_act_arm, f_ang_cmd_pole, f_ang_cmd_arm, s_msg):
-    global ui_pole_rdc_offset
-    global ui_arm_rdc_offset
-
-    ui_MAX_CUENTAS = 65535
-    f_MAX_GRADOS = 359.999
-    ui_PENDIENTE_RES_ARM = 182.148 # (ctas/grados)
-    ui_PENDIENTE_RES_POLE = 182.148 # (ctas/grados)
-    ui_cruce_por_cero_res_pole = 0
-    ui_cruce_por_cero_res_arm = 0
-
-    if(s_msg == "cuenta_a_angulo"):
-        # Se verifica el valor actual de encoder para saber qué valor de cruce por cero utilizar.
-        # Más info en RDCvsANG.xls
-        if ui_res_act_arm >= 0 and ui_res_act_arm < ui_arm_rdc_offset:
-            ui_cruce_por_cero_res_arm = ui_arm_rdc_offset - ui_MAX_CUENTAS
-        elif ui_res_act_arm >= ui_arm_rdc_offset and ui_res_act_arm <= ui_MAX_CUENTAS:
-            ui_cruce_por_cero_res_arm = ui_arm_rdc_offset
-
-        if ui_res_act_pole >= 0 and ui_res_act_pole < ui_pole_rdc_offset:
-            ui_cruce_por_cero_res_pole = ui_pole_rdc_offset - ui_MAX_CUENTAS
-        elif ui_res_act_pole >= ui_arm_rdc_offset and ui_res_act_pole <= ui_MAX_CUENTAS:
-            ui_cruce_por_cero_res_pole = ui_pole_rdc_offset
-
-        # angulo = (Nres - intersecciòn)/pendiente
-        f_ang_act_arm = float((ui_res_act_arm - ui_cruce_por_cero_res_arm)/ui_PENDIENTE_RES_ARM)
-        f_ang_act_pole = float((ui_res_act_pole - ui_cruce_por_cero_res_pole)/ui_PENDIENTE_RES_POLE) 
-
-        return f_ang_act_pole, f_ang_act_arm   
-
-    elif(s_msg == "angulo_a_cuenta"):
-
-        f_ang_arm_offset = float((ui_MAX_CUENTAS - ui_arm_rdc_offset)/ui_PENDIENTE_RES_ARM)
-        f_ang_pole_offset = float((ui_MAX_CUENTAS - ui_pole_rdc_offset)/ui_PENDIENTE_RES_POLE)
-                
-        # según el ángulo que se quiera convertir se deberá distinguir qué valor de cruce por cero usar.
-        # Más info en RDCvsANG.xls
-        if f_ang_cmd_arm >= 0 and f_ang_cmd_arm <= f_ang_arm_offset:
-            ui_cruce_por_cero_res_arm = ui_arm_rdc_offset
-        elif f_ang_cmd_arm > f_ang_arm_offset and f_ang_cmd_arm <= f_MAX_GRADOS :
-            ui_cruce_por_cero_res_arm = ui_arm_rdc_offset - ui_MAX_CUENTAS
-
-        if f_ang_cmd_pole >= 0 and f_ang_cmd_pole <= f_ang_pole_offset:
-            ui_cruce_por_cero_res_pole = ui_pole_rdc_offset 
-        elif f_ang_cmd_pole > f_ang_pole_offset and f_ang_cmd_pole <= f_MAX_GRADOS :
-            ui_cruce_por_cero_res_pole = ui_pole_rdc_offset - ui_MAX_CUENTAS
-
-        # cuenta = pendiente*cuenta + interseccióm
-        ui_res_cmd_arm  = abs(int(float(ui_PENDIENTE_RES_ARM)*f_ang_cmd_arm + ui_cruce_por_cero_res_arm))
-        ui_res_cmd_pole = abs(int(float(ui_PENDIENTE_RES_POLE)*f_ang_cmd_pole + ui_cruce_por_cero_res_pole))   
-
-        return int(ui_res_cmd_pole), int(ui_res_cmd_arm) 
-"""
 
 ##
 # @brief Función que se ejecuta en un hilo separado del HMI. Inicia la conexión con RTU
@@ -2858,7 +2841,7 @@ def tm():
             depurador(1, "TM", "- Estado conexión con RTU: " + str(b_connect))
             depurador(1, "TM", " ")
 
-            # Se asegura que ante una desconexión el modo esté en STOP 
+            # Sea_HMIDataString[6] = "CAL_SET" asegura que ante una desconexión el modo esté en STOP 
             b_on_condition = False
             a_HMIDataString[0] = "STOP"
 
@@ -2873,6 +2856,7 @@ def tm():
                 a_HMIDataByteTx[2] = a_HMIDataByte[2]
                 a_HMIDataByteTx[3] = a_HMIDataByte[3]
 
+                print(a_HMIDataByteTx[1], a_HMIDataByteTx[0], a_HMIDataString[6])
                 # Se envían los paquetes DataBytes y DataStrings hacia RTU y se recibe un paquete proveniente de RTU 
                 a_RTUDataRx, b_connect, s_sock = enviar_a_y_recibir_de_rtu(a_HMIDataByteTx, a_HMIDataString, b_connect, s_sock, s_ip, s_port)#'192.168.0.193', 5020)
 
@@ -2898,7 +2882,7 @@ def tm():
                 # Esta porción de código manda un Stop en la trama cuando se alcanzó el umbral de control, en modo automático
                 # y se muestra msg ON CONDITION en HMI.
                 if (a_HMIDataString[0] == "AUTOMATIC"):   
-                    if (ui_error_control_pole < ui_CMD_ACT_ERROR and ui_error_control_arm < ui_CMD_ACT_ERROR ):
+                    if (ui_error_control_pole < ui_CMD_ACT_ERROR and ui_error_control_arm < ui_CMD_ACT_ERROR):
                         ui_on_condition_counter += 1
                         # Si luego de muchas tramas el CMD ACT error se mantiene por debajo del umbral se establece el ON CONDITION
                         if (ui_on_condition_counter >= ui_STABLE_CONTROL):
@@ -2928,7 +2912,10 @@ def tm():
                 depurador(2, "TM", "- ARM  pos cmd [res] : " + str(a_HMIDataByteTx[0]).zfill(4) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
                 depurador(2, "TM", "- ARM  pos act [res] : " + str(a_RTUDataRx[0]).zfill(4) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
                 depurador(2, "TM", "- ARM  vel cmd: " +str(a_HMIDataByte[2]) + "\t\t\t|  ARM  vel act: " + str(a_RTUData[2]))
-                depurador(2, "TM", " ")    
+                depurador(2, "TM", " ")  
+
+                # Se limpia la bandera de calibración, la cual solo se activa una vez al presionar botón SET CAL POINT o al iniciar el sistema
+                a_HMIDataString[6] = "NOP_CAL"  
 
             except Exception as e:
                 b_connect = False

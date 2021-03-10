@@ -669,7 +669,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="valign">end</property>
+                        <property name="valign">center</property>
                         <property name="label" translatable="yes">NASA-GSPC</property>
                         <attributes>
                           <attribute name="font-desc" value="Sans Bold 10"/>
@@ -685,7 +685,7 @@
                       <object class="GtkLabel" id="inicio_eqtiqueta_autor">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="valign">end</property>
+                        <property name="valign">center</property>
                         <property name="label" translatable="yes">Designed by</property>
                         <attributes>
                           <attribute name="font-desc" value="Quicksand 10"/>
@@ -766,6 +766,7 @@
                       <object class="GtkImage">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="valign">center</property>
                         <property name="pixbuf">logo nasa.png</property>
                       </object>
                       <packing>
