@@ -293,7 +293,7 @@ class hmi_SM13():
             "evento_seleccion_plan": self.seleccion_plan,
             "evento_cargar_archivos": self.cargar_archivos,
             "evento_next_tube": self.siguiente_tubo,
-            "evento_set_offset": self.cal_home_offset,
+            "evento_set_offset": self.calibration,
             "evento_seleccion_incremento_off": self.seleccion_incremento_jog,
             "evento_seleccion_incremento_fino": self.seleccion_incremento_jog,
             "evento_seleccion_incremento_grueso": self.seleccion_incremento_jog,
@@ -1555,7 +1555,7 @@ class hmi_SM13():
     # @param self Puntero al objeto HMI
     # @param button Boton Set Offset
     # @return none
-    def cal_home_offset(self, button):
+    def calibration(self, button):
         global a_RTUDataRx
         global ui_pole_rdc_offset
         global ui_arm_rdc_offset
