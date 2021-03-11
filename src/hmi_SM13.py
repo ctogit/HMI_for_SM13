@@ -42,8 +42,7 @@
 #   a_HMIDataString[3]  <--     s_ctrlEn *
 #   a_HMIDataString[4]  <--     s_stallEn *
 #   a_HMIDataString[5]  <--     s_liftDir *
-#   a_HMIDataString[6]  <--     s_setCal *
-#   a_HMIDataString[7]  <--     s_cmdFlag *
+#   a_HMIDataString[6]  <--     s_cmdFlag *
     
 #
 #   IMPORTANTE TENER EN CUENTA:
@@ -121,7 +120,7 @@ class hmi_SM13():
         ## Variable global para que la vea HMI y el hilo TM. Almacena una lista de  
         #  eventos que surguen desde HMI y son comunicados a RTU:
         # [s_mode, s_freeRunAxis, s_freeRunDir, s_ctrlEn, s_stallEn, s_liftDir]
-        a_HMIDataString = ["STOP", "ARM", "DIR_CW", "DISABLE_CONTROL", "STALL_ENABLE", "LIFT_UP","NOP_CAL"]
+        a_HMIDataString = ["STOP", "ARM", "DIR_CW", "DISABLE_CONTROL", "STALL_ENABLE", "LIFT_UP"]
         ## Variable global la ve tanto HMI como TM. Contiene el estado del simulador
         # 0: simulador inactivo
         # 1: simulador activo
@@ -1331,12 +1330,6 @@ class hmi_SM13():
 
         depurador(1, "HMI", "- Se cargó POLE offset: "+ str(ui_pole_rdc_offset) + ", ARM offset: " + str(ui_arm_rdc_offset))
         depurador(1, "HMI", "- ")
-
-        # Al comandar ángulo 0º en POLE y ARM, teniendo nuevos offsets y pasando por el conversor en TM, lo que se enviará por trama son 
-        # justamente los valores de offsets. RTU detectará la variable CAL_SET y fijará esos valores de resolver como los nuevos offset 
-        a_HMIDataByte[0] = 0
-        a_HMIDataByte[1] = 0
-        a_HMIDataString[6] = "CAL_SET"
         
         return True
     
@@ -1603,6 +1596,7 @@ class hmi_SM13():
         # Se calculan los offset (trasladados a home) en base a la diferencia, en cuentas de resolver, de la posición real del tubo tomado como referencia y el 
         # valor de cuenta resultante del cálculo matermático del mismo tubo.
         if self.s_pivot_type == "main":
+            # Ejemplo depuración
             a_RTUDataRx[1] = 48000
             a_RTUDataRx[0] = 63000
 
@@ -1610,15 +1604,24 @@ class hmi_SM13():
             ui_arm_rdc_offset = int(a_RTUDataRx[0] - self.ui_arm_res_for_cal)
 
         if self.s_pivot_type == "alternative":
+            # Ejemplo depuración
             a_RTUDataRx[1] = 31851
             a_RTUDataRx[0] = 20949
 
             ui_pole_rdc_offset = int(a_RTUDataRx[1] - self.ui_pole_res_for_cal + self.ui_MAX_CUENTAS)
             ui_arm_rdc_offset = int(a_RTUDataRx[0] - self.ui_arm_res_for_cal + self.ui_MAX_CUENTAS)
 
-        depurador(1, "HMI", "- Cálculo cuentas teoricas: ")
+        # Se comprueba que el cálculo de offset de un valor coherente
+        if (ui_pole_rdc_offset > self.ui_MAX_CUENTAS or ui_arm_rdc_offset > self.ui_MAX_CUENTAS) or (ui_pole_rdc_offset < 0 or ui_arm_rdc_offset < 0):
+            depurador(1, "HMI", "- Error en el cálculo de offsets, se mantiene valor anterior") 
+            depurador(1, "HMI", "-  ") 
+            self.actualizar_etiquetas_msg("calibration point error...")
+            return True
+
+        depurador(1, "HMI", "- Valor resolver teórico: ")
         depurador(1, "HMI", "- POLE res math: "+ str(self.ui_pole_res_for_cal) + ", ARM res math: " + str(self.ui_arm_res_for_cal))
-        depurador(1, "HMI", "- POLE res real: "+ str(a_RTUDataRx[1]) + ", ARM res real: " + str(a_RTUDataRx[1]))
+        depurador(1, "HMI", "- Valor resolver actual: ")
+        depurador(1, "HMI", "- POLE res real: "+ str(a_RTUDataRx[1]) + ", ARM res real: " + str(a_RTUDataRx[0]))
         depurador(1, "HMI", " ")
         
         # Se comprueban cambios.
@@ -1659,8 +1662,7 @@ class hmi_SM13():
             ui_arm_rdc_offset = int(ui_arm_rdc_offset)
             
             
-            
-            depurador(1, "HMI", "- POLE offset anterior: "+ s_x_pole_offset + ",     ARM offset anterior: " + s_x_arm_offset)
+            depurador(1, "HMI", "- POLE offset anterior: "+ str(s_x_pole_offset) + ", ARM offset anterior: " + str(s_x_arm_offset))
             depurador(1, "HMI", "- POLE offset nuevo   : "+ str(ui_pole_rdc_offset) + ", ARM offset nuevo   : " + str(ui_arm_rdc_offset))
 
             # Se envía al conversor el ángulo correspondiente al offset (el conversor no modificará nada ya que se hardcodearon los offsets en 0)
@@ -1668,6 +1670,7 @@ class hmi_SM13():
             a_HMIDataByte[1] = float((ui_arm_rdc_offset/self.ui_MAX_CUENTAS)*self.f_MAX_GRADOS)
             # Se envía el comando de "CAL_SET", para establecer la calibración del punto seleccionados en la RTU
             a_HMIDataString[6] = "CAL_SET"
+
         
         return True
     
@@ -2842,7 +2845,6 @@ def tm():
             depurador(1, "TM", "- Estado conexión con RTU: " + str(b_connect))
             depurador(1, "TM", " ")
 
-            # Sea_HMIDataString[6] = "CAL_SET" asegura que ante una desconexión el modo esté en STOP 
             b_on_condition = False
             a_HMIDataString[0] = "STOP"
 
@@ -2912,10 +2914,7 @@ def tm():
                 depurador(2, "TM", "- ARM  pos cmd [res] : " + str(a_HMIDataByteTx[0]).zfill(4) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
                 depurador(2, "TM", "- ARM  pos act [res] : " + str(a_RTUDataRx[0]).zfill(4) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
                 depurador(2, "TM", "- ARM  vel cmd: " +str(a_HMIDataByte[2]) + "\t\t\t|  ARM  vel act: " + str(a_RTUData[2]))
-                depurador(2, "TM", " ")  
-
-                # Se limpia la bandera de calibración, la cual solo se activa una vez al presionar botón SET CAL POINT o al iniciar el sistema
-                a_HMIDataString[6] = "NOP_CAL"  
+                depurador(2, "TM", " ")   
 
             except Exception as e:
                 b_connect = False
