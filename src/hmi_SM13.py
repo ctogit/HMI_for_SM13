@@ -150,7 +150,11 @@ class hmi_SM13():
         ## Constante grados máximos de una vuelta de ARM o POLE
         self.f_MAX_GRADOS = 359.999
         ## Constante máximo valor de conversión del RDC (16 bits)
-        self.ui_MAX_CUENTAS = 65536       
+        self.ui_MAX_CUENTAS = 65536 
+        ## Constante contiene el ángulo de STOW para POLE              
+        self.f_POLE_STOW_ANG = 1
+        ## Constante contiene el ángulo de STOW para ARM
+        self.f_ARM_STOW_ANG = 1
         # ATRIBUTOS PÚBLICOS DE LA CLASE PRINCIPAL
         ## Contiene el punto X en pulgadas de la posición de la boquilla.
         self.f_px_tubo = 0.0
@@ -648,10 +652,9 @@ class hmi_SM13():
                 return True   
 
             else:
-                # Si se permite, se mueven los ejes POLE y ARM a la posición de reposo, teniendo en cuenta los ángulos.
-                self.f_pole, self.f_arm = conversor(ui_pole_rdc_offset, ui_pole_rdc_offset, 0, 0, ui_pole_rdc_offset, ui_arm_rdc_offset, "cuenta_a_angulo")
-                a_HMIDataByte[1] = self.f_pole + 1 # para evitar que la cuenta de resolver rebalse, se evita mandar a 0º justo sino que se corta un poco antes
-                a_HMIDataByte[0] = self.f_arm + 1
+                # Si se permite, se mueven los ejes POLE y ARM a la posición de reposo
+                a_HMIDataByte[1] = self.f_POLE_STOW_ANG # para evitar que la cuenta de resolver rebalse, se evita mandar a 0º justo sino que se corta un poco antes
+                a_HMIDataByte[0] = self.f_ARM_STOW_ANG
                 simu.refrescar_pos_comandada(np.deg2rad(a_HMIDataByte[1]), np.deg2rad(a_HMIDataByte[0]))
 
                 self.actualizar_etiquetas_msg("Moving robot to STOW position...")
@@ -1593,14 +1596,7 @@ class hmi_SM13():
         # Se abre el archivo robots_home_offsets.csv en modo lectura, se lo lee y se cierra. 
         offsets_file = open(self.s_project_path + "/hmi/cfg_files/Robots/robots_home_offsets.csv", "r")
         offsets_lines = offsets_file.readlines()
-        offsets_file.close()
-
-
-        # TUBE.1 pivot main
-        
-
-        # TUBE.1 pivot alternative
-        
+        offsets_file.close()        
         
         trash, s_x_pole_offset, s_x_arm_offset = offsets_lines[1].split(";")
 
@@ -1662,16 +1658,15 @@ class hmi_SM13():
             ui_pole_rdc_offset = int(ui_pole_rdc_offset)
             ui_arm_rdc_offset = int(ui_arm_rdc_offset)
             
-            # Se envía el comando de "CAL_SET", para establecer la calibración del punto seleccionados en la RTU
-            a_HMIDataString[6] = "CAL_SET"
+            
             
             depurador(1, "HMI", "- POLE offset anterior: "+ s_x_pole_offset + ",     ARM offset anterior: " + s_x_arm_offset)
             depurador(1, "HMI", "- POLE offset nuevo   : "+ str(ui_pole_rdc_offset) + ", ARM offset nuevo   : " + str(ui_arm_rdc_offset))
 
-            # Al comandar ángulo 0º en POLE y ARM, teniendo nuevos offsets y pasando por el conversor, lo que se enviará por trama son 
-            # justamente los valores de offsets. RTU detectará la variable CAL_SET y fijará esos valores de resolver como los nuevos offset 
-            a_HMIDataByte[0] = 0
-            a_HMIDataByte[1] = 0
+            # Se envía al conversor el ángulo correspondiente al offset (el conversor no modificará nada ya que se hardcodearon los offsets en 0)
+            a_HMIDataByte[0] = float((ui_pole_rdc_offset/self.ui_MAX_CUENTAS)*self.f_MAX_GRADOS)
+            a_HMIDataByte[1] = float((ui_arm_rdc_offset/self.ui_MAX_CUENTAS)*self.f_MAX_GRADOS)
+            # Se envía el comando de "CAL_SET", para establecer la calibración del punto seleccionados en la RTU
             a_HMIDataString[6] = "CAL_SET"
         
         return True
@@ -2858,11 +2853,10 @@ def tm():
 
                 # ***************************************************************************************************************************
                 # Antes de enviar los ángulos comandandos en a_HMIDataByte[0]/[1] se deben convertir a cuentas de resolver
-                a_HMIDataByteTx[1], a_HMIDataByteTx[0] = conversor(0, 0, a_HMIDataByte[1], a_HMIDataByte[0], ui_pole_rdc_offset, ui_arm_rdc_offset, "angulo_a_cuenta")
+                a_HMIDataByteTx[1], a_HMIDataByteTx[0] = conversor(0, 0, a_HMIDataByte[1], a_HMIDataByte[0], 0, 0, "angulo_a_cuenta")
                 a_HMIDataByteTx[2] = a_HMIDataByte[2]
                 a_HMIDataByteTx[3] = a_HMIDataByte[3]
 
-                print(a_HMIDataByteTx[1], a_HMIDataByteTx[0], a_HMIDataString[6])
                 # Se envían los paquetes DataBytes y DataStrings hacia RTU y se recibe un paquete proveniente de RTU 
                 a_RTUDataRx, b_connect, s_sock = enviar_a_y_recibir_de_rtu(a_HMIDataByteTx, a_HMIDataString, b_connect, s_sock, s_ip, s_port)#'192.168.0.193', 5020)
 
