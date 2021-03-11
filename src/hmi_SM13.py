@@ -1248,6 +1248,7 @@ class hmi_SM13():
         global b_simulador
         global ui_pole_rdc_offset
         global ui_arm_rdc_offset
+        global a_HMIDataByte
 
         if self.b_beeps == True:
             zumbador.beep_primordial()
@@ -1332,10 +1333,10 @@ class hmi_SM13():
         depurador(1, "HMI", "- Se cargó POLE offset: "+ str(ui_pole_rdc_offset) + ", ARM offset: " + str(ui_arm_rdc_offset))
         depurador(1, "HMI", "- ")
 
-        # Al comandar ángulo 0º en POLE y ARM, teniendo nuevos offsets y pasando por el conversor en TM, lo que se enviará por trama son 
-        # justamente los valores de offsets. RTU detectará la variable CAL_SET y fijará esos valores de resolver como los nuevos offset 
-        a_HMIDataByte[0] = 0
-        a_HMIDataByte[1] = 0
+        # Se envía al conversor el ángulo correspondiente al offset (el conversor no modificará nada ya que se hardcodearon los offsets en 0)
+        a_HMIDataByte[0] = float((ui_pole_rdc_offset/self.ui_MAX_CUENTAS)*self.f_MAX_GRADOS)
+        a_HMIDataByte[1] = float((ui_arm_rdc_offset/self.ui_MAX_CUENTAS)*self.f_MAX_GRADOS)
+        # Se envía el comando de "CAL_SET", para establecer la calibración del punto seleccionados en la RTU
         a_HMIDataString[6] = "CAL_SET"
         
         return True
@@ -1603,6 +1604,7 @@ class hmi_SM13():
         # Se calculan los offset (trasladados a home) en base a la diferencia, en cuentas de resolver, de la posición real del tubo tomado como referencia y el 
         # valor de cuenta resultante del cálculo matermático del mismo tubo.
         if self.s_pivot_type == "main":
+            # ejemplo corrido en campo
             a_RTUDataRx[1] = 48000
             a_RTUDataRx[0] = 63000
 
@@ -1610,14 +1612,23 @@ class hmi_SM13():
             ui_arm_rdc_offset = int(a_RTUDataRx[0] - self.ui_arm_res_for_cal)
 
         if self.s_pivot_type == "alternative":
+            # ejemplo corrido en campo
             a_RTUDataRx[1] = 31851
             a_RTUDataRx[0] = 20949
 
             ui_pole_rdc_offset = int(a_RTUDataRx[1] - self.ui_pole_res_for_cal + self.ui_MAX_CUENTAS)
             ui_arm_rdc_offset = int(a_RTUDataRx[0] - self.ui_arm_res_for_cal + self.ui_MAX_CUENTAS)
 
-        depurador(1, "HMI", "- Cálculo cuentas teoricas: ")
+        # Se comprueba que el cálculo de offset de un valor coherente
+        if (ui_pole_rdc_offset > self.ui_MAX_CUENTAS or ui_arm_rdc_offset > self.ui_MAX_CUENTAS) or (ui_pole_rdc_offset < 0 or ui_arm_rdc_offset < 0):
+            depurador(1, "HMI", "- Error en el cálculo de offsets, se mantiene valor anterior") 
+            depurador(1, "HMI", "-  ") 
+            self.actualizar_etiquetas_msg("calibration point error...")
+            return True
+
+        depurador(1, "HMI", "- Valor resolver teórico: ")
         depurador(1, "HMI", "- POLE res math: "+ str(self.ui_pole_res_for_cal) + ", ARM res math: " + str(self.ui_arm_res_for_cal))
+        depurador(1, "HMI", "- Valor resolver actual: ")
         depurador(1, "HMI", "- POLE res real: "+ str(a_RTUDataRx[1]) + ", ARM res real: " + str(a_RTUDataRx[1]))
         depurador(1, "HMI", " ")
         
@@ -1660,15 +1671,16 @@ class hmi_SM13():
             
             
             
-            depurador(1, "HMI", "- POLE offset anterior: "+ s_x_pole_offset + ",     ARM offset anterior: " + s_x_arm_offset)
+            depurador(1, "HMI", "- POLE offset anterior: "+ s_x_pole_offset + ", ARM offset anterior: " + s_x_arm_offset)
             depurador(1, "HMI", "- POLE offset nuevo   : "+ str(ui_pole_rdc_offset) + ", ARM offset nuevo   : " + str(ui_arm_rdc_offset))
 
             # Se envía al conversor el ángulo correspondiente al offset (el conversor no modificará nada ya que se hardcodearon los offsets en 0)
             a_HMIDataByte[0] = float((ui_pole_rdc_offset/self.ui_MAX_CUENTAS)*self.f_MAX_GRADOS)
             a_HMIDataByte[1] = float((ui_arm_rdc_offset/self.ui_MAX_CUENTAS)*self.f_MAX_GRADOS)
-            # Se envía el comando de "CAL_SET", para establecer la calibración del punto seleccionados en la RTU
+            # Se envía el comando de "CAL_SET" para establecer la calibración del punto seleccionados en la RTU
             a_HMIDataString[6] = "CAL_SET"
-        
+            self.actualizar_etiquetas_msg("Calibration point success at COL: "+ str(self.ui_plan_col) + ", ROW: "+ str(self.ui_plan_row))
+
         return True
     
     ##
@@ -2700,6 +2712,7 @@ class hmi_SM13():
         global b_on_condition
         global a_RTUData
         global a_HMIDataString
+        global a_HMIDataByte
 
         s_fecha, s_hora = str(dt.datetime.now()).split(' ')
         s_anio, s_mes, s_dia = s_fecha.split('-')
@@ -2856,6 +2869,10 @@ def tm():
                 a_HMIDataByteTx[1], a_HMIDataByteTx[0] = conversor(0, 0, a_HMIDataByte[1], a_HMIDataByte[0], 0, 0, "angulo_a_cuenta")
                 a_HMIDataByteTx[2] = a_HMIDataByte[2]
                 a_HMIDataByteTx[3] = a_HMIDataByte[3]
+
+                if (a_HMIDataString[6] == "CAL_SET"):
+                    depurador(1, "TM", "****************************************")
+                    depurador(1, "TM", "- Enviando trama " + str(a_HMIDataString[6]) + ", POLE " + str(a_HMIDataByteTx[1]) + ", ARM " + str(a_HMIDataByteTx[0])) 
 
                 # Se envían los paquetes DataBytes y DataStrings hacia RTU y se recibe un paquete proveniente de RTU 
                 a_RTUDataRx, b_connect, s_sock = enviar_a_y_recibir_de_rtu(a_HMIDataByteTx, a_HMIDataString, b_connect, s_sock, s_ip, s_port)#'192.168.0.193', 5020)
