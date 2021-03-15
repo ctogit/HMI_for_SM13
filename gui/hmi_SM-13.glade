@@ -4416,7 +4416,7 @@
                     <property name="label" translatable="yes">No configuration files has been loaded...</property>
                     <attributes>
                       <attribute name="font-desc" value="Quicksand Bold 12"/>
-                      <attribute name="foreground" value="#efef29292929"/>
+                      <attribute name="foreground" value="#8a8ae2e23434"/>
                     </attributes>
                   </object>
                   <packing>
