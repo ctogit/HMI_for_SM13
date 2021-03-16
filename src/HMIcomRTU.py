@@ -333,7 +333,8 @@ def RTUTranslate(a_RTUDataRx):
         f_posActArm = (int(a_RTUDataRx[0]))##/i_MAX_CUENTAS)*f_MAX_GRADOS
         f_posActPole = (int(a_RTUDataRx[1]))##/i_MAX_CUENTAS)*f_MAX_GRADOS
         #   -- velAct --
-        f_velActArm = int(a_RTUDataRx[2])
+        #f_velActArm = int(a_RTUDataRx[2])
+        f_temperatura = int(a_RTUDataRx[2])
         f_velActPole = int(a_RTUDataRx[3])
         
          # Se convierten lose datos de -Byte- a -String- mediante -decode()-.
@@ -438,7 +439,8 @@ def RTUTranslate(a_RTUDataRx):
             depurador(2, "HMIcomRTU","- No se pudo enviar trama desde RTU.")
             depurador(2, "HMI", " ")
         
-        a_RTUDataOutput = [f_posActArm, f_posActPole, f_velActArm, f_velActPole, b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, b_onCondition]
+        #a_RTUDataOutput = [f_posActArm, f_posActPole, f_velActArm, f_velActPole, b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, b_onCondition]
+        a_RTUDataOutput = [f_posActArm, f_posActPole, f_temperatura, f_velActPole, b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, b_onCondition]
         #depurador(3, "HMIcomRTU","- output :" + str(a_RTUDataOutput))
 
     except Exception as err:
