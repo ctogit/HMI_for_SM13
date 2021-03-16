@@ -27,6 +27,7 @@
 #   b_limitUp       <--     a_RTUData[8] *
 #   b_limitDown     <--     a_RTUData[9] *
 #   b_stallAlm      <--     a_RTUData[10] *
+#   b_onCondition   <--     a_RTUData[11] *
 #
 #
 #   TX TO RTU                           
@@ -113,7 +114,7 @@ class hmi_SM13():
         ## Variable global contiene la lista de datos que llegan desde RTU:
         # [f_posActArm, f_posActPole, f_velActArm, f_velActPole, 
         # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm]
-        a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False]
+        a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False, False]
         ## Variable global para que la vea HMI y el hilo TM. Almacena los datos 
         # de ángulos y velocidad comandados hacia la RTU:
         # [f_posCmdArm, f_posCmdPole, ui_velCmdArm, ui_velCmdPole]
@@ -140,7 +141,7 @@ class hmi_SM13():
 
         # CONSTANTES DEL SISTEMA
         ## Constante contiene el tiempo para actualizar etiquetas del reloj
-        self.ui_REFRESCO_ms_RELOJ = 2000
+        self.ui_REFRESCO_ms_RELOJ = 500
         ## Constante contiene el tiempo de refresco de valores actuales de ángulos POLE y ARM del 
         # simulador
         self.ui_REFRESCO_ms_SIMULADOR = 1000
@@ -148,7 +149,7 @@ class hmi_SM13():
         # de pasar el modo a STOP otra vez
         self.ui_DELAY_ms_PULSADOR = 300
         ## Constante grados máximos de una vuelta de ARM o POLE
-        self.f_MAX_GRADOS = 359.999
+        self.f_MAX_GRADOS = 360
         ## Constante máximo valor de conversión del RDC (16 bits)
         self.ui_MAX_CUENTAS = 65536 
         ## Constante contiene el ángulo de STOW para POLE              
@@ -177,9 +178,9 @@ class hmi_SM13():
         ## Contiene el ángulo de rotación de la articulación ARM respecto a la base del telemanipulador.
         self.f_arm = 0.0
         ## Contiene las cuentas "teóricas" del POLE respecto a la base del telemanipulador para propósitos de calibración
-        self.ui_pole_res_for_cal = 42400
+        self.ui_pole_res_for_cal = 0
         ## Contiene las cuentas "teóricas" del ARM respecto a la base del telemanipulador para propósitos de calibración
-        self.ui_arm_res_for_cal = 42400
+        self.ui_arm_res_for_cal = 0
         ## Contiene la cantidad a incrementar por el Jog Control
         self.f_incremento_jog = 0.0
         ## Contiene el incremento acumulado por el jog control en columnas
@@ -578,6 +579,7 @@ class hmi_SM13():
         global s_sock
         global s_port
         global s_ip
+        global b_on_condition
         
         # Obtiene el nombre del widget switch presionado
         s_name = button.get_name()
@@ -657,8 +659,9 @@ class hmi_SM13():
                 a_HMIDataByte[0] = self.f_ARM_STOW_ANG
                 simu.refrescar_pos_comandada(np.deg2rad(a_HMIDataByte[1]), np.deg2rad(a_HMIDataByte[0]))
 
+                b_on_condition = False
                 self.actualizar_etiquetas_msg("Moving robot to STOW position...")
-
+                
                 a_HMIDataString[0] = "AUTOMATIC"
 
         elif (s_name == "fixture_pivot_button"):
@@ -737,7 +740,7 @@ class hmi_SM13():
             self.ui_plan_row = int(model[iter][0])
             self.ui_plan_col = int(model[iter][1])
             self.s_tubo_id = model[iter][2]
-            depurador(1, "HMI", "- Se seleccionó "+self.s_tubo_id+"ROW:"+str(self.ui_plan_row)+(", COL:"+str(self.ui_plan_col)))
+            depurador(1, "HMI", "- Se seleccionó "+self.s_tubo_id+", ROW:"+str(self.ui_plan_row)+(", COL:"+str(self.ui_plan_col)))
         except:
             pass     
         
@@ -760,6 +763,7 @@ class hmi_SM13():
         global a_HMIDataString
         global a_HMIDataByte
         global b_simulador
+        global b_on_condition
         
         # Verificaciones previas al movimiento
         # no  si no se han elegido todos los archivos de configuración no se avanza
@@ -786,9 +790,9 @@ class hmi_SM13():
             # Extrae las distancias x,y desde el archivo del hx (en pulgadas) según tubo seleccionado
             self.f_px_tubo, self.f_py_tubo, self.a_lista_px, self.a_lista_py, b_error_coordenada = leer_archivo_hx(self.ui_plan_col, self.ui_plan_row, self.s_archivo_hx)
             # Se agrega el jog si lo hubiere
-            depurador(1, "HMI", "- Jog aplicado a Px = " + str(round(self.f_incremento_acumulado_jog_col*self.f_x_pitch)) + " in")
+            depurador(1, "HMI", "- Jog aplicado a Px = " + str(round(self.f_incremento_acumulado_jog_col*self.f_x_pitch, 2)) + " in")
             self.f_px_tubo -= self.f_incremento_acumulado_jog_col*self.f_x_pitch
-            depurador(1, "HMI", "- Jog aplicado a Py = " + str(round(self.f_incremento_acumulado_jog_row*self.f_y_pitch)) + " in")
+            depurador(1, "HMI", "- Jog aplicado a Py = " + str(round(self.f_incremento_acumulado_jog_row*self.f_y_pitch, 2)) + " in")
             self.f_py_tubo -= self.f_incremento_acumulado_jog_row*self.f_y_pitch
         else:
             # Posición inicial de la boquilla al arrancar el simulador 
@@ -834,7 +838,10 @@ class hmi_SM13():
             
             depurador(1, "HMI", "- Moviendo hacia "+ self.s_tubo_id + " (COL : "+ str(self.ui_plan_col) + ", ROW : "+str(self.ui_plan_row) + ")")
             depurador(1, "HMI", " ")
+            
+            b_on_condition = False
             self.actualizar_etiquetas_msg("Moving to tube ROW : "+ str(self.ui_plan_row) + ", COL : "+str(self.ui_plan_col))
+            
             
             if(b_simulador == 1):
                 depurador(1, "HMI", " - Nuevo ángulo POLE = " + str(self.f_pole))
@@ -894,6 +901,7 @@ class hmi_SM13():
         global a_HMIDataString
         global a_HMIDataByte
         global b_simulador
+        global b_on_condition
         
         # Verificaciones previas al movimiento
         # no  si no se han elegido todos los archivos de configuración no se avanza
@@ -932,9 +940,9 @@ class hmi_SM13():
             # Extrae las distancias x,y desde el archivo del hx (en pulgadas) según tubo seleccionado
             self.f_px_tubo, self.f_py_tubo, self.a_lista_px, self.a_lista_py, b_error_coordenada = leer_archivo_hx(self.ui_plan_col, self.ui_plan_row, self.s_archivo_hx)
             # Se agrega el jog si lo hubiere
-            depurador(1, "HMI", "- Jog aplicado a Px = " + str(round(self.f_incremento_acumulado_jog_col*self.f_x_pitch)) + " in")
+            depurador(1, "HMI", "- Jog aplicado a Px = " + str(round(self.f_incremento_acumulado_jog_col*self.f_x_pitch, 2)) + " in")
             self.f_px_tubo -= self.f_incremento_acumulado_jog_col*self.f_x_pitch
-            depurador(1, "HMI", "- Jog aplicado a Py = " + str(round(self.f_incremento_acumulado_jog_row*self.f_y_pitch)) + " in")
+            depurador(1, "HMI", "- Jog aplicado a Py = " + str(round(self.f_incremento_acumulado_jog_row*self.f_y_pitch, 2)) + " in")
             self.f_py_tubo -= self.f_incremento_acumulado_jog_row*self.f_y_pitch
         else:
             # Posición inicial de la boquilla al arrancar el simulador 
@@ -971,7 +979,10 @@ class hmi_SM13():
             depurador(1, "HMI", "****************************************")
             depurador(1, "HMI", "- Moviendo hacia "+ self.s_tubo_id + " (COL : "+ str(self.ui_plan_col) + ", ROW : "+str(self.ui_plan_row) + ")")
             depurador(1, "HMI", " ")
+            
+            b_on_condition = False
             self.actualizar_etiquetas_msg("Moving to tube ROW : "+ str(self.ui_plan_row) + ", COL : "+str(self.ui_plan_col))
+            
             
             if(b_simulador == 1):
                 depurador(1, "HMI", " - Nuevo ángulo POLE = " + str(self.f_pole))
@@ -1043,9 +1054,9 @@ class hmi_SM13():
             if (self.ui_plan_col != 0 and self.ui_plan_row != 0):
                 self.f_px_tubo, self.f_py_tubo, self.a_lista_px, self.a_lista_py, b_error_coordenada = leer_archivo_hx(self.ui_plan_col, self.ui_plan_row, self.s_archivo_hx)
                 # Se agrega el jog si lo hubiere
-                depurador(1, "HMI", "- Jog aplicado a Px = " + str(round(self.f_incremento_acumulado_jog_col*self.f_x_pitch)) + " in")
+                depurador(1, "HMI", "- Jog aplicado a Px = " + str(round(self.f_incremento_acumulado_jog_col*self.f_x_pitch, 2)) + " in")
                 self.f_px_tubo -= self.f_incremento_acumulado_jog_col*self.f_x_pitch
-                depurador(1, "HMI", "- Jog aplicado a Py = " + str(round(self.f_incremento_acumulado_jog_row*self.f_y_pitch)) + " in")
+                depurador(1, "HMI", "- Jog aplicado a Py = " + str(round(self.f_incremento_acumulado_jog_row*self.f_y_pitch, 2)) + " in")
                 self.f_py_tubo -= self.f_incremento_acumulado_jog_row*self.f_y_pitch
             else:
                 # Posición inicial de la boquilla al arrancar el simulador 
@@ -1248,6 +1259,7 @@ class hmi_SM13():
         global b_simulador
         global ui_pole_rdc_offset
         global ui_arm_rdc_offset
+        global a_HMIDataByte
 
         if self.b_beeps == True:
             zumbador.beep_primordial()
@@ -1332,11 +1344,7 @@ class hmi_SM13():
         depurador(1, "HMI", "- Se cargó POLE offset: "+ str(ui_pole_rdc_offset) + ", ARM offset: " + str(ui_arm_rdc_offset))
         depurador(1, "HMI", "- ")
 
-        # Al comandar ángulo 0º en POLE y ARM, teniendo nuevos offsets y pasando por el conversor en TM, lo que se enviará por trama son 
-        # justamente los valores de offsets. RTU detectará la variable CAL_SET y fijará esos valores de resolver como los nuevos offset 
-        a_HMIDataByte[0] = 0
-        a_HMIDataByte[1] = 0
-        a_HMIDataString[6] = "CAL_SET"
+        self.enviar_offsets_a_rtu()
         
         return True
     
@@ -1610,22 +1618,33 @@ class hmi_SM13():
         # Se calculan los offset (trasladados a home) en base a la diferencia, en cuentas de resolver, de la posición real del tubo tomado como referencia y el 
         # valor de cuenta resultante del cálculo matermático del mismo tubo.
         if self.s_pivot_type == "main":
-            a_RTUDataRx[1] = 48000
-            a_RTUDataRx[0] = 63000
+            # ejemplo corrido en campo
+            #a_RTUDataRx[1] = 48000
+            #a_RTUDataRx[0] = 63000
 
             ui_pole_rdc_offset = int(a_RTUDataRx[1] - self.ui_pole_res_for_cal) 
             ui_arm_rdc_offset = int(a_RTUDataRx[0] - self.ui_arm_res_for_cal)
+            print(ui_pole_rdc_offset, ui_arm_rdc_offset)
 
         if self.s_pivot_type == "alternative":
-            a_RTUDataRx[1] = 31851
-            a_RTUDataRx[0] = 20949
+            # ejemplo corrido en campo
+            #a_RTUDataRx[1] = 31851
+            #a_RTUDataRx[0] = 20949
 
             ui_pole_rdc_offset = int(a_RTUDataRx[1] - self.ui_pole_res_for_cal + self.ui_MAX_CUENTAS)
             ui_arm_rdc_offset = int(a_RTUDataRx[0] - self.ui_arm_res_for_cal + self.ui_MAX_CUENTAS)
 
-        depurador(1, "HMI", "- Cálculo cuentas teoricas: ")
+        # Se comprueba que el cálculo de offset de un valor coherente
+        if (ui_pole_rdc_offset > self.ui_MAX_CUENTAS or ui_arm_rdc_offset > self.ui_MAX_CUENTAS) or (ui_pole_rdc_offset < 0 or ui_arm_rdc_offset < 0):
+            depurador(1, "HMI", "- Error en el cálculo de offsets, se mantiene valor anterior") 
+            depurador(1, "HMI", "-  ") 
+            self.actualizar_etiquetas_msg("calibration point error...")
+            return True
+
+        depurador(1, "HMI", "- Valor resolver teórico: ")
         depurador(1, "HMI", "- POLE res math: "+ str(self.ui_pole_res_for_cal) + ", ARM res math: " + str(self.ui_arm_res_for_cal))
-        depurador(1, "HMI", "- POLE res real: "+ str(a_RTUDataRx[1]) + ", ARM res real: " + str(a_RTUDataRx[1]))
+        depurador(1, "HMI", "- Valor resolver actual: ")
+        depurador(1, "HMI", "- POLE res real: "+ str(a_RTUDataRx[1]) + ", ARM res real: " + str(a_RTUDataRx[0]))
         depurador(1, "HMI", " ")
         
         # Se comprueban cambios.
@@ -1668,15 +1687,30 @@ class hmi_SM13():
             # Se envía el comando de "CAL_SET", para establecer la calibración del punto seleccionados en la RTU
             a_HMIDataString[6] = "CAL_SET"
             
-            depurador(1, "HMI", "- POLE offset anterior: "+ s_x_pole_offset + ",     ARM offset anterior: " + s_x_arm_offset)
+            depurador(1, "HMI", "- POLE offset anterior: "+ s_x_pole_offset + ", ARM offset anterior: " + s_x_arm_offset)
             depurador(1, "HMI", "- POLE offset nuevo   : "+ str(ui_pole_rdc_offset) + ", ARM offset nuevo   : " + str(ui_arm_rdc_offset))
 
-            # Al comandar ángulo 0º en POLE y ARM, teniendo nuevos offsets y pasando por el conversor, lo que se enviará por trama son 
-            # justamente los valores de offsets. RTU detectará la variable CAL_SET y fijará esos valores de resolver como los nuevos offset 
-            a_HMIDataByte[0] = 0
-            a_HMIDataByte[1] = 0
-        
+            self.enviar_offsets_a_rtu()
+
         return True
+
+    ##
+    # @brief Función que coloca los offsets en la trama para actualizarlos en la rtu
+    # @param self puntero al objeto HMI
+    # @return none
+    def enviar_offsets_a_rtu(self):
+        global a_HMIDataByte
+        global a_HMIDataString
+        global ui_pole_rdc_offset
+        global ui_arm_rdc_offset
+
+        # Se actualiza byte de Tx con el ángulo de offset correspondiente, luego el conversor lo pasará a cuentas
+        # sin corregir con offset 
+        a_HMIDataByte[1] = float((ui_pole_rdc_offset/self.ui_MAX_CUENTAS)*self.f_MAX_GRADOS)
+        a_HMIDataByte[0] = float((ui_arm_rdc_offset/self.ui_MAX_CUENTAS)*self.f_MAX_GRADOS)
+        # Se envía el comando de "CAL_SET" para establecer la calibración del punto seleccionados en la RTU
+        a_HMIDataString[6] = "CAL_SET"
+        self.actualizar_etiquetas_msg("Calibration point success at COL: "+ str(self.ui_plan_col) + ", ROW: "+ str(self.ui_plan_row))
     
     ##
     # @brief Función que indica si se han cargado archivos de configuración o no
@@ -2029,7 +2063,10 @@ class hmi_SM13():
         depurador(1, "HMI", "****************************************")
         depurador(1, "HMI", "- Moving "+ a_HMIDataString[5])
         depurador(1, "HMI", " ")
+        
+        b_on_condition = False
         self.actualizar_etiquetas_msg("Moving "+ a_HMIDataString[5] + "...")
+        
     
         return 
     
@@ -2118,6 +2155,7 @@ class hmi_SM13():
         global a_RTUData
         global a_HMIDataByte
         global a_HMIDataString
+        global b_on_condition
 
         ui_DELAY_ms_TOGGLE = 100
 
@@ -2521,7 +2559,10 @@ class hmi_SM13():
         depurador(1, "HMI", "****************************************")
         depurador(1, "HMI", "- Moviendo "+ a_HMIDataString[1] + " en sentido " + a_HMIDataString[2])
         depurador(1, "HMI", " ")
+        
+        b_on_condition = False
         self.fr_etiqueta_msg.set_text("Moving "+ a_HMIDataString[1] + " , " + a_HMIDataString[2])
+        
 
         return True
 
@@ -2707,6 +2748,7 @@ class hmi_SM13():
         global b_on_condition
         global a_RTUData
         global a_HMIDataString
+        global a_HMIDataByte
 
         s_fecha, s_hora = str(dt.datetime.now()).split(' ')
         s_anio, s_mes, s_dia = s_fecha.split('-')
@@ -2721,16 +2763,24 @@ class hmi_SM13():
             self.actualizar_etiquetas_msg("Attempting to connect to NFC...")
             self.b_print_status = True
             self.inicio_etiqueta_estado_red.set_text("Disconnected :-(")
+
+            self.detener_movimientos("TOTAL")
+
         elif(b_connect == True and self.b_print_status == True):
             if(self.b_beeps == True):
                 zumbador.beep_primordial()
 
+            # Cuando no hay conexión con RTU intenta 
+            depurador(1, "HMI", "****************************************")
+            depurador(1, "HMI", "- Conexión HMI-RTU: " + str(b_connect))
             self.actualizar_etiquetas_msg("HMI connected to NFC !")
             self.inicio_etiqueta_estado_red.set_text("Connected :-)")
             self.b_print_status = False
 
         if (b_on_condition == True):
             self.actualizar_etiquetas_msg("Fixture is ON CONDITION")
+        #else:
+            #self.actualizar_etiquetas_msg(" ")
 
         # Se monitorea continuamente si viene alguna señal de atasque desde RTU
         if (a_RTUData[10] == True and a_HMIDataString[4] == "STALL_ENABLE"):
@@ -2740,6 +2790,11 @@ class hmi_SM13():
             self.detener_movimientos("TOTAL")
             # Se indica en todas las etiquetas de msg del hmi
             self.actualizar_etiquetas_msg("Fixture harness is stalled, main control disabled...")
+
+        if a_HMIDataString[6] == "CAL_SET":   
+            time.sleep(0.05)
+            # Se limpia la bandera de calibración, la cual solo se activa una vez al presionar botón SET CAL POINT o al iniciar el sistema
+            a_HMIDataString[6] = "NOP_CAL"  
 
         return True
 
@@ -2766,8 +2821,8 @@ def tm():
     ui_PERIODO_ms_ANGULOS_SIMULADOS = 150
     f_ERROR_ANGULOS_SIMULADOS = 3 # [grados]
     f_INCREMENTO_ANGULOS_SIMULADOS = 1 # [grados]
-    ui_CMD_ACT_ERROR = 10 # (cuentas)
-    ui_STABLE_CONTROL = 300 # (cantidad de tramas para determinar si el control es estable)
+    ui_CMD_ACT_ERROR = 6 # (cuentas)
+    ui_STABLE_CONTROL = 50 # (cantidad de tramas para determinar si el control es estable)
 
     a_HMIDataByte[0] = 0
     a_HMIDataByte[1] = 0
@@ -2775,9 +2830,8 @@ def tm():
     a_HMIDataByteTx=[0, 0, 0 ,0]
     a_RTUDataRx=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-    # Variable local. Si el error CMD-ACT está debajo del umbral luego de muchas tramas,
-    # este contador alcanza el valor ui_STABLE_CONTROL y se establece el ON CONDITION
-    ui_on_condition_counter = 0
+    # Varialbe local para enviar un SET_CAL una sola vez con CONTROL_ENABLE
+    toggle_enable = False
 
     while(True):
         # Código de simulación de variación en ángulos actuales, sólo funciona off-line
@@ -2838,6 +2892,9 @@ def tm():
             depurador(1, "TM", "****************************************")
             depurador(1, "TM", "- Intentando conectar con RTU...")
             depurador(1, "TM", "- IP actual: " + s_ip + " / Port: " + s_port)
+            depurador(1, "TM", "- Estado conexión con RTU: " + str(b_connect))
+            depurador(1, "TM", " ")
+
             try:
                 s_sock, b_connect = RTU_connect(b_connect, s_ip, int(s_port))
                 pass
@@ -2845,9 +2902,6 @@ def tm():
                 depurador(1, "TM", "****************************************")
                 depurador(1, "TM", "- No se puede establecer comunicación con RTU: " + str(e))
                 depurador(1, "TM", " ")
-                
-            depurador(1, "TM", "- Estado conexión con RTU: " + str(b_connect))
-            depurador(1, "TM", " ")
 
             # Sea_HMIDataString[6] = "CAL_SET" asegura que ante una desconexión el modo esté en STOP 
             b_on_condition = False
@@ -2858,27 +2912,48 @@ def tm():
                 depurador(2, "TM", "- OFFSETs POLE, ARM: " + str(ui_pole_rdc_offset) + ", " + str(ui_arm_rdc_offset)) 
                 depurador(2, "TM", "--> Paquete Data_String: " + str(a_HMIDataString))
 
+                if a_HMIDataString[3] == "CONTROL_ENABLE" and toggle_enable == True:
+                    # Se actualiza byte de Tx con el ángulo de offset correspondiente, luego el conversor lo pasará a cuentas
+                    # sin corregir con offset 
+                    print(a_HMIDataByte[1], a_HMIDataByte[0], ui_pole_rdc_offset,ui_arm_rdc_offset)
+                    a_HMIDataByte[1] = float((ui_pole_rdc_offset/65535)*360.0)
+                    a_HMIDataByte[0] = float((ui_arm_rdc_offset/65535)*360.0)
+                    # Se envía el comando de "CAL_SET" para establecer la calibración del punto seleccionados en la RTU
+                    a_HMIDataString[6] = "CAL_SET"
+                    toggle_enable = False
+                
+                if a_HMIDataString[3] == "DISABLE_CONTROL" and toggle_enable == False:
+                    toggle_enable = True
+
                 # ***************************************************************************************************************************
                 # Antes de enviar los ángulos comandandos en a_HMIDataByte[0]/[1] se deben convertir a cuentas de resolver
                 a_HMIDataByteTx[1], a_HMIDataByteTx[0] = conversor(0, 0, a_HMIDataByte[1], a_HMIDataByte[0], 0, 0, "angulo_a_cuenta")
                 a_HMIDataByteTx[2] = a_HMIDataByte[2]
                 a_HMIDataByteTx[3] = a_HMIDataByte[3]
-
-                print(a_HMIDataByteTx[1], a_HMIDataByteTx[0], a_HMIDataString[6])
+                
+                if (a_HMIDataString[6] == "CAL_SET"):
+                    depurador(1, "TM", "****************************************")
+                    depurador(1, "TM", "- Enviando trama " + str(a_HMIDataString[6]) + ", POLE " + str(a_HMIDataByteTx[1]) + ", ARM " + str(a_HMIDataByteTx[0])) 
+                #print(a_HMIDataByteTx[1], a_HMIDataByteTx[0])
                 # Se envían los paquetes DataBytes y DataStrings hacia RTU y se recibe un paquete proveniente de RTU 
                 a_RTUDataRx, b_connect, s_sock = enviar_a_y_recibir_de_rtu(a_HMIDataByteTx, a_HMIDataString, b_connect, s_sock, s_ip, s_port)#'192.168.0.193', 5020)
 
                 # Apenas se actualiza a_RTUDataRx se convierten los elementos [0] y [1] de cuentas resolver a ángulos.
                 a_RTUData[1], a_RTUData[0] = conversor(a_RTUDataRx[1], a_RTUDataRx[0], 0, 0, ui_pole_rdc_offset, ui_arm_rdc_offset, "cuenta_a_angulo")
                 # y también se actualizan los demás datos
-                for i in range(2, 11):
+                
+                for i in range(2, len(a_RTUDataRx)):
                     a_RTUData[i] = a_RTUDataRx[i]
+
+                a_RTUData[11] = a_RTUDataRx[11]
 
                 # Se monitorean continuamente los valores de cuenta comandada y recibida para establecer o no
                 # el estado de ON_CONDITION del FH.
+                ui_cmd_pole, ui_cmd_arm = 0, 0
                 try:
-                    ui_error_control_arm = abs(int(a_HMIDataByteTx[0]) - int(a_RTUDataRx[0]))
-                    ui_error_control_pole = abs(int(a_HMIDataByteTx[1]) - int(a_RTUDataRx[1]))
+                    ui_cmd_pole, ui_cmd_arm  = conversor(0, 0, a_HMIDataByte[1], a_HMIDataByte[0], ui_pole_rdc_offset, ui_arm_rdc_offset, "angulo_a_cuenta")
+                    ui_error_control_arm = abs(int(ui_cmd_arm) - int(a_RTUDataRx[0]))
+                    ui_error_control_pole = abs(int(ui_cmd_pole) - int(a_RTUDataRx[1]))
                 except:
                     ui_error_control_arm = ui_CMD_ACT_ERROR
                     ui_error_control_pole = ui_CMD_ACT_ERROR
@@ -2888,42 +2963,31 @@ def tm():
 
                 
                 # Esta porción de código manda un Stop en la trama cuando se alcanzó el umbral de control, en modo automático
-                # y se muestra msg ON CONDITION en HMI.
-                if (a_HMIDataString[0] == "AUTOMATIC"):   
-                    if (ui_error_control_pole < ui_CMD_ACT_ERROR and ui_error_control_arm < ui_CMD_ACT_ERROR):
-                        ui_on_condition_counter += 1
-                        # Si luego de muchas tramas el CMD ACT error se mantiene por debajo del umbral se establece el ON CONDITION
-                        if (ui_on_condition_counter >= ui_STABLE_CONTROL):
-                            b_on_condition = True
-                            # Si el FH alcanzó el ON CONDITION se pasa el modo de AUTO a STOP (RTU debería hacer lo mismo desde su lado)
-                            a_HMIDataString[0] = "STOP"
-                            ui_on_condition_counter = 0
-                            depurador(1, "TM", "****************************************")
-                            depurador(1, "TM", "- Fixture is ON CONDITION ")
-                            depurador(1, "TM", "- ")
+                # y se muestra msg ON CONDITION en HMI.        
+                if (a_HMIDataString[0] == "AUTOMATIC" and a_RTUData[11] == True):  
+                    b_on_condition = True
+                    depurador(1, "TM", "****************************************")
+                    depurador(1, "TM", "- Fixture is ON CONDITION ")
+                    depurador(1, "TM", "- ")
 
-                    else:
-                        b_on_condition = False
-                        ui_on_condition_counter = 0
-
-                elif (a_HMIDataString[0] == "FREE_RUN" or a_HMIDataString[0] == "LIFT"): 
+                    # Si RTU dice que se está on-el FH alcanzó el ON CONDITION se pasa el modo de AUTO a STOP
+                    a_HMIDataString[0] = "STOP"
+                
+                if (a_HMIDataString[0] == "FREE_RUN" or a_HMIDataString[0] == "LIFT"): 
                     b_on_condition = False
-
+                
                 # ***************************************************************************************************************************
 
-                depurador(2, "TM", "****************************************")
-                depurador(2, "TM", "- POLE pos cmd [res] : " + str(a_HMIDataByteTx[1]).zfill(4) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
-                depurador(2, "TM", "- POLE pos act [res] : " + str(a_RTUDataRx[1]).zfill(4) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
-                depurador(2, "TM", "- POLE vel cmd : " +str(a_HMIDataByte[3]) + "\t\t| POLE vel act: " + str(a_RTUData[3]))
+                depurador(4, "TM", "****************************************")
+                depurador(4, "TM", "- POLE pos cmd [res] : " + str(a_HMIDataByteTx[1]).zfill(4) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
+                depurador(4, "TM", "- POLE pos act [res] : " + str(a_RTUDataRx[1]).zfill(4) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
+                depurador(4, "TM", "- POLE vel cmd : " +str(a_HMIDataByte[3]) + "\t\t| POLE vel act: " + str(a_RTUData[3]))
                 
-                depurador(2, "TM", " ")                
-                depurador(2, "TM", "- ARM  pos cmd [res] : " + str(a_HMIDataByteTx[0]).zfill(4) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
-                depurador(2, "TM", "- ARM  pos act [res] : " + str(a_RTUDataRx[0]).zfill(4) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
-                depurador(2, "TM", "- ARM  vel cmd: " +str(a_HMIDataByte[2]) + "\t\t\t|  ARM  vel act: " + str(a_RTUData[2]))
-                depurador(2, "TM", " ")  
-
-                # Se limpia la bandera de calibración, la cual solo se activa una vez al presionar botón SET CAL POINT o al iniciar el sistema
-                a_HMIDataString[6] = "NOP_CAL"  
+                depurador(4, "TM", " ")                
+                depurador(4, "TM", "- ARM  pos cmd [res] : " + str(a_HMIDataByteTx[0]).zfill(4) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
+                depurador(4, "TM", "- ARM  pos act [res] : " + str(a_RTUDataRx[0]).zfill(4) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
+                depurador(4, "TM", "- ARM  vel cmd: " +str(a_HMIDataByte[2]) + "\t\t\t|  ARM  vel act: " + str(a_RTUData[2]))
+                depurador(4, "TM", " ")  
 
             except Exception as e:
                 b_connect = False
@@ -2939,7 +3003,7 @@ def tm():
             
         # Esta porción de código permite que no se detenga el HMI con la llegada de
         # alguna trama corrupta+
-        for x in range(0, 10):
+        for x in range(0, 11):
             try:
                 if a_RTUData[x] == True:
                     pass
@@ -2949,7 +3013,7 @@ def tm():
                 ## Variable global contiene la lista de datos que llegan desde RTU:
                 # [f_posActArm, f_posActPole, f_velActArm, f_velActPole, 
                 # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, ui_status]
-                a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False]  
+                a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False, False]  
                 pass  
         
                 

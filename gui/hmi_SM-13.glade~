@@ -2453,7 +2453,7 @@
                       <object class="GtkLabel" id="fr_etiqueta_offset">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Offset</property>
+                        <property name="label" translatable="yes">Cal Point</property>
                         <attributes>
                           <attribute name="font-desc" value="Quicksand Bold 12"/>
                           <attribute name="foreground" value="#20204a4a8787"/>

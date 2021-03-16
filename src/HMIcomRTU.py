@@ -344,7 +344,8 @@ def RTUTranslate(a_RTUDataRx):
         b_limitUp = a_RTUDataRx[8].decode()
         b_limitDown = a_RTUDataRx[9].decode()
         b_stallAlm = a_RTUDataRx[10].decode()
-        status = int(a_RTUDataRx[11])
+        b_onCondition = a_RTUDataRx[11].decode()
+        status = int(a_RTUDataRx[12])
 
         # Conversion de comandos. -Char- a -Bool-.
         if b_cwLimitArm  == "ACW_RUN;":
@@ -415,6 +416,15 @@ def RTUTranslate(a_RTUDataRx):
              depurador(2, "HMI", "****************************************")
              depurador(2, "HMIcomRTU","error -b_stallAlm- RTUTranslate")
              depurador(2, "HMI", " ")
+               # b_onCondition
+        if b_onCondition  == "NOT_POS;":
+            b_onCondition = False
+        elif b_onCondition  == "ON_COND;":
+            b_onCondition = True
+        else: 
+             depurador(2, "HMI", "****************************************")
+             depurador(2, "HMIcomRTU","error -b_stallAlm- RTUTranslate")
+             depurador(2, "HMI", " ")
             # Manejo de errores de conexión 
         if status == "81":
             depurador(2, "HMI", "****************************************")
@@ -428,7 +438,7 @@ def RTUTranslate(a_RTUDataRx):
             depurador(2, "HMIcomRTU","- No se pudo enviar trama desde RTU.")
             depurador(2, "HMI", " ")
         
-        a_RTUDataOutput = [f_posActArm, f_posActPole, f_velActArm, f_velActPole, b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm]
+        a_RTUDataOutput = [f_posActArm, f_posActPole, f_velActArm, f_velActPole, b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, b_onCondition]
         #depurador(3, "HMIcomRTU","- output :" + str(a_RTUDataOutput))
 
     except Exception as err:

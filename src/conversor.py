@@ -21,15 +21,15 @@ def conversor(ui_res_act_pole, ui_res_act_arm, f_ang_cmd_pole, f_ang_cmd_arm, ui
 
     ui_MAX_CUENTAS = 65535
     f_MAX_GRADOS = 359.999
-    f_PENDIENTE_RES_ARM = 182.148 # (ctas/grados)
-    f_PENDIENTE_RES_POLE = 182.148 # (ctas/grados)
+    f_PENDIENTE_RES_ARM = float(65536.0/360.0)#182.04 # (ctas/grados)
+    f_PENDIENTE_RES_POLE = float(65536.0/360.0) # (ctas/grados)
     ui_cruce_por_cero_res_pole = 0
     ui_cruce_por_cero_res_arm = 0
 
-    depurador(3, "CONVERSOR", "****************************************")
-    depurador(3, "CONVERSOR", "- Offset POLE: " + str(ui_offset_1))
-    depurador(3, "CONVERSOR", "- Offset ARM : " + str(ui_offset_2))
-    depurador(3, "CONVERSOR", " ")
+    depurador(4, "CONVERSOR", "****************************************")
+    depurador(4, "CONVERSOR", "- Offset POLE: " + str(ui_offset_1))
+    depurador(4, "CONVERSOR", "- Offset ARM : " + str(ui_offset_2))
+    depurador(4, "CONVERSOR", " ")
 
     ui_offset_pole = int(ui_offset_1)
     ui_offset_arm = int(ui_offset_2)
@@ -47,19 +47,19 @@ def conversor(ui_res_act_pole, ui_res_act_arm, f_ang_cmd_pole, f_ang_cmd_arm, ui
         elif ui_res_act_pole >= ui_offset_pole and ui_res_act_pole <= ui_MAX_CUENTAS:
             ui_cruce_por_cero_res_pole = ui_offset_pole
 
-        depurador(3, "CONVERSOR", "****************************************")
-        depurador(3, "CONVERSOR", "- Cruce POLE: " + str(ui_cruce_por_cero_res_pole))
-        depurador(3, "CONVERSOR", "- Cruce ARM : " + str(ui_cruce_por_cero_res_arm))
-        depurador(3, "CONVERSOR", " ")
+        depurador(4, "CONVERSOR", "****************************************")
+        depurador(4, "CONVERSOR", "- Cruce POLE: " + str(ui_cruce_por_cero_res_pole))
+        depurador(4, "CONVERSOR", "- Cruce ARM : " + str(ui_cruce_por_cero_res_arm))
+        depurador(4, "CONVERSOR", " ")
 
         # angulo = (Nres - intersecciòn)/pendiente
         f_ang_act_arm = float(ui_res_act_arm - ui_cruce_por_cero_res_arm)/f_PENDIENTE_RES_ARM
         f_ang_act_pole = float(ui_res_act_pole - ui_cruce_por_cero_res_pole)/f_PENDIENTE_RES_POLE 
 
-        depurador(3, "CONVERSOR", "****************************************")
-        depurador(3, "CONVERSOR", "- Ángulo ACT POLE: " + str(f_ang_act_pole))
-        depurador(3, "CONVERSOR", "- Ángulo ACT ARM : " + str(f_ang_act_arm))
-        depurador(3, "CONVERSOR", " ")
+        depurador(4, "CONVERSOR", "****************************************")
+        depurador(4, "CONVERSOR", "- Ángulo ACT POLE: " + str(f_ang_act_pole))
+        depurador(4, "CONVERSOR", "- Ángulo ACT ARM : " + str(f_ang_act_arm))
+        depurador(4, "CONVERSOR", " ")
 
         return f_ang_act_pole, f_ang_act_arm   
 
@@ -84,12 +84,13 @@ def conversor(ui_res_act_pole, ui_res_act_arm, f_ang_cmd_pole, f_ang_cmd_arm, ui
         ui_res_cmd_arm  = abs(int(float(f_PENDIENTE_RES_ARM)*f_ang_cmd_arm + ui_cruce_por_cero_res_arm))
         ui_res_cmd_pole = abs(int(float(f_PENDIENTE_RES_POLE)*f_ang_cmd_pole + ui_cruce_por_cero_res_pole))  
 
-        depurador(3, "CONVERSOR", "****************************************")
-        depurador(3, "CONVERSOR", "- Ángulo CMD POLE: " + str(f_ang_cmd_pole))
-        depurador(3, "CONVERSOR", "- Ángulo CMD ARM : " + str(f_ang_cmd_arm))
-        depurador(3, "CONVERSOR", " ") 
+        depurador(4, "CONVERSOR", "****************************************")
+        depurador(4, "CONVERSOR", "- Cuenta CMD POLE: " + str(ui_res_cmd_pole))
+        depurador(4, "CONVERSOR", "- Cuenta CMD ARM : " + str(ui_res_cmd_arm))
+        depurador(4, "CONVERSOR", " ") 
 
         return int(ui_res_cmd_pole), int(ui_res_cmd_arm) 
 
 #if __name__ == "__main__":
 #    conversor(2855, 10000, 10, 10, 2851, 9900, "cuenta_a_angulo")
+#    conversor(2855, 10000, 10, 10, 2851, 9900, "angulo_a_cuenta")
