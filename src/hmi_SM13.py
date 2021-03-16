@@ -18,7 +18,7 @@
 #   --------------------------------------
 #   f_posActArm     <--     a_RTUData[0] *
 #   f_posActPole    <--     a_RTUData[1] *
-#   f_velActArm     <--     a_RTUData[2] *
+#   f_temperatura   <--     a_RTUData[2] *
 #   f_velActPole    <--     a_RTUData[3] *
 #   b_cwLimitArm    <--     a_RTUData[4] *
 #   b_ccwLimitArm   <--     a_RTUData[5] *
@@ -34,7 +34,7 @@
 #   --------------------------------------
 #   a_HMIDataByte[0]    <--     f_posCmdArm *
 #   a_HMIDataByte[1]    <--     f_posCmdPole *
-#   a_HMIDataByte[2]    <--     ui_velCmdArm *
+#   a_HMIDataByte[2]    <--     ui_velCmdPole *
 #   a_HMIDataByte[3]    <--     ui_velCmdPole *
 #
 #   a_HMIDataString[0]  <--     s_mode *
@@ -452,6 +452,10 @@ class hmi_SM13():
         self.manual_etiqueta_valor_deseado_row.set_text("-")
         ## Etiqueta que indica el tipo de pivot actual seleccionado
         self.inicio_etiqueta_estado_pivot = self.builder.get_object("inicio_etiqueta_estado_pivot")
+        
+        ## Etiqueta de actualización de hora en solapa Free Run
+        self.help_etiqueta_temperatura = self.builder.get_object("temperatura")
+        
         ## Ventana principal del HMI
         self.window = self.builder.get_object("ventana_principal")
         #win_name = Gtk.Label("SM-13 HUMAN-MACHINE INTERFACE")
@@ -2756,6 +2760,12 @@ class hmi_SM13():
 
         # Se actualizarn las etiquetas de hora y fecha en todas las solapas
         self.actualizar_etiquetas_reloj(s_hr+":"+s_min, s_dia+"/"+s_mes+"/"+s_anio) 
+        
+        if(a_RTUData[2] < 100):
+            self.help_etiqueta_temperatura.set_markup("<span foreground='blue'> " + str(a_RTUData[2]) + " </span>")
+        else:
+            self.help_etiqueta_temperatura.set_markup("<span foreground='orange'> " + str(a_RTUData[2]) + " </span>")
+                
 
         # Si no hay conexión con RTU se avisa constantemente, si se conectó, la variable
         # print_status permite que se muestre el aviso de conexión solo una vez.
@@ -2947,6 +2957,7 @@ def tm():
 
                 a_RTUData[11] = a_RTUDataRx[11]
 
+                
                 # Se monitorean continuamente los valores de cuenta comandada y recibida para establecer o no
                 # el estado de ON_CONDITION del FH.
                 ui_cmd_pole, ui_cmd_arm = 0, 0
