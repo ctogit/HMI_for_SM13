@@ -58,7 +58,18 @@ def ik_SM13(f_x, f_y, f_l1, f_l2, f_l3, f_l4, s_pivot_type):
         elif (s_pivot_type == "alternative"):
             f_qp = 2*math.pi - f_alfa - f_beta
             f_qa = 2*math.pi - math.acos((f_La**2 + f_Lp**2 - f_h**2)/(2*f_La*f_Lp))
-            
+
+        # A veces pasa que la matemática da números negativos o mayores a 360ª así que se corrige. 
+        print("hola",f_qp, f_qa)
+        if f_qp < 0.0:
+            f_qp = f_qp + 2*np.pi
+        if f_qa < 0.0:
+            f_qa = f_qa + 2*np.pi
+        if f_qp >= 2*np.pi:
+            f_qp = f_qp - 2*np.pi
+        if f_qa >= 2*np.pi:
+            f_qa = f_qa - 2*np.pi
+        print("chau",f_qp, f_qa)
         b_success = True
 
         depurador(2, "ik_SM13", " ")
@@ -82,8 +93,8 @@ def ik_SM13(f_x, f_y, f_l1, f_l2, f_l3, f_l4, s_pivot_type):
             depurador(2, "ik_SM13", "- Ángulos POLE y ARM inalcanzables: " + str(err_msg))
             depurador(2, "ik_SM13", " ")
     
-    return f_qp, f_qa, b_success
+    return float(f_qp), float(f_qa), b_success
     
 if __name__ == "__main__":
-    ik_SM13(-0.438, 0.704, 16.625, 3.518, 9.5, 15.25, "main")
+    ik_SM13(29.1676, 3.9774, 20.5499, 3.3145, 9.5, 15.52, "alternative")
     # qp = 52.14ª; qa = 85.29ª

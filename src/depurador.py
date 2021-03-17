@@ -27,7 +27,7 @@ iNIVEL_TEST3 = int(3)
 iNIVEL_TEST4 = int(4)
 
 ## Variable de depuración
-iSeveridad = iNIVEL_TEST1
+iSeveridad = iNIVEL_TEST3
 
 import datetime as dt
 

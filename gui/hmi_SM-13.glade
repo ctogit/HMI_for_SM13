@@ -421,7 +421,6 @@
                     <property name="label" translatable="yes">Attempting to connect with RTU...</property>
                     <attributes>
                       <attribute name="font-desc" value="Quicksand Bold 12"/>
-                      <attribute name="foreground" value="#efef29292929"/>
                     </attributes>
                   </object>
                   <packing>
@@ -1386,7 +1385,6 @@
                     <property name="label" translatable="yes">Moviendo telemanipulador...</property>
                     <attributes>
                       <attribute name="font-desc" value="Quicksand Bold 12"/>
-                      <attribute name="foreground" value="#efef29292929"/>
                     </attributes>
                   </object>
                   <packing>
@@ -2685,7 +2683,6 @@
                     <property name="label" translatable="yes">No configuration files has been loaded...</property>
                     <attributes>
                       <attribute name="font-desc" value="Quicksand Bold 12"/>
-                      <attribute name="foreground" value="#efef29292929"/>
                     </attributes>
                   </object>
                   <packing>
@@ -2916,7 +2913,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="halign">center</property>
-                        <property name="spacing">10</property>
                         <child>
                           <object class="GtkLabel" id="manual_etiqueta_valor_temperatura">
                             <property name="visible">True</property>
@@ -4481,7 +4477,6 @@
                     <property name="label" translatable="yes">No configuration files has been loaded...</property>
                     <attributes>
                       <attribute name="font-desc" value="Quicksand Bold 12"/>
-                      <attribute name="foreground" value="#8a8ae2e23434"/>
                     </attributes>
                   </object>
                   <packing>
@@ -5518,7 +5513,6 @@ Tube</property>
                     </child>
                     <child>
                       <object class="GtkBox">
-                        <property name="width_request">270</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
@@ -5575,10 +5569,8 @@ Tube</property>
                         </child>
                         <child>
                           <object class="GtkScrolledWindow">
-                            <property name="width_request">150</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="margin_right">90</property>
                             <property name="hexpand">True</property>
                             <property name="vexpand">True</property>
                             <property name="shadow_type">in</property>

@@ -596,7 +596,7 @@ class hmi_SM13():
                 a_HMIDataString[3] = "CONTROL_ENABLE"
                 self.inicio_etiqueta_estado_main_control.set_text("Enabled")
                 # Se indica en todas las etiquetas de msg del hmi
-                self.actualizar_etiquetas_msg("Fixture harness main control enabled...")
+                self.actualizar_etiquetas_msg("Fixture harness main control enabled...", "green")
 
                 if self.b_beeps == True:
                     zumbador.beep_button()
@@ -605,7 +605,7 @@ class hmi_SM13():
                 a_HMIDataString[3] = "DISABLE_CONTROL"
                 self.inicio_etiqueta_estado_main_control.set_text("Disabled")
                 # Se indica en todas las etiquetas de msg del hmi
-                self.actualizar_etiquetas_msg("Fixture harness main control disabled...")
+                self.actualizar_etiquetas_msg("Fixture harness main control disabled...", "red")
 
                 if self.b_beeps == True:
                     zumbador.beep_stop()
@@ -619,7 +619,7 @@ class hmi_SM13():
                 a_HMIDataString[4] = "STALL_ENABLE"
                 self.inicio_etiqueta_estado_stall.set_text("Enabled")
                 # Se indica en todas las etiquetas de msg del hmi
-                self.actualizar_etiquetas_msg("Fixture harness stall function enabled...")
+                self.actualizar_etiquetas_msg("Fixture harness stall function enabled...", "green")
 
                 if self.b_beeps == True:
                     zumbador.beep_button()
@@ -627,7 +627,7 @@ class hmi_SM13():
             else:
                 a_HMIDataString[4] = "DISABLE_STALL"
                 self.inicio_etiqueta_estado_stall.set_text("Disabled")
-                self.actualizar_etiquetas_msg("Fixture harness stall function disabled...")
+                self.actualizar_etiquetas_msg("Fixture harness stall function disabled...", "red")
 
                 if self.b_beeps == True:
                     zumbador.beep_button()
@@ -642,7 +642,7 @@ class hmi_SM13():
                 if self.b_beeps == True:
                     zumbador.beep_stop()
 
-                self.actualizar_etiquetas_msg("Fixture control is disabled...")
+                self.actualizar_etiquetas_msg("Fixture control is disabled...", "red")
 
                 return True
             
@@ -656,7 +656,7 @@ class hmi_SM13():
                 self.inicio_toggle_fixture_control.set_active(False)
                 self.inicio_etiqueta_estado_main_control.set_text("Disabled")
                 # Se indica en todas las etiquetas de msg del hmi
-                self.actualizar_etiquetas_msg("Fixture harness is stalled, main control disabled...")
+                self.actualizar_etiquetas_msg("Fixture harness is stalled, main control disabled...", "red")
 
                 return True   
 
@@ -667,7 +667,7 @@ class hmi_SM13():
                 simu.refrescar_pos_comandada(np.deg2rad(a_HMIDataByte[1]), np.deg2rad(a_HMIDataByte[0]))
 
                 b_on_condition = False
-                self.actualizar_etiquetas_msg("Moving robot to STOW position...")
+                self.actualizar_etiquetas_msg("Moving robot to STOW position...", "green")
                 
                 a_HMIDataString[0] = "AUTOMATIC"
 
@@ -680,7 +680,7 @@ class hmi_SM13():
             elif (self.s_pivot_type == "alternative"):
                 self.s_pivot_type = "main"
 
-            self.actualizar_etiquetas_msg("Fixture " + self.s_pivot_type + " pivot type selected")
+            self.actualizar_etiquetas_msg("Fixture " + self.s_pivot_type + " pivot type selected", "green")
             self.inicio_etiqueta_estado_pivot.set_text(self.s_pivot_type)
 
             depurador(1, "HMI", "****************************************")
@@ -710,7 +710,7 @@ class hmi_SM13():
         # Cambia el mensaje de la etiqueta del interruptor
         self.inicio_etiqueta_estado_main_control.set_text("Disabled")
         ## Se indica la acción en las etiquetas principales de msg.
-        self.actualizar_etiquetas_msg("Stop, fixture harness main control disabled...") 
+        self.actualizar_etiquetas_msg("Stop, fixture harness main control disabled...", "red")
 
         # Si no está habilitado el control principal aseguramos que no queden 
         # presionados los botones toggle de las diferentes solapas
@@ -782,7 +782,7 @@ class hmi_SM13():
             if self.b_beeps == True:
                 zumbador.beep_stop()
 
-            self.actualizar_etiquetas_msg("Fixture control is disabled...")
+            self.actualizar_etiquetas_msg("Fixture control is disabled...", "red")
 
             return True
         
@@ -811,20 +811,18 @@ class hmi_SM13():
         if not b_error_coordenada:
             # Calcula los ángulos de los ejes POLE y ARM en base a la distancia que hay que alcanzar
             self.f_pole, self.f_arm, self.b_ik_success = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, self.s_pivot_type)
-            
+            print(self.f_pole)
+
             # Se convierten los ágnulos de las articulaciones a grados y se redondea a 3 decimales
             self.f_pole = round(np.rad2deg(self.f_pole), 3)
             self.f_arm = round(np.rad2deg(self.f_arm), 3)
-            # A veces pasa que la conversión da números negativos así que se corrige 
-            if self.f_pole < 0:
-                self.f_pole = self.f_pole + 360
-            if self.f_arm < 0:
-                self.f_arm = self.f_arm + 360
+
+            print(self.f_pole)
         else:
             if self.b_beeps == True:
                 zumbador.beep_stop()
 
-            self.actualizar_etiquetas_msg("Can not reach that position...")
+            self.actualizar_etiquetas_msg("Can not reach that position...", "red")
             return True
 
 
@@ -832,7 +830,7 @@ class hmi_SM13():
             if self.b_beeps == True:
                 zumbador.beep_stop()
 
-            self.actualizar_etiquetas_msg("Can not reach that position...")
+            self.actualizar_etiquetas_msg("Can not reach that position...", "red")
 
             return True
 
@@ -847,7 +845,7 @@ class hmi_SM13():
             depurador(1, "HMI", " ")
             
             b_on_condition = False
-            self.actualizar_etiquetas_msg("Moving to tube ROW : "+ str(self.ui_plan_row) + ", COL : "+str(self.ui_plan_col))
+            self.actualizar_etiquetas_msg("Moving to tube ROW : "+ str(self.ui_plan_row) + ", COL : "+str(self.ui_plan_col), "green")
             
             
             if(b_simulador == 1):
@@ -872,7 +870,7 @@ class hmi_SM13():
             # Si todo salió bien, se activa el modo Automático, pero antes se asegura aparagar motor LIFT
             if a_HMIDataString[0] == "LIFT":
                 a_HMIDataString[0] = "STOP"
-                self.actualizar_etiquetas_msg("Stopping LIFT first, try again...")
+                self.actualizar_etiquetas_msg("Stopping LIFT first, try again", "red")
                 self.b_fr_boton_lift_up_total.set_active(False)
                 self.b_fr_boton_lift_down_total.set_active(False)
                 self.b_manual_boton_lift_up_total.set_active(False)
@@ -920,7 +918,7 @@ class hmi_SM13():
             if self.b_beeps == True:
                 zumbador.beep_stop()
 
-            self.actualizar_etiquetas_msg("Fixture control is disabled...")
+            self.actualizar_etiquetas_msg("Fixture control is disabled...", "red")
 
             return True
         
@@ -962,18 +960,12 @@ class hmi_SM13():
         # Se convierten los ágnulos de las articulaciones a grados y se redondea a 3 decimales
         self.f_pole = round(np.rad2deg(self.f_pole), 3)
         self.f_arm = round(np.rad2deg(self.f_arm), 3)
-        # A veces pasa que la conversión da números negativos así que se corrige 
-        if self.f_pole < 0:
-            self.f_pole = self.f_pole + 360
-        if self.f_arm < 0:
-            self.f_arm = self.f_arm + 360
-
 
         if not self.b_ik_success:
             if self.b_beeps == True:
                 zumbador.beep_stop()
 
-            self.actualizar_etiquetas_msg("Can not reach that position...")
+            self.actualizar_etiquetas_msg("Can not reach that position...", "red")
             return True
 
         else:
@@ -988,7 +980,7 @@ class hmi_SM13():
             depurador(1, "HMI", " ")
             
             b_on_condition = False
-            self.actualizar_etiquetas_msg("Moving to tube ROW : "+ str(self.ui_plan_row) + ", COL : "+str(self.ui_plan_col))
+            self.actualizar_etiquetas_msg("Moving to tube ROW : "+ str(self.ui_plan_row) + ", COL : "+str(self.ui_plan_col), "green")
             
             
             if(b_simulador == 1):
@@ -1012,7 +1004,7 @@ class hmi_SM13():
             # Si todo salió bien, se activa el modo Automático, pero antes se asegura aparagar motor LIFT
             if a_HMIDataString[0] == "LIFT":
                 a_HMIDataString[0] = "STOP"
-                self.actualizar_etiquetas_msg("Stopping LIFT first, try again...")
+                self.actualizar_etiquetas_msg("Stopping LIFT first, try again...", "red")
                 self.b_fr_boton_lift_up_total.set_active(False)
                 self.b_fr_boton_lift_down_total.set_active(False)
                 self.b_manual_boton_lift_up_total.set_active(False)
@@ -1396,7 +1388,7 @@ class hmi_SM13():
                     if self.b_beeps == True:
                         zumbador.beep_stop()
 
-                    self.actualizar_etiquetas_msg("Coordinate unreacheable...")
+                    self.actualizar_etiquetas_msg("Coordinate unreacheable...", "red")
 
                     return True
 
@@ -1414,7 +1406,7 @@ class hmi_SM13():
                 # resetear el jog, pero antes se asegura apagar motor LIFT (si se encontrara activado)
                 if a_HMIDataString[0] == "LIFT":
                     a_HMIDataString[0] = "STOP"
-                    self.actualizar_etiquetas_msg("Stopping LIFT first, try again...")
+                    self.actualizar_etiquetas_msg("Stopping LIFT first, try again...", "red")
                     self.b_fr_boton_lift_up_total.set_active(False)
                     self.b_fr_boton_lift_down_total.set_active(False)
                     self.b_manual_boton_lift_up_total.set_active(False)
@@ -1471,7 +1463,7 @@ class hmi_SM13():
             if self.b_beeps == True:
                 zumbador.beep_stop()
 
-            self.actualizar_etiquetas_msg("Fixture control is disabled...")
+            self.actualizar_etiquetas_msg("Fixture control is disabled...", "red")
 
             return True
         
@@ -1485,7 +1477,7 @@ class hmi_SM13():
             self.inicio_toggle_fixture_control.set_active(False)
             self.inicio_etiqueta_estado_main_control.set_text("Disabled")
             # Se indica en todas las etiquetas de msg del hmi
-            self.actualizar_etiquetas_msg("Fixture harness is stalled, main control disabled...")
+            self.actualizar_etiquetas_msg("Fixture harness is stalled, main control disabled...", "red")
 
             return True
         
@@ -1536,18 +1528,12 @@ class hmi_SM13():
         # Se convierten los ágnulos de las articulaciones a grados y se redondea a 3 decimales
         self.f_pole = round(np.rad2deg(self.f_pole), 3)
         self.f_arm = round(np.rad2deg(self.f_arm), 3)
-        # A veces pasa que la conversión da números negativos así que se corrige 
-        if self.f_pole < 0:
-            self.f_pole = self.f_pole + 360
-        if self.f_arm < 0:
-            self.f_arm = self.f_arm + 360
-
 
         if not self.b_ik_success:
             if self.b_beeps == True:
                 zumbador.beep_stop()
 
-            self.actualizar_etiquetas_msg("Can not move positioner in that direction...")
+            self.actualizar_etiquetas_msg("Can not move positioner in that direction...", "red")
             
             return True
 
@@ -1573,7 +1559,7 @@ class hmi_SM13():
         # realizar el jog, pero antes se asegura apagar motor LIFT (si se encontrara activado)
         if a_HMIDataString[0] == "LIFT":
             a_HMIDataString[0] = "STOP"
-            self.actualizar_etiquetas_msg("Stopping LIFT first, try again...")
+            self.actualizar_etiquetas_msg("Stopping LIFT first, try again...", "red")
             self.b_fr_boton_lift_up_total.set_active(False)
             self.b_fr_boton_lift_down_total.set_active(False)
             self.b_manual_boton_lift_up_total.set_active(False)
@@ -1631,7 +1617,6 @@ class hmi_SM13():
 
             ui_pole_rdc_offset = int(a_RTUDataRx[1] - self.ui_pole_res_for_cal) 
             ui_arm_rdc_offset = int(a_RTUDataRx[0] - self.ui_arm_res_for_cal)
-            print(ui_pole_rdc_offset, ui_arm_rdc_offset)
 
         if self.s_pivot_type == "alternative":
             # ejemplo corrido en campo
@@ -1645,7 +1630,7 @@ class hmi_SM13():
         if (ui_pole_rdc_offset > self.ui_MAX_CUENTAS or ui_arm_rdc_offset > self.ui_MAX_CUENTAS) or (ui_pole_rdc_offset < 0 or ui_arm_rdc_offset < 0):
             depurador(1, "HMI", "- Error en el cálculo de offsets, se mantiene valor anterior") 
             depurador(1, "HMI", "-  ") 
-            self.actualizar_etiquetas_msg("calibration point error...")
+            self.actualizar_etiquetas_msg("calibration point error...", "red")
             return True
 
         depurador(1, "HMI", "- Valor resolver teórico: ")
@@ -1717,7 +1702,7 @@ class hmi_SM13():
         a_HMIDataByte[0] = float((ui_arm_rdc_offset/self.ui_MAX_CUENTAS)*self.f_MAX_GRADOS)
         # Se envía el comando de "CAL_SET" para establecer la calibración del punto seleccionados en la RTU
         a_HMIDataString[6] = "CAL_SET"
-        self.actualizar_etiquetas_msg("Calibration point success at COL: "+ str(self.ui_plan_col) + ", ROW: "+ str(self.ui_plan_row))
+        self.actualizar_etiquetas_msg("Calibration point success at COL: "+ str(self.ui_plan_col) + ", ROW: "+ str(self.ui_plan_row), "green")
     
     ##
     # @brief Función que indica si se han cargado archivos de configuración o no
@@ -1726,7 +1711,7 @@ class hmi_SM13():
     def archivos(self):
 
         if (self.s_archivo_hx == 'none' or self.s_archivo_fixture == 'none' or self.s_archivo_plan == 'none'):
-            self.actualizar_etiquetas_msg("No configuration files has been loaded...")
+            self.actualizar_etiquetas_msg("No configuration files has been loaded...", "red")
 
             if self.b_beeps == True:
                 zumbador.beep_stop()
@@ -1757,11 +1742,18 @@ class hmi_SM13():
     # @param self puntero al objeto HMI
     # @param s_msg Mensaje general a imprimir en todas las etiquetas de las solapas
     # @return none
-    def actualizar_etiquetas_msg(self, s_msg): 
-        self.inicio_etiqueta_msg.set_text(s_msg)
-        self.fr_etiqueta_msg.set_text(s_msg)
-        self.manual_etiqueta_msg.set_text(s_msg)
-        self.inspection_etiqueta_msg.set_text(s_msg)
+    def actualizar_etiquetas_msg(self, s_msg, s_color): 
+
+        if s_color == "red":
+            self.inicio_etiqueta_msg.set_markup("<span foreground='red'> " + s_msg + " </span>")
+            self.fr_etiqueta_msg.set_markup("<span foreground='red'> " + s_msg + " </span>")
+            self.manual_etiqueta_msg.set_markup("<span foreground='red'> " + s_msg + " </span>")
+            self.inspection_etiqueta_msg.set_markup("<span foreground='red'> " + s_msg + " </span>")
+        if s_color == "green":
+            self.inicio_etiqueta_msg.set_markup("<span foreground='green'> " + s_msg + " </span>")
+            self.fr_etiqueta_msg.set_markup("<span foreground='green'> " + s_msg + " </span>")
+            self.manual_etiqueta_msg.set_markup("<span foreground='green'> " + s_msg + " </span>")
+            self.inspection_etiqueta_msg.set_markup("<span foreground='green'> " + s_msg + " </span>")
           
         return True
 
@@ -1936,7 +1928,7 @@ class hmi_SM13():
             if self.b_beeps == True:
                 zumbador.beep_stop()
 
-            self.actualizar_etiquetas_msg("Fixture control is disabled...")
+            self.actualizar_etiquetas_msg("Fixture control is disabled...", "red")
 
             # Si no está habilitado el control principal aseguramos que no queden 
             # presionados los botones toggle de las diferentes solapas
@@ -1960,7 +1952,7 @@ class hmi_SM13():
             self.b_inspection_boton_lift_up_total.set_active(False)
             self.b_inspection_boton_lift_down_total.set_active(False)
 
-            self.actualizar_etiquetas_msg("Wait for ARM or POLE stop movement!")
+            self.actualizar_etiquetas_msg("Wait for ARM or POLE stop movement!", "red")
 
             if self.b_beeps == True:
                 zumbador.beep_stop()
@@ -2070,7 +2062,7 @@ class hmi_SM13():
                 if(self.b_limitDwn == True):
                     a_HMIDataString[0] = "STOP"
                     a_HMIDataString[5] = "LIFT_DOWN"
-                    self.actualizar_etiquetas_msg("Lift lower limit alarm!")
+                    self.actualizar_etiquetas_msg("Lift lower limit alarm!", "red")
                     depurador(3, "HMI", "****************************************")
                     depurador(3, "HMI", "- Límite inferior alcanzado en LIFT")
                     depurador(3, "HMI", " ")
@@ -2088,7 +2080,7 @@ class hmi_SM13():
         depurador(1, "HMI", " ")
         
         b_on_condition = False
-        self.actualizar_etiquetas_msg("Moving "+ a_HMIDataString[5] + "...")
+        self.actualizar_etiquetas_msg("Moving "+ a_HMIDataString[5] + "...", "green")
         
     
         return 
@@ -2162,7 +2154,7 @@ class hmi_SM13():
         depurador(4, "HMI", "- Modo: " + a_HMIDataString[0])
         depurador(4, "HMI", " ")
         
-        self.actualizar_etiquetas_msg("Stopping movement..." + s_FR_Axis)
+        self.actualizar_etiquetas_msg("Stopping movement..." + s_FR_Axis, "red")
     
         # retorna False para detener el temporizador
         return False
@@ -2184,7 +2176,7 @@ class hmi_SM13():
 
         # Antes de mover verifica si está activado el control principal
         if (a_HMIDataString[3] == "DISABLE_CONTROL"):
-            self.actualizar_etiquetas_msg("Fixture control is disabled...")
+            self.actualizar_etiquetas_msg("Fixture control is disabled...", "red")
 
             # Si no está habilitado el control principal aseguramos que no queden 
             # presionados los botones toggle de las diferentes solapas
@@ -2611,7 +2603,7 @@ class hmi_SM13():
         
         # Antes de mover verifica si está activado el control principal
         if (a_HMIDataString[3] == "DISABLE_CONTROL"):
-            self.actualizar_etiquetas_msg("Fixture control is disabled...")
+            self.actualizar_etiquetas_msg("Fixture control is disabled...", "red")
 
             if self.b_beeps == True:
                 zumbador.beep_stop()
@@ -2785,7 +2777,7 @@ class hmi_SM13():
         # Si no hay conexión con RTU se avisa constantemente, si se conectó, la variable
         # print_status permite que se muestre el aviso de conexión solo una vez.
         if(b_connect  == False):
-            self.actualizar_etiquetas_msg("Attempting to connect to NFC...")
+            self.actualizar_etiquetas_msg("Attempting to connect to NFC...", "red")
             self.b_print_status = True
             self.inicio_etiqueta_estado_red.set_text("Disconnected :-(")
 
@@ -2798,12 +2790,12 @@ class hmi_SM13():
             # Cuando no hay conexión con RTU intenta 
             depurador(1, "HMI", "****************************************")
             depurador(1, "HMI", "- Conexión HMI-RTU: " + str(b_connect))
-            self.actualizar_etiquetas_msg("HMI connected to NFC !")
+            self.actualizar_etiquetas_msg("HMI connected to NFC !", "green")
             self.inicio_etiqueta_estado_red.set_text("Connected :-)")
             self.b_print_status = False
 
         if (b_on_condition == True):
-            self.actualizar_etiquetas_msg("Fixture is ON CONDITION")
+            self.actualizar_etiquetas_msg("Fixture is ON CONDITION", "green")
         #else:
             #self.actualizar_etiquetas_msg(" ")
 
@@ -2814,7 +2806,7 @@ class hmi_SM13():
 
             self.detener_movimientos("TOTAL")
             # Se indica en todas las etiquetas de msg del hmi
-            self.actualizar_etiquetas_msg("Fixture harness is stalled, main control disabled...")
+            self.actualizar_etiquetas_msg("Fixture harness is stalled, main control disabled...", "red")
 
         if a_HMIDataString[6] == "CAL_SET":   
             time.sleep(0.05)
@@ -2934,13 +2926,12 @@ def tm():
 
         elif (b_connect == True):
             try:
-                depurador(2, "TM", "- OFFSETs POLE, ARM: " + str(ui_pole_rdc_offset) + ", " + str(ui_arm_rdc_offset)) 
-                depurador(2, "TM", "--> Paquete Data_String: " + str(a_HMIDataString))
+                depurador(4, "TM", "- OFFSETs POLE, ARM: " + str(ui_pole_rdc_offset) + ", " + str(ui_arm_rdc_offset)) 
+                depurador(4, "TM", "--> Paquete Data_String: " + str(a_HMIDataString))
 
                 if a_HMIDataString[3] == "CONTROL_ENABLE" and toggle_enable == True:
                     # Se actualiza byte de Tx con el ángulo de offset correspondiente, luego el conversor lo pasará a cuentas
                     # sin corregir con offset 
-                    print(a_HMIDataByte[1], a_HMIDataByte[0], ui_pole_rdc_offset,ui_arm_rdc_offset)
                     a_HMIDataByte[1] = float((ui_pole_rdc_offset/65535)*360.0)
                     a_HMIDataByte[0] = float((ui_arm_rdc_offset/65535)*360.0)
                     # Se envía el comando de "CAL_SET" para establecer la calibración del punto seleccionados en la RTU

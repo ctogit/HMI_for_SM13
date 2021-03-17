@@ -2916,7 +2916,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="halign">center</property>
-                        <property name="spacing">10</property>
                         <child>
                           <object class="GtkLabel" id="manual_etiqueta_valor_temperatura">
                             <property name="visible">True</property>
@@ -5518,7 +5517,6 @@ Tube</property>
                     </child>
                     <child>
                       <object class="GtkBox">
-                        <property name="width_request">270</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
@@ -5575,7 +5573,6 @@ Tube</property>
                         </child>
                         <child>
                           <object class="GtkScrolledWindow">
-                            <property name="width_request">150</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="margin_right">90</property>

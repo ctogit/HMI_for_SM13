@@ -68,11 +68,11 @@ def enviar_a_y_recibir_de_rtu(a_HMIDataByte, a_HMIDataString, b_connect, s_sock,
         # Transmisión de tramas y recepción de datos desde RTU -a_RTUData-.
     a_RTUData, b_connect, s_sock = DataTxRx(a_HMIDataByte, a_HMIDataString, s_CLIENT_ID, s_sock, b_connect)
 
-    depurador(2, "HMIcomRTU", "****************************************")
-    depurador(2, "HMIcomRTU", "- Enviando...")
-    depurador(2, "HMIcomRTU", "- Tx--> HMIDataByte: " + str(a_HMIDataByte))
-    depurador(2, "HMIcomRTU", "- Tx--> HMIDataString: " + str(a_HMIDataString))
-    depurador(2, "HMIcomRTU", " ")
+    depurador(4, "HMIcomRTU", "****************************************")
+    depurador(4, "HMIcomRTU", "- Enviando...")
+    depurador(4, "HMIcomRTU", "- Tx--> HMIDataByte: " + str(a_HMIDataByte))
+    depurador(4, "HMIcomRTU", "- Tx--> HMIDataString: " + str(a_HMIDataString))
+    depurador(4, "HMIcomRTU", " ")
         
     # Valores de salida para módulo HMIcomRTU
     return a_RTUData, b_connect, s_sock
@@ -319,9 +319,9 @@ def RTUTranslate(a_RTUDataRx):
     # Se juntan los datos numéricos de resolver y velocidad en una lista-.
     a_RTUDataRx = a_RTUDataRx.split()
 
-    depurador(2, "HMIcomRTU", "****************************************")
-    depurador(2, "HMIcomRTU", "- Recibiendo...")
-    depurador(3, "HMIcomRTU","- Rx<-- RTUDataRx  :" + str(a_RTUDataRx))
+    depurador(4, "HMIcomRTU", "****************************************")
+    depurador(4, "HMIcomRTU", "- Recibiendo...")
+    depurador(4, "HMIcomRTU","- Rx<-- RTUDataRx  :" + str(a_RTUDataRx))
 
     #depurador(3, "HMIcomRTU","- Rx<-- RTUDataString :" + str(a_RTUDataString))
     
