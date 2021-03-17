@@ -400,6 +400,7 @@
         <property name="height_request">470</property>
         <property name="visible">True</property>
         <property name="can_focus">True</property>
+        <property name="halign">center</property>
         <child>
           <object class="GtkBox">
             <property name="visible">True</property>
@@ -2733,11 +2734,13 @@
                     <property name="width_request">110</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="halign">center</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkLabel" id="manual_etiqueta_lift">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="halign">center</property>
                         <property name="margin_left">30</property>
                         <property name="margin_right">30</property>
                         <property name="margin_top">40</property>
@@ -2763,6 +2766,8 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="halign">center</property>
+                        <property name="margin_left">15</property>
+                        <property name="margin_right">15</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
                         <signal name="clicked" handler="evento_lift_up" swapped="no"/>
@@ -2790,6 +2795,8 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="halign">center</property>
+                        <property name="margin_left">15</property>
+                        <property name="margin_right">15</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
                         <signal name="clicked" handler="evento_lift_down" swapped="no"/>
@@ -2887,15 +2894,73 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkLabel" id="manual_etiqueta_nfc_temp">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="halign">center</property>
+                        <property name="margin_top">20</property>
+                        <property name="label" translatable="yes">NFC Temp.</property>
+                        <attributes>
+                          <attribute name="font-desc" value="Quicksand Bold 12"/>
+                          <attribute name="foreground" value="#20204a4a8787"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">5</property>
+                      </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkBox">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="halign">center</property>
+                        <property name="spacing">10</property>
+                        <child>
+                          <object class="GtkLabel" id="manual_etiqueta_valor_temperatura">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">center</property>
+                            <property name="label" translatable="yes">--</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Quicksand Bold 12"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="manual_etiqueta_degrees">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">center</property>
+                            <property name="label" translatable="yes">ºC</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Quicksand 10"/>
+                              <attribute name="foreground" value="#20204a4a8787"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">6</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
-                    <property name="fill">True</property>
+                    <property name="fill">False</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
@@ -4470,6 +4535,7 @@
                       <object class="GtkSeparator">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="halign">center</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -5165,11 +5231,13 @@
                         <property name="width_request">110</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="halign">center</property>
                         <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkLabel" id="inspection_etiqueta_lift">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="halign">center</property>
                             <property name="margin_left">30</property>
                             <property name="margin_right">30</property>
                             <property name="margin_top">40</property>
@@ -5323,10 +5391,67 @@
                           </packing>
                         </child>
                         <child>
-                          <placeholder/>
+                          <object class="GtkLabel" id="inspection_etiqueta_nfc_temp">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">center</property>
+                            <property name="margin_top">20</property>
+                            <property name="label" translatable="yes">NFC Temp.</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Quicksand Bold 12"/>
+                              <attribute name="foreground" value="#20204a4a8787"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">5</property>
+                          </packing>
                         </child>
                         <child>
-                          <placeholder/>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">center</property>
+                            <child>
+                              <object class="GtkLabel" id="inspection_etiqueta_valor_temperatura">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">center</property>
+                                <property name="label" translatable="yes">--</property>
+                                <attributes>
+                                  <attribute name="font-desc" value="Quicksand Bold 12"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="inspection_etiqueta_degrees">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">center</property>
+                                <property name="label" translatable="yes">ºC</property>
+                                <attributes>
+                                  <attribute name="font-desc" value="Quicksand 10"/>
+                                  <attribute name="foreground" value="#20204a4a8787"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">6</property>
+                          </packing>
                         </child>
                       </object>
                       <packing>
@@ -5393,6 +5518,7 @@ Tube</property>
                     </child>
                     <child>
                       <object class="GtkBox">
+                        <property name="width_request">270</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
@@ -5452,7 +5578,7 @@ Tube</property>
                             <property name="width_request">150</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="margin_right">20</property>
+                            <property name="margin_right">90</property>
                             <property name="hexpand">True</property>
                             <property name="vexpand">True</property>
                             <property name="shadow_type">in</property>
@@ -5577,16 +5703,7 @@ Tube</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkLabel" id="temperatura">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">temperatura</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
+              <placeholder/>
             </child>
             <child>
               <placeholder/>

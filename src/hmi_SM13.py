@@ -453,8 +453,11 @@ class hmi_SM13():
         ## Etiqueta que indica el tipo de pivot actual seleccionado
         self.inicio_etiqueta_estado_pivot = self.builder.get_object("inicio_etiqueta_estado_pivot")
         
-        ## Etiqueta de actualización de hora en solapa Free Run
-        self.help_etiqueta_temperatura = self.builder.get_object("temperatura")
+        ## Etiqueta de actualización de Temperatura en solapa manual
+        self.manual_etiqueta_valor_temperatura = self.builder.get_object("manual_etiqueta_valor_temperatura")
+        
+        ## Etiqueta de actualización de Temperatura en solapa inspection
+        self.inspection_etiqueta_valor_temperatura = self.builder.get_object("inspection_etiqueta_valor_temperatura")
         
         ## Ventana principal del HMI
         self.window = self.builder.get_object("ventana_principal")
@@ -1733,6 +1736,22 @@ class hmi_SM13():
             return True
     
     ##
+    # @brief Función que optimiza la actualización de las etiquetas de temperatura
+    # simultáneamente en todas las solapas
+    # @param self puntero al objeto HMI
+    # @param  ui_T valor de temperatura que se desea mostrar 
+    # @return none
+    def actualizar_etiquetas_temperatura(self, ui_T):
+        if(a_RTUData[2] < 50):
+            self.manual_etiqueta_valor_temperatura.set_markup("<span foreground='green'> " + str(ui_T) + " </span>")
+            self.inspection_etiqueta_valor_temperatura.set_markup("<span foreground='green'> " + str(ui_T) + " </span>")
+        else:
+            self.inspection_etiqueta_valor_temperatura.set_markup("<span foreground='orange'> " + str(ui_T) + " </span>")
+            self.inspection_etiqueta_valor_temperatura.set_markup("<span foreground='orange'> " + str(ui_T) + " </span>")
+
+            return True
+
+    ##
     # @brief Función que optimiza la actualización de mensajes generales
     # simultáneamente en todas las etiquetas de msg de las diferentes solapas
     # @param self puntero al objeto HMI
@@ -2760,12 +2779,8 @@ class hmi_SM13():
 
         # Se actualizarn las etiquetas de hora y fecha en todas las solapas
         self.actualizar_etiquetas_reloj(s_hr+":"+s_min, s_dia+"/"+s_mes+"/"+s_anio) 
-        
-        if(a_RTUData[2] < 100):
-            self.help_etiqueta_temperatura.set_markup("<span foreground='blue'> " + str(a_RTUData[2]) + " </span>")
-        else:
-            self.help_etiqueta_temperatura.set_markup("<span foreground='orange'> " + str(a_RTUData[2]) + " </span>")
-                
+
+        self.actualizar_etiquetas_temperatura(a_RTUData[2])              
 
         # Si no hay conexión con RTU se avisa constantemente, si se conectó, la variable
         # print_status permite que se muestre el aviso de conexión solo una vez.
