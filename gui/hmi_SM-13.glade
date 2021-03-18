@@ -686,6 +686,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="valign">center</property>
+                        <property name="margin_top">15</property>
                         <property name="label" translatable="yes">Designed by</property>
                         <attributes>
                           <attribute name="font-desc" value="Quicksand 10"/>
@@ -754,7 +755,6 @@
                         <property name="label" translatable="yes">disconected :-(</property>
                         <attributes>
                           <attribute name="font-desc" value="Quicksand 10"/>
-                          <attribute name="foreground" value="#20204a4a8787"/>
                         </attributes>
                       </object>
                       <packing>

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['lista_5ftubos_414',['lista_tubos',['../classhmi__SM13_1_1hmi__SM13.html#ab47178f915bd4af01ff5227f11439f50',1,'hmi_SM13::hmi_SM13']]]
+  ['lista_5ftubos_439',['lista_tubos',['../classhmi__SM13_1_1hmi__SM13.html#ab47178f915bd4af01ff5227f11439f50',1,'hmi_SM13::hmi_SM13']]],
+  ['logger_440',['logger',['../namespacelogger.html#a0b14e488ae28d98d262453f3e9cd6e4d',1,'logger']]]
 ];

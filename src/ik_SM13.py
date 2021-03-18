@@ -60,7 +60,6 @@ def ik_SM13(f_x, f_y, f_l1, f_l2, f_l3, f_l4, s_pivot_type):
             f_qa = 2*math.pi - math.acos((f_La**2 + f_Lp**2 - f_h**2)/(2*f_La*f_Lp))
 
         # A veces pasa que la matemática da números negativos o mayores a 360ª así que se corrige. 
-        print("hola",f_qp, f_qa)
         if f_qp < 0.0:
             f_qp = f_qp + 2*np.pi
         if f_qa < 0.0:
@@ -69,7 +68,6 @@ def ik_SM13(f_x, f_y, f_l1, f_l2, f_l3, f_l4, s_pivot_type):
             f_qp = f_qp - 2*np.pi
         if f_qa >= 2*np.pi:
             f_qa = f_qa - 2*np.pi
-        print("chau",f_qp, f_qa)
         b_success = True
 
         depurador(2, "ik_SM13", " ")

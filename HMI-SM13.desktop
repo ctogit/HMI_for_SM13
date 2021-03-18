@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=HMI-SM13
+Comment=Habilitar permisos y ejectuar chmod +x hmi_SM13.py
+Exec=/home/gspc/Proyectos/SM-13/hmi/src/hmi_SM13.py
+Icon=/home/gspc/Proyectos/SM-13/hmi/gui/robot.png
+Terminal=False
+Type=Application

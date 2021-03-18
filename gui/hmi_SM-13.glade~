@@ -421,7 +421,6 @@
                     <property name="label" translatable="yes">Attempting to connect with RTU...</property>
                     <attributes>
                       <attribute name="font-desc" value="Quicksand Bold 12"/>
-                      <attribute name="foreground" value="#efef29292929"/>
                     </attributes>
                   </object>
                   <packing>
@@ -687,6 +686,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="valign">center</property>
+                        <property name="margin_top">20</property>
                         <property name="label" translatable="yes">Designed by</property>
                         <attributes>
                           <attribute name="font-desc" value="Quicksand 10"/>
@@ -755,7 +755,6 @@
                         <property name="label" translatable="yes">disconected :-(</property>
                         <attributes>
                           <attribute name="font-desc" value="Quicksand 10"/>
-                          <attribute name="foreground" value="#20204a4a8787"/>
                         </attributes>
                       </object>
                       <packing>
@@ -1386,7 +1385,6 @@
                     <property name="label" translatable="yes">Moviendo telemanipulador...</property>
                     <attributes>
                       <attribute name="font-desc" value="Quicksand Bold 12"/>
-                      <attribute name="foreground" value="#efef29292929"/>
                     </attributes>
                   </object>
                   <packing>
@@ -2685,7 +2683,6 @@
                     <property name="label" translatable="yes">No configuration files has been loaded...</property>
                     <attributes>
                       <attribute name="font-desc" value="Quicksand Bold 12"/>
-                      <attribute name="foreground" value="#efef29292929"/>
                     </attributes>
                   </object>
                   <packing>
@@ -4480,7 +4477,6 @@
                     <property name="label" translatable="yes">No configuration files has been loaded...</property>
                     <attributes>
                       <attribute name="font-desc" value="Quicksand Bold 12"/>
-                      <attribute name="foreground" value="#8a8ae2e23434"/>
                     </attributes>
                   </object>
                   <packing>
@@ -5575,7 +5571,6 @@ Tube</property>
                           <object class="GtkScrolledWindow">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="margin_right">90</property>
                             <property name="hexpand">True</property>
                             <property name="vexpand">True</property>
                             <property name="shadow_type">in</property>

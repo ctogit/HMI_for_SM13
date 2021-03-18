@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['actualizar_5fetiquetas_5fenc_5fang_267',['actualizar_etiquetas_enc_ang',['../classhmi__SM13_1_1hmi__SM13.html#a13b220f6bcd376d9a145460cea3b914d',1,'hmi_SM13::hmi_SM13']]],
-  ['actualizar_5fetiquetas_5fmsg_268',['actualizar_etiquetas_msg',['../classhmi__SM13_1_1hmi__SM13.html#acac94972b8d0f5ae5f13b814ae87c89a',1,'hmi_SM13::hmi_SM13']]],
-  ['actualizar_5fetiquetas_5freloj_269',['actualizar_etiquetas_reloj',['../classhmi__SM13_1_1hmi__SM13.html#a84adba1090fbd31ae5616428c295d369',1,'hmi_SM13::hmi_SM13']]],
-  ['archivos_270',['archivos',['../classhmi__SM13_1_1hmi__SM13.html#abe08d73d17b21ee8e043d12cbd6a6ccb',1,'hmi_SM13::hmi_SM13']]]
+  ['actualizar_5fetiquetas_5fenc_5fang_282',['actualizar_etiquetas_enc_ang',['../classhmi__SM13_1_1hmi__SM13.html#a13b220f6bcd376d9a145460cea3b914d',1,'hmi_SM13::hmi_SM13']]],
+  ['actualizar_5fetiquetas_5fmsg_283',['actualizar_etiquetas_msg',['../classhmi__SM13_1_1hmi__SM13.html#aba3a91ae444526bdd33975a4a142b471',1,'hmi_SM13::hmi_SM13']]],
+  ['actualizar_5fetiquetas_5freloj_284',['actualizar_etiquetas_reloj',['../classhmi__SM13_1_1hmi__SM13.html#a84adba1090fbd31ae5616428c295d369',1,'hmi_SM13::hmi_SM13']]],
+  ['actualizar_5fetiquetas_5ftemperatura_285',['actualizar_etiquetas_temperatura',['../classhmi__SM13_1_1hmi__SM13.html#a892b69c328aa5bd84f528d06493b55b7',1,'hmi_SM13::hmi_SM13']]],
+  ['archivos_286',['archivos',['../classhmi__SM13_1_1hmi__SM13.html#abe08d73d17b21ee8e043d12cbd6a6ccb',1,'hmi_SM13::hmi_SM13']]]
 ];
