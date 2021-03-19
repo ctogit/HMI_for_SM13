@@ -82,6 +82,7 @@ import zumbador
 import multiprocessing
 import threading
 import registrador
+
 global simu
 global a_RTUData
 global a_RTUDataRx
@@ -252,7 +253,7 @@ class hmi_SM13():
         ## Variable contiene el tipo de solución matemática que va a usar el
         # algoritmo de cinemática inversa para que el quiebre del ARM se de la
         # forma principal o alternativa.
-        self.s_pivot_type = "main"
+        self.s_name_pivot_type = "main"
         ## Contiene la ruta a la carpeta SM-13.
         # Cambiar esta línea para correr el HMI en otro sistema y
         # procurar que la ruta tenga la misma cantidad de carpetas, ej: /Carpeta1/Carpeta2/Carpeta3/SM-13
@@ -686,17 +687,17 @@ class hmi_SM13():
             if self.b_beeps == True:
                     zumbador.beep_button()
 
-            if (self.s_pivot_type == "main"):
-                self.s_pivot_type = "alternative"
-            elif (self.s_pivot_type == "alternative"):
-                self.s_pivot_type = "main"
+            if (self.s_name_pivot_type == "main"):
+                self.s_name_pivot_type = "alternative"
+            elif (self.s_name_pivot_type == "alternative"):
+                self.s_name_pivot_type = "main"
 
-            self.actualizar_etiquetas_msg("Fixture " + self.s_pivot_type + " pivot type selected", "green")
-            self.inicio_etiqueta_estado_pivot.set_text(self.s_pivot_type)
-            registrador.info("Fixture " + self.s_pivot_type + " pivot type selected")
+            self.actualizar_etiquetas_msg("Fixture " + self.s_name_pivot_type + " pivot type selected", "green")
+            self.inicio_etiqueta_estado_pivot.set_text(self.s_name_pivot_type)
+            registrador.info("Fixture " + self.s_name_pivot_type + " pivot type selected")
 
             depurador(1, "HMI", "****************************************")
-            depurador(1, "HMI", "- Fixture pivot = " + self.s_pivot_type)
+            depurador(1, "HMI", "- Fixture pivot = " + self.s_name_pivot_type)
             depurador(1, "HMI", " ")
         
         return True
@@ -809,6 +810,11 @@ class hmi_SM13():
         if (self.ui_plan_col != 0 and self.ui_plan_row != 0):
             # Extrae las distancias x,y desde el archivo del hx (en pulgadas) según tubo seleccionado
             self.f_px_tubo, self.f_py_tubo, self.a_lista_px, self.a_lista_py, b_error_coordenada = leer_archivo_hx(self.ui_plan_col, self.ui_plan_row, self.s_archivo_hx)
+            
+            self.corregir_ordenadas_plan_par()
+
+            #if self.s_archivo_plan == 
+
             # Se agrega el jog si lo hubiere
             depurador(1, "HMI", "- Jog aplicado a Px = " + str(round(self.f_incremento_acumulado_jog_col*self.f_x_pitch, 2)) + " in")
             self.f_px_tubo -= self.f_incremento_acumulado_jog_col*self.f_x_pitch
@@ -823,7 +829,7 @@ class hmi_SM13():
         # a calcular nuevos ángulos.
         if not b_error_coordenada:
             # Calcula los ángulos de los ejes POLE y ARM en base a la distancia que hay que alcanzar
-            self.f_pole, self.f_arm, self.b_ik_success = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, self.s_pivot_type)
+            self.f_pole, self.f_arm, self.b_ik_success = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, self.s_name_pivot_type)
 
             # Se convierten los ágnulos de las articulaciones a grados y se redondea a 3 decimales
             self.f_pole = round(np.rad2deg(self.f_pole), 3)
@@ -902,6 +908,19 @@ class hmi_SM13():
             return True
     
     ##
+    # @brief Función que corrige la posición py de los tubos con plan de inspección par. 
+    # @param self Puntero al objeto HMI
+    # @return none
+    def corregir_ordenadas_plan_par(self):
+        s_name_pi_montaje = self.s_archivo_plan.split('/')            
+        s_name_pi = str(s_name_pi_montaje[len(s_name_pi_montaje)-1]).split('_')
+        s_pi = s_name_pi[0]
+        if s_pi == "InspPlan2" or s_pi == "InspPlan4" or s_pi == "InspPlan6":
+            self.f_py_tubo = self.f_py_tubo - 9.0 - (self.ui_plan_row - 1)*2*0.6625
+
+        return True
+
+    ##
     # @brief Función que se activa al presionar botón "Next Tube". Identifica
     # la fila actual y selecciona la siguiente en el plan de inspección activo.
     # Usa el scrip leer_archivo_hx.py para calcular P[x,y] del siguiente [col, row]. 
@@ -958,6 +977,9 @@ class hmi_SM13():
         if (self.ui_plan_col != 0 and self.ui_plan_row != 0):
             # Extrae las distancias x,y desde el archivo del hx (en pulgadas) según tubo seleccionado
             self.f_px_tubo, self.f_py_tubo, self.a_lista_px, self.a_lista_py, b_error_coordenada = leer_archivo_hx(self.ui_plan_col, self.ui_plan_row, self.s_archivo_hx)
+
+            self.corregir_ordenadas_plan_par()
+
             # Se agrega el jog si lo hubiere
             depurador(1, "HMI", "- Jog aplicado a Px = " + str(round(self.f_incremento_acumulado_jog_col*self.f_x_pitch, 2)) + " in")
             self.f_px_tubo -= self.f_incremento_acumulado_jog_col*self.f_x_pitch
@@ -969,7 +991,7 @@ class hmi_SM13():
             self.f_py_tubo = self.f_Ly - self.f_Lp + self.f_La - self.f_incremento_acumulado_jog_row*self.f_y_pitch
 
         # Calcula los ángulos de los ejes POLE y ARM en base a la distancia que hay que alcanzar
-        self.f_pole, self.f_arm, self.b_ik_success = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, self.s_pivot_type)
+        self.f_pole, self.f_arm, self.b_ik_success = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, self.s_name_pivot_type)
         
         # Se convierten los ágnulos de las articulaciones a grados y se redondea a 3 decimales
         self.f_pole = round(np.rad2deg(self.f_pole), 3)
@@ -1068,6 +1090,9 @@ class hmi_SM13():
 
             if (self.ui_plan_col != 0 and self.ui_plan_row != 0):
                 self.f_px_tubo, self.f_py_tubo, self.a_lista_px, self.a_lista_py, b_error_coordenada = leer_archivo_hx(self.ui_plan_col, self.ui_plan_row, self.s_archivo_hx)
+
+                self.corregir_ordenadas_plan_par()
+
                 # Se agrega el jog si lo hubiere
                 depurador(1, "HMI", "- Jog aplicado a Px = " + str(round(self.f_incremento_acumulado_jog_col*self.f_x_pitch, 2)) + " in")
                 self.f_px_tubo -= self.f_incremento_acumulado_jog_col*self.f_x_pitch
@@ -1396,7 +1421,7 @@ class hmi_SM13():
                 self.f_py_tubo += self.f_incremento_acumulado_jog_row*self.f_y_pitch
                 
                 # Calcula los ángulos de los ejes POLE y ARM en base al corrimiento
-                self.f_pole, self.f_arm, self.b_ik_success = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, self.s_pivot_type)   
+                self.f_pole, self.f_arm, self.b_ik_success = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, self.s_name_pivot_type)   
                 
                 # Se convierten los ágnulos de las articulaciones a grados y se redondea a 3 decimales
                 self.f_pole = round(np.rad2deg(self.f_pole), 3)
@@ -1549,7 +1574,7 @@ class hmi_SM13():
         self.actualizar_etiquetas_msg("Jogging the end effector position...", "green")
             
         # Calcula los ángulos de los ejes POLE y ARM en base al corrimiento
-        self.f_pole, self.f_arm, self.b_ik_success = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, self.s_pivot_type)   
+        self.f_pole, self.f_arm, self.b_ik_success = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, self.s_name_pivot_type)   
 
         # Se convierten los ágnulos de las articulaciones a grados y se redondea a 3 decimales
         self.f_pole = round(np.rad2deg(self.f_pole), 3)
@@ -1630,7 +1655,7 @@ class hmi_SM13():
 
         # Se calculan los offset (trasladados a home) en base a la diferencia, en cuentas de resolver, de la posición real del tubo tomado como referencia y el 
         # valor de cuenta resultante del cálculo matermático del mismo tubo.
-        if self.s_pivot_type == "main":
+        if self.s_name_pivot_type == "main":
             # ejemplo corrido en campo
             #_RTUDataRx[1] = 48000
             #a_RTUDataRx[0] = 63000
@@ -1638,7 +1663,7 @@ class hmi_SM13():
             ui_pole_rdc_offset = int(a_RTUDataRx[1] - self.ui_pole_res_for_cal) 
             ui_arm_rdc_offset = int(a_RTUDataRx[0] - self.ui_arm_res_for_cal)
 
-        if self.s_pivot_type == "alternative":
+        if self.s_name_pivot_type == "alternative":
             # ejemplo corrido en campo
             #a_RTUDataRx[1] = 31851
             #a_RTUDataRx[0] = 20949
