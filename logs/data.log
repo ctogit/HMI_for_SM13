@@ -1,0 +1,304 @@
+2021-03-19 10:20:16,433 - INFO -  
+2021-03-19 10:20:16,433 - INFO - ********* Starting HUMAN-MACHINE-INTERFACE for SM-13 **********
+2021-03-19 10:20:16,555 - INFO - Fixture harness stall function is enabled
+2021-03-19 10:20:17,351 - INFO - Stopping movement TOTAL
+2021-03-19 10:20:17,351 - ERROR - Attempting to connect to NFC
+2021-03-19 10:20:18,320 - INFO - HMI connected to NFC successfully
+2021-03-19 10:20:27,115 - INFO - Changing RTU IP/PORT parameters:
+2021-03-19 10:20:27,116 - INFO - Previous IP: 192.168.1.20, Previous Port: 5020
+2021-03-19 10:20:27,116 - INFO - Current  IP: 192.168.1.21, Current Port : 5020
+2021-03-19 10:20:30,184 - INFO - Changing RTU IP/PORT parameters:
+2021-03-19 10:20:30,184 - INFO - Previous IP: 192.168.1.21, Previous Port: 5020
+2021-03-19 10:20:30,184 - INFO - Current  IP: 192.168.1.20, Current Port : 5020
+2021-03-19 10:20:38,350 - INFO - System files loaded:
+2021-03-19 10:20:38,350 - INFO - HX file        : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/tubesheet.csv
+2021-03-19 10:20:38,350 - INFO - Inspection Plan: /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/InspPlan3_M_2.csv
+2021-03-19 10:20:38,350 - INFO - Fixture Model  : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Robots/Zetec/SM-13.csv
+2021-03-19 10:20:44,020 - INFO - Starting SM-13 simulator
+2021-03-19 10:20:48,794 - INFO - Fixture harness main control is enabled
+2021-03-19 10:20:50,176 - INFO - Fixture harness stall function is disabled
+2021-03-19 10:20:52,303 - INFO - Fixture alternative pivot type selected
+2021-03-19 10:20:57,168 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-19 10:20:59,189 - INFO - Moving to tube ROW : 1, COL : 3
+2021-03-19 10:20:59,894 - INFO - Moving to tube ROW : 1, COL : 5
+2021-03-19 10:21:00,342 - INFO - Moving to tube ROW : 1, COL : 7
+2021-03-19 10:21:00,628 - INFO - Moving to tube ROW : 1, COL : 9
+2021-03-19 10:21:00,901 - INFO - Moving to tube ROW : 1, COL : 11
+2021-03-19 10:21:01,345 - INFO - Moving to tube ROW : 1, COL : 13
+2021-03-19 10:21:01,622 - INFO - Moving to tube ROW : 1, COL : 15
+2021-03-19 10:21:01,903 - INFO - Moving to tube ROW : 1, COL : 17
+2021-03-19 10:21:02,172 - INFO - Moving to tube ROW : 1, COL : 19
+2021-03-19 10:21:02,611 - INFO - Moving to tube ROW : 1, COL : 20
+2021-03-19 10:21:02,893 - INFO - Moving to tube ROW : 2, COL : 21
+2021-03-19 10:21:03,179 - INFO - Moving to tube ROW : 2, COL : 18
+2021-03-19 10:21:03,618 - INFO - Moving to tube ROW : 2, COL : 16
+2021-03-19 10:21:03,899 - INFO - Moving to tube ROW : 2, COL : 14
+2021-03-19 10:21:04,182 - INFO - Moving to tube ROW : 2, COL : 12
+2021-03-19 10:21:04,453 - INFO - Moving to tube ROW : 2, COL : 10
+2021-03-19 10:21:04,890 - INFO - Moving to tube ROW : 2, COL : 8
+2021-03-19 10:21:05,165 - INFO - Moving to tube ROW : 2, COL : 6
+2021-03-19 10:21:05,433 - INFO - Moving to tube ROW : 2, COL : 4
+2021-03-19 10:21:05,713 - INFO - Moving to tube ROW : 2, COL : 2
+2021-03-19 10:21:06,160 - INFO - Moving to tube ROW : 3, COL : 1
+2021-03-19 10:21:06,430 - INFO - Moving to tube ROW : 3, COL : 3
+2021-03-19 10:21:06,700 - INFO - Moving to tube ROW : 3, COL : 5
+2021-03-19 10:21:06,977 - INFO - Moving to tube ROW : 3, COL : 7
+2021-03-19 10:21:07,425 - INFO - Moving to tube ROW : 3, COL : 9
+2021-03-19 10:21:07,710 - INFO - Moving to tube ROW : 3, COL : 11
+2021-03-19 10:21:07,995 - INFO - Moving to tube ROW : 3, COL : 13
+2021-03-19 10:21:08,432 - INFO - Moving to tube ROW : 3, COL : 15
+2021-03-19 10:21:08,720 - INFO - Moving to tube ROW : 3, COL : 17
+2021-03-19 10:21:08,999 - INFO - Moving to tube ROW : 3, COL : 19
+2021-03-19 10:21:09,438 - INFO - Moving to tube ROW : 3, COL : 20
+2021-03-19 10:21:09,723 - INFO - Moving to tube ROW : 4, COL : 21
+2021-03-19 10:21:10,008 - INFO - Moving to tube ROW : 4, COL : 18
+2021-03-19 10:21:10,445 - INFO - Moving to tube ROW : 4, COL : 16
+2021-03-19 10:21:10,727 - INFO - Moving to tube ROW : 4, COL : 14
+2021-03-19 10:21:11,010 - INFO - Moving to tube ROW : 4, COL : 12
+2021-03-19 10:21:11,451 - INFO - Moving to tube ROW : 4, COL : 10
+2021-03-19 10:21:11,738 - INFO - Moving to tube ROW : 4, COL : 8
+2021-03-19 10:21:12,027 - INFO - Moving to tube ROW : 4, COL : 6
+2021-03-19 10:21:12,454 - INFO - Moving to tube ROW : 4, COL : 4
+2021-03-19 10:21:12,728 - INFO - Moving to tube ROW : 4, COL : 2
+2021-03-19 10:21:13,008 - INFO - Moving to tube ROW : 5, COL : 1
+2021-03-19 10:21:13,278 - INFO - Moving to tube ROW : 5, COL : 3
+2021-03-19 10:21:13,715 - INFO - Moving to tube ROW : 5, COL : 5
+2021-03-19 10:21:14,000 - INFO - Moving to tube ROW : 5, COL : 7
+2021-03-19 10:21:14,286 - INFO - Moving to tube ROW : 5, COL : 9
+2021-03-19 10:21:14,722 - INFO - Moving to tube ROW : 5, COL : 11
+2021-03-19 10:21:15,003 - INFO - Moving to tube ROW : 5, COL : 13
+2021-03-19 10:21:15,273 - INFO - Moving to tube ROW : 5, COL : 15
+2021-03-19 10:21:15,542 - INFO - Moving to tube ROW : 5, COL : 17
+2021-03-19 10:21:15,981 - INFO - Moving to tube ROW : 5, COL : 19
+2021-03-19 10:21:16,267 - INFO - Moving to tube ROW : 5, COL : 20
+2021-03-19 10:21:16,550 - INFO - Moving to tube ROW : 6, COL : 21
+2021-03-19 10:21:16,991 - INFO - Moving to tube ROW : 6, COL : 18
+2021-03-19 10:21:17,264 - INFO - Moving to tube ROW : 6, COL : 16
+2021-03-19 10:21:17,555 - INFO - Moving to tube ROW : 6, COL : 14
+2021-03-19 10:21:17,981 - INFO - Moving to tube ROW : 6, COL : 12
+2021-03-19 10:21:18,254 - INFO - Moving to tube ROW : 6, COL : 10
+2021-03-19 10:21:18,537 - INFO - Moving to tube ROW : 6, COL : 8
+2021-03-19 10:21:18,824 - INFO - Moving to tube ROW : 6, COL : 6
+2021-03-19 10:21:19,266 - INFO - Moving to tube ROW : 6, COL : 4
+2021-03-19 10:21:19,541 - INFO - Moving to tube ROW : 6, COL : 2
+2021-03-19 10:21:19,827 - INFO - Moving to tube ROW : 7, COL : 3
+2021-03-19 10:21:20,116 - INFO - Moving to tube ROW : 7, COL : 5
+2021-03-19 10:21:20,562 - INFO - Moving to tube ROW : 7, COL : 7
+2021-03-19 10:21:20,846 - INFO - Moving to tube ROW : 7, COL : 9
+2021-03-19 10:21:21,117 - INFO - Moving to tube ROW : 7, COL : 11
+2021-03-19 10:21:21,394 - INFO - Moving to tube ROW : 7, COL : 13
+2021-03-19 10:21:21,820 - INFO - Moving to tube ROW : 7, COL : 15
+2021-03-19 10:21:22,105 - INFO - Moving to tube ROW : 7, COL : 17
+2021-03-19 10:21:22,385 - INFO - Moving to tube ROW : 7, COL : 19
+2021-03-19 10:21:22,668 - INFO - Moving to tube ROW : 7, COL : 20
+2021-03-19 10:21:23,109 - INFO - Moving to tube ROW : 8, COL : 21
+2021-03-19 10:21:23,385 - INFO - Moving to tube ROW : 8, COL : 18
+2021-03-19 10:21:23,653 - INFO - Moving to tube ROW : 8, COL : 16
+2021-03-19 10:21:23,917 - INFO - Moving to tube ROW : 8, COL : 14
+2021-03-19 10:21:24,356 - INFO - Moving to tube ROW : 8, COL : 12
+2021-03-19 10:21:24,628 - INFO - Moving to tube ROW : 8, COL : 10
+2021-03-19 10:21:24,893 - INFO - Moving to tube ROW : 8, COL : 8
+2021-03-19 10:21:25,165 - INFO - Moving to tube ROW : 8, COL : 6
+2021-03-19 10:21:25,594 - INFO - Moving to tube ROW : 8, COL : 4
+2021-03-19 10:21:25,869 - INFO - Moving to tube ROW : 8, COL : 2
+2021-03-19 10:21:26,147 - INFO - Moving to tube ROW : 9, COL : 3
+2021-03-19 10:21:26,416 - INFO - Moving to tube ROW : 9, COL : 5
+2021-03-19 10:21:26,849 - INFO - Moving to tube ROW : 9, COL : 7
+2021-03-19 10:21:27,133 - INFO - Moving to tube ROW : 9, COL : 9
+2021-03-19 10:21:27,421 - INFO - Moving to tube ROW : 9, COL : 11
+2021-03-19 10:21:27,863 - INFO - Moving to tube ROW : 9, COL : 13
+2021-03-19 10:21:28,136 - INFO - Moving to tube ROW : 9, COL : 15
+2021-03-19 10:21:28,419 - INFO - Moving to tube ROW : 9, COL : 17
+2021-03-19 10:21:28,689 - INFO - Moving to tube ROW : 9, COL : 19
+2021-03-19 10:21:29,129 - INFO - Moving to tube ROW : 9, COL : 20
+2021-03-19 10:21:29,409 - INFO - Moving to tube ROW : 10, COL : 21
+2021-03-19 10:21:29,690 - INFO - Moving to tube ROW : 10, COL : 18
+2021-03-19 10:21:30,143 - INFO - Moving to tube ROW : 10, COL : 16
+2021-03-19 10:21:30,422 - INFO - Moving to tube ROW : 10, COL : 14
+2021-03-19 10:21:30,706 - INFO - Moving to tube ROW : 10, COL : 12
+2021-03-19 10:21:31,145 - INFO - Moving to tube ROW : 10, COL : 10
+2021-03-19 10:21:31,431 - INFO - Moving to tube ROW : 10, COL : 8
+2021-03-19 10:21:31,719 - INFO - Moving to tube ROW : 10, COL : 6
+2021-03-19 10:21:32,162 - INFO - Moving to tube ROW : 10, COL : 4
+2021-03-19 10:21:32,430 - INFO - Moving to tube ROW : 11, COL : 5
+2021-03-19 10:21:32,710 - INFO - Moving to tube ROW : 11, COL : 7
+2021-03-19 10:21:32,983 - INFO - Moving to tube ROW : 11, COL : 9
+2021-03-19 10:21:33,415 - INFO - Moving to tube ROW : 11, COL : 11
+2021-03-19 10:21:33,688 - INFO - Moving to tube ROW : 11, COL : 13
+2021-03-19 10:21:33,971 - INFO - Moving to tube ROW : 11, COL : 15
+2021-03-19 10:21:34,255 - INFO - Moving to tube ROW : 11, COL : 17
+2021-03-19 10:21:34,698 - INFO - Moving to tube ROW : 11, COL : 19
+2021-03-19 10:21:34,970 - INFO - Moving to tube ROW : 11, COL : 20
+2021-03-19 10:21:35,243 - INFO - Moving to tube ROW : 1, COL : 43
+2021-03-19 10:21:35,525 - INFO - Moving to tube ROW : 1, COL : 45
+2021-03-19 10:21:35,963 - INFO - Moving to tube ROW : 1, COL : 47
+2021-03-19 10:21:36,246 - INFO - Moving to tube ROW : 1, COL : 49
+2021-03-19 10:21:36,531 - INFO - Moving to tube ROW : 1, COL : 51
+2021-03-19 10:21:36,971 - INFO - Moving to tube ROW : 1, COL : 53
+2021-03-19 10:21:37,253 - INFO - Moving to tube ROW : 1, COL : 55
+2021-03-19 10:21:37,535 - INFO - Moving to tube ROW : 2, COL : 54
+2021-03-19 10:21:38,031 - INFO - Moving to tube ROW : 2, COL : 52
+2021-03-19 10:21:38,313 - INFO - Moving to tube ROW : 2, COL : 50
+2021-03-19 10:21:38,596 - INFO - Moving to tube ROW : 2, COL : 48
+2021-03-19 10:21:39,022 - INFO - Moving to tube ROW : 2, COL : 46
+2021-03-19 10:21:39,292 - INFO - Moving to tube ROW : 2, COL : 44
+2021-03-19 10:21:39,561 - INFO - Moving to tube ROW : 2, COL : 42
+2021-03-19 10:21:39,836 - INFO - Moving to tube ROW : 3, COL : 43
+2021-03-19 10:21:40,278 - INFO - Moving to tube ROW : 3, COL : 45
+2021-03-19 10:21:40,554 - INFO - Moving to tube ROW : 3, COL : 47
+2021-03-19 10:21:40,840 - INFO - Moving to tube ROW : 3, COL : 49
+2021-03-19 10:21:41,109 - INFO - Moving to tube ROW : 3, COL : 51
+2021-03-19 10:21:41,543 - INFO - Moving to tube ROW : 3, COL : 53
+2021-03-19 10:21:41,850 - INFO - Moving to tube ROW : 3, COL : 55
+2021-03-19 10:21:42,124 - INFO - Moving to tube ROW : 4, COL : 54
+2021-03-19 10:21:42,558 - INFO - Moving to tube ROW : 4, COL : 52
+2021-03-19 10:21:42,829 - INFO - Moving to tube ROW : 4, COL : 50
+2021-03-19 10:21:43,116 - INFO - Moving to tube ROW : 4, COL : 48
+2021-03-19 10:21:43,400 - INFO - Moving to tube ROW : 4, COL : 46
+2021-03-19 10:21:43,827 - INFO - Moving to tube ROW : 4, COL : 44
+2021-03-19 10:21:44,099 - INFO - Moving to tube ROW : 4, COL : 42
+2021-03-19 10:21:44,375 - INFO - Moving to tube ROW : 5, COL : 43
+2021-03-19 10:21:44,652 - INFO - Moving to tube ROW : 5, COL : 45
+2021-03-19 10:21:45,082 - INFO - Moving to tube ROW : 5, COL : 47
+2021-03-19 10:21:45,366 - INFO - Moving to tube ROW : 5, COL : 49
+2021-03-19 10:21:45,639 - INFO - Moving to tube ROW : 5, COL : 51
+2021-03-19 10:21:45,923 - INFO - Moving to tube ROW : 5, COL : 53
+2021-03-19 10:21:46,347 - INFO - Moving to tube ROW : 5, COL : 55
+2021-03-19 10:21:46,632 - INFO - Moving to tube ROW : 6, COL : 54
+2021-03-19 10:21:46,911 - INFO - Moving to tube ROW : 6, COL : 52
+2021-03-19 10:21:47,349 - INFO - Moving to tube ROW : 6, COL : 50
+2021-03-19 10:21:47,636 - INFO - Moving to tube ROW : 6, COL : 48
+2021-03-19 10:21:47,915 - INFO - Moving to tube ROW : 6, COL : 46
+2021-03-19 10:21:48,349 - INFO - Moving to tube ROW : 6, COL : 44
+2021-03-19 10:21:48,638 - INFO - Moving to tube ROW : 6, COL : 42
+2021-03-19 10:21:48,914 - INFO - Moving to tube ROW : 7, COL : 43
+2021-03-19 10:21:49,187 - INFO - Moving to tube ROW : 7, COL : 45
+2021-03-19 10:21:49,629 - INFO - Moving to tube ROW : 7, COL : 47
+2021-03-19 10:21:49,897 - INFO - Moving to tube ROW : 7, COL : 49
+2021-03-19 10:21:50,173 - INFO - Moving to tube ROW : 7, COL : 51
+2021-03-19 10:21:50,442 - INFO - Moving to tube ROW : 7, COL : 53
+2021-03-19 10:21:50,878 - INFO - Moving to tube ROW : 8, COL : 54
+2021-03-19 10:21:51,160 - INFO - Moving to tube ROW : 8, COL : 52
+2021-03-19 10:21:51,440 - INFO - Moving to tube ROW : 8, COL : 50
+2021-03-19 10:21:51,870 - INFO - Moving to tube ROW : 8, COL : 48
+2021-03-19 10:21:52,156 - INFO - Moving to tube ROW : 8, COL : 46
+2021-03-19 10:21:52,439 - INFO - Moving to tube ROW : 8, COL : 44
+2021-03-19 10:21:52,710 - INFO - Moving to tube ROW : 8, COL : 42
+2021-03-19 10:21:53,144 - INFO - Moving to tube ROW : 9, COL : 43
+2021-03-19 10:21:53,412 - INFO - Moving to tube ROW : 9, COL : 45
+2021-03-19 10:21:53,690 - INFO - Moving to tube ROW : 9, COL : 47
+2021-03-19 10:21:53,962 - INFO - Moving to tube ROW : 9, COL : 49
+2021-03-19 10:21:54,402 - INFO - Moving to tube ROW : 9, COL : 51
+2021-03-19 10:21:54,671 - INFO - Moving to tube ROW : 9, COL : 53
+2021-03-19 10:21:54,951 - INFO - Moving to tube ROW : 10, COL : 52
+2021-03-19 10:21:55,237 - INFO - Moving to tube ROW : 10, COL : 50
+2021-03-19 10:21:55,681 - INFO - Moving to tube ROW : 10, COL : 48
+2021-03-19 10:21:55,956 - INFO - Moving to tube ROW : 10, COL : 46
+2021-03-19 10:21:56,245 - INFO - Moving to tube ROW : 10, COL : 44
+2021-03-19 10:21:57,408 - INFO - Moving to tube ROW : 10, COL : 42
+2021-03-19 10:21:57,827 - INFO - Moving to tube ROW : 11, COL : 43
+2021-03-19 10:21:58,106 - INFO - Moving to tube ROW : 11, COL : 45
+2021-03-19 10:21:58,482 - INFO - Moving to tube ROW : 11, COL : 47
+2021-03-19 10:21:59,072 - INFO - Moving to tube ROW : 11, COL : 49
+2021-03-19 10:21:59,587 - INFO - Moving to tube ROW : 11, COL : 51
+2021-03-19 10:22:04,880 - INFO - Fixture harness main control is disabled
+2021-03-19 10:22:05,253 - WARNING - Total stop, fixture harness main control disabled.
+2021-03-19 10:22:13,407 - INFO - Fixture harness main control is enabled
+2021-03-19 10:22:15,337 - INFO - Moving LIFT_UP
+2021-03-19 10:22:15,637 - INFO - Stopping movement LIFT_UP
+2021-03-19 10:22:16,888 - INFO - Moving LIFT_DOWN
+2021-03-19 10:22:17,189 - INFO - Stopping movement LIFT_DOWN
+2021-03-19 10:22:18,220 - INFO - Moving LIFT_UP
+2021-03-19 10:22:20,632 - INFO - Stopping movement LIFT_UP
+2021-03-19 10:22:20,632 - INFO - Moving LIFT_DOWN
+2021-03-19 10:22:22,307 - INFO - Stopping movement LIFT_DOWN
+2021-03-19 10:22:57,744 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-19 10:23:02,873 - INFO - Fixture harness main control is disabled
+2021-03-19 10:23:03,245 - WARNING - Total stop, fixture harness main control disabled.
+2021-03-19 10:23:05,492 - INFO - Fixture harness main control is enabled
+2021-03-19 10:23:09,659 - INFO - Jogging the end effector position
+2021-03-19 10:23:09,660 - INFO - Jog col total: 0.25
+2021-03-19 10:23:09,660 - INFO - Jog row total: 0.0
+2021-03-19 10:23:11,401 - INFO - Jogging the end effector position
+2021-03-19 10:23:11,402 - INFO - Jog col total: 0.5
+2021-03-19 10:23:11,402 - INFO - Jog row total: 0.0
+2021-03-19 10:23:11,826 - INFO - Jogging the end effector position
+2021-03-19 10:23:11,827 - INFO - Jog col total: 0.75
+2021-03-19 10:23:11,827 - INFO - Jog row total: 0.0
+2021-03-19 10:23:12,837 - INFO - Jogging the end effector position
+2021-03-19 10:23:12,837 - INFO - Jog col total: 1.0
+2021-03-19 10:23:12,837 - INFO - Jog row total: 0.0
+2021-03-19 10:23:14,539 - INFO - Jogging the end effector position
+2021-03-19 10:23:14,539 - INFO - Jog col total: 1.0
+2021-03-19 10:23:14,539 - INFO - Jog row total: 0.25
+2021-03-19 10:23:15,026 - INFO - Jogging the end effector position
+2021-03-19 10:23:15,027 - INFO - Jog col total: 1.0
+2021-03-19 10:23:15,027 - INFO - Jog row total: 0.5
+2021-03-19 10:23:15,445 - INFO - Jogging the end effector position
+2021-03-19 10:23:15,445 - INFO - Jog col total: 1.0
+2021-03-19 10:23:15,445 - INFO - Jog row total: 0.75
+2021-03-19 10:23:15,999 - INFO - Jogging the end effector position
+2021-03-19 10:23:16,000 - INFO - Jog col total: 1.0
+2021-03-19 10:23:16,000 - INFO - Jog row total: 1.0
+2021-03-19 10:23:24,084 - INFO - Jogging the end effector position
+2021-03-19 10:23:24,084 - INFO - Jog col total: 0.0
+2021-03-19 10:23:24,084 - INFO - Jog row total: -0.25
+2021-03-19 10:23:24,512 - INFO - Jogging the end effector position
+2021-03-19 10:23:24,512 - INFO - Jog col total: 0.0
+2021-03-19 10:23:24,512 - INFO - Jog row total: -0.5
+2021-03-19 10:23:24,793 - INFO - Jogging the end effector position
+2021-03-19 10:23:24,793 - INFO - Jog col total: 0.0
+2021-03-19 10:23:24,793 - INFO - Jog row total: -0.75
+2021-03-19 10:23:25,057 - INFO - Jogging the end effector position
+2021-03-19 10:23:25,057 - INFO - Jog col total: 0.0
+2021-03-19 10:23:25,057 - INFO - Jog row total: -1.0
+2021-03-19 10:23:28,827 - INFO - Jogging the end effector position
+2021-03-19 10:23:28,827 - INFO - Jog col total: 0.25
+2021-03-19 10:23:28,827 - INFO - Jog row total: -1.0
+2021-03-19 10:23:29,182 - INFO - Jogging the end effector position
+2021-03-19 10:23:29,182 - INFO - Jog col total: 0.5
+2021-03-19 10:23:29,182 - INFO - Jog row total: -1.0
+2021-03-19 10:23:29,621 - INFO - Jogging the end effector position
+2021-03-19 10:23:29,621 - INFO - Jog col total: 0.75
+2021-03-19 10:23:29,621 - INFO - Jog row total: -1.0
+2021-03-19 10:23:30,094 - INFO - Jogging the end effector position
+2021-03-19 10:23:30,094 - INFO - Jog col total: 1.0
+2021-03-19 10:23:30,094 - INFO - Jog row total: -1.0
+2021-03-19 10:23:49,242 - INFO - Stopping movement ARM
+2021-03-19 10:23:52,289 - INFO - Stopping movement POLE
+2021-03-19 10:23:55,815 - INFO - Moving ARM , DIR_CW
+2021-03-19 10:23:57,617 - INFO - Stopping movement ARM
+2021-03-19 10:23:57,731 - INFO - Moving ARM , CCW_DIR
+2021-03-19 10:23:59,550 - INFO - Stopping movement ARM
+2021-03-19 10:24:01,732 - INFO - Moving POLE , CCW_DIR
+2021-03-19 10:24:03,115 - INFO - Stopping movement POLE
+2021-03-19 10:24:03,217 - INFO - Moving POLE , DIR_CW
+2021-03-19 10:24:04,165 - INFO - Stopping movement POLE
+2021-03-19 10:24:05,096 - INFO - Moving POLE , DIR_CW
+2021-03-19 10:24:05,397 - INFO - Stopping movement POLE
+2021-03-19 10:24:06,337 - INFO - Moving POLE , CCW_DIR
+2021-03-19 10:24:06,638 - INFO - Stopping movement POLE
+2021-03-19 10:24:07,565 - INFO - Moving ARM , DIR_CW
+2021-03-19 10:24:07,990 - INFO - Stopping movement ARM
+2021-03-19 10:24:08,682 - INFO - Moving ARM , CCW_DIR
+2021-03-19 10:24:08,982 - INFO - Stopping movement ARM
+2021-03-19 10:24:13,996 - INFO - POLE offset previous: 41588, ARM offset previous: 42925
+2021-03-19 10:24:13,996 - INFO - POLE offset now     : 9747, ARM offset now     : 20074
+2021-03-19 10:24:13,996 - INFO - 
+2021-03-19 10:24:13,997 - INFO - Calibration point success at COL: 1, ROW: 1
+2021-03-19 10:24:36,846 - INFO - ---------- Closing HUMAN-MACHINE-INTERFACE for SM-13 -----------
+2021-03-19 10:39:39,862 - INFO -  
+2021-03-19 10:39:39,862 - INFO - ********* Starting HUMAN-MACHINE-INTERFACE for SM-13 **********
+2021-03-19 10:39:39,983 - INFO - Fixture harness stall function is enabled
+2021-03-19 10:39:40,778 - INFO - Stopping movement TOTAL
+2021-03-19 10:39:40,779 - ERROR - Attempting to connect to NFC
+2021-03-19 10:39:41,746 - INFO - HMI connected to NFC successfully
+2021-03-19 10:39:43,990 - INFO - Fixture harness main control is enabled
+2021-03-19 10:39:44,998 - INFO - Fixture harness main control is disabled
+2021-03-19 10:39:53,920 - INFO - System files loaded:
+2021-03-19 10:39:53,920 - INFO - HX file        : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/tubesheet.csv
+2021-03-19 10:39:53,921 - INFO - Inspection Plan: /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/InspPlan3_M_2.csv
+2021-03-19 10:39:53,921 - INFO - Fixture Model  : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Robots/Zetec/SM-13.csv
+2021-03-19 10:39:56,046 - INFO - Starting SM-13 simulator
+2021-03-19 10:40:01,246 - INFO - Closing SM-13 simulator
+2021-03-19 10:40:04,575 - INFO - ---------- Closing HUMAN-MACHINE-INTERFACE for SM-13 -----------

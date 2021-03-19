@@ -4,7 +4,7 @@ var searchData=
   ['i_5fmax_5fcuentas_108',['i_MAX_CUENTAS',['../namespaceHMIcomRTU.html#a52e4c5b328b1d843bffdcc513d974200',1,'HMIcomRTU']]],
   ['ik_5fsm13_109',['ik_SM13',['../namespaceik__SM13.html',1,'ik_SM13'],['../namespaceik__SM13.html#ab9d119c654533d8eb2ef92fe50783545',1,'ik_SM13.ik_SM13()']]],
   ['ik_5fsm13_2epy_110',['ik_SM13.py',['../ik__SM13_8py.html',1,'']]],
-  ['info_111',['info',['../namespacelogger.html#af4714c16a9ebd71844c8ec0a6e71a171',1,'logger']]],
+  ['info_111',['info',['../namespaceregistrador.html#a20d92f2007eb772caf86c73ec2cbf822',1,'registrador']]],
   ['inicio_5fetiqueta_5festado_5fmain_5fcontrol_112',['inicio_etiqueta_estado_main_control',['../classhmi__SM13_1_1hmi__SM13.html#a2fe69622048283e4d3360b71cacca3eb',1,'hmi_SM13::hmi_SM13']]],
   ['inicio_5fetiqueta_5festado_5fpivot_113',['inicio_etiqueta_estado_pivot',['../classhmi__SM13_1_1hmi__SM13.html#a76022de0ced4da719a1c7d63608d073f',1,'hmi_SM13::hmi_SM13']]],
   ['inicio_5fetiqueta_5festado_5fred_114',['inicio_etiqueta_estado_red',['../classhmi__SM13_1_1hmi__SM13.html#a04581533a16175067bbaaa56533853bb',1,'hmi_SM13::hmi_SM13']]],

@@ -9,5 +9,5 @@ var searchData=
   ['entrada_5fpuerto_64',['entrada_puerto',['../classhmi__SM13_1_1hmi__SM13.html#a278a580bc16a970b30fed63ce12ccc5c',1,'hmi_SM13::hmi_SM13']]],
   ['enviar_5fa_5fy_5frecibir_5fde_5frtu_65',['enviar_a_y_recibir_de_rtu',['../namespaceHMIcomRTU.html#a46117ab563cb1407c4b8efdd27bb3591',1,'HMIcomRTU']]],
   ['enviar_5foffsets_5fa_5frtu_66',['enviar_offsets_a_rtu',['../classhmi__SM13_1_1hmi__SM13.html#af87a744ca9665ca538fe015a15c5890f',1,'hmi_SM13::hmi_SM13']]],
-  ['error_67',['error',['../namespacelogger.html#a2f7e4b994028eca2203e28e788c1968f',1,'logger']]]
+  ['error_67',['error',['../namespaceregistrador.html#a64f350fcd544d1e387e9f77e0b6be2b6',1,'registrador']]]
 ];

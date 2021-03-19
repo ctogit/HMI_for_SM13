@@ -93,6 +93,6 @@ def ik_SM13(f_x, f_y, f_l1, f_l2, f_l3, f_l4, s_pivot_type):
     
     return float(f_qp), float(f_qa), b_success
     
-if __name__ == "__main__":
-    ik_SM13(29.1676, 3.9774, 20.5499, 3.3145, 9.5, 15.52, "alternative")
-    # qp = 52.14ª; qa = 85.29ª
+#if __name__ == "__main__":
+#    ik_SM13(29.1676, 3.9774, 20.5499, 3.3145, 9.5, 15.52, "alternative")
+#    qp = 52.14ª; qa = 85.29ª

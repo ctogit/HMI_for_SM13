@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['warning_340',['warning',['../namespacelogger.html#af75e4cefe3ffdc6baea3ad6e49bf6144',1,'logger']]]
+  ['warning_341',['warning',['../namespaceregistrador.html#a6d8d0d0c50796f58644c21ce3778840b',1,'registrador']]]
 ];

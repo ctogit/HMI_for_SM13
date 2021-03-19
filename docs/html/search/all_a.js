@@ -10,7 +10,6 @@ var searchData=
   ['leer_5fspecs_5ftubos_153',['leer_specs_tubos',['../namespaceleer__specs__tubos.html',1,'leer_specs_tubos'],['../namespaceleer__specs__tubos.html#acec1a2348be18dcc8f63dd34edb3e4fa',1,'leer_specs_tubos.leer_specs_tubos()']]],
   ['leer_5fspecs_5ftubos_2epy_154',['leer_specs_tubos.py',['../leer__specs__tubos_8py.html',1,'']]],
   ['lista_5ftubos_155',['lista_tubos',['../classhmi__SM13_1_1hmi__SM13.html#ab47178f915bd4af01ff5227f11439f50',1,'hmi_SM13::hmi_SM13']]],
-  ['logger_156',['logger',['../namespacelogger.html',1,'logger'],['../namespacelogger.html#a0b14e488ae28d98d262453f3e9cd6e4d',1,'logger.logger()']]],
-  ['logger_2epy_157',['logger.py',['../logger_8py.html',1,'']]],
-  ['lsb_5fmsb_158',['LSB_MSB',['../namespaceHMIcomRTU.html#a0acc4ec894f7718a956c609465029186',1,'HMIcomRTU']]]
+  ['logger_156',['logger',['../namespaceregistrador.html#a0b14e488ae28d98d262453f3e9cd6e4d',1,'registrador']]],
+  ['lsb_5fmsb_157',['LSB_MSB',['../namespaceHMIcomRTU.html#a0acc4ec894f7718a956c609465029186',1,'HMIcomRTU']]]
 ];

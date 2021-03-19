@@ -12,5 +12,5 @@ var searchData=
   ['control_5fzumbador_44',['control_zumbador',['../classhmi__SM13_1_1hmi__SM13.html#a2e44d7152b5ec8a12786f489895749e2',1,'hmi_SM13::hmi_SM13']]],
   ['conversor_45',['conversor',['../namespaceconversor.html',1,'conversor'],['../namespaceconversor.html#ae5ab7bef8b2d9f0b5c744b9300d7d2b1',1,'conversor.conversor()']]],
   ['conversor_2epy_46',['conversor.py',['../conversor_8py.html',1,'']]],
-  ['critical_47',['critical',['../namespacelogger.html#a08ed0ae1153aeab15d0272031af7b030',1,'logger']]]
+  ['critical_47',['critical',['../namespaceregistrador.html#a2ffca52af3bfa302fed5d88989509d82',1,'registrador']]]
 ];

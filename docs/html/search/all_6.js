@@ -23,7 +23,7 @@ var searchData=
   ['f_5fy_5fpitch_88',['f_y_pitch',['../classhmi__SM13_1_1hmi__SM13.html#a4efef75e4c7dccf637c30a4fb278df25',1,'hmi_SM13::hmi_SM13']]],
   ['fila_5fplan_5finspeccion_89',['fila_plan_inspeccion',['../classhmi__SM13_1_1hmi__SM13.html#aac97848c51f57544626f22e4b66c4424',1,'hmi_SM13::hmi_SM13']]],
   ['fixture_5fcontrol_90',['fixture_control',['../classhmi__SM13_1_1hmi__SM13.html#a1b7a9de216ef958a8fe15677bf70b27b',1,'hmi_SM13::hmi_SM13']]],
-  ['format_91',['FORMAT',['../namespacelogger.html#a86a7e0297c115ef7026195243a0f1177',1,'logger']]],
+  ['format_91',['FORMAT',['../namespaceregistrador.html#a86a7e0297c115ef7026195243a0f1177',1,'registrador']]],
   ['fr_5fetiqueta_5ffecha_92',['fr_etiqueta_fecha',['../classhmi__SM13_1_1hmi__SM13.html#ad2cf441b320c7cbd1bae326307bf7d94',1,'hmi_SM13::hmi_SM13']]],
   ['fr_5fetiqueta_5fhora_93',['fr_etiqueta_hora',['../classhmi__SM13_1_1hmi__SM13.html#a5d4a57ed523da5587c1235c1af2046ee',1,'hmi_SM13::hmi_SM13']]],
   ['fr_5fetiqueta_5fmsg_94',['fr_etiqueta_msg',['../classhmi__SM13_1_1hmi__SM13.html#a8836eada72bce7b6ab47d720a6ba918a',1,'hmi_SM13::hmi_SM13']]],
