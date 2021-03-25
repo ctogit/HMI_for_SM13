@@ -686,7 +686,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="valign">center</property>
-                        <property name="margin_top">20</property>
+                        <property name="margin_top">15</property>
                         <property name="label" translatable="yes">Designed by</property>
                         <attributes>
                           <attribute name="font-desc" value="Quicksand 10"/>
@@ -5695,13 +5695,57 @@ Tube</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <child>
-              <placeholder/>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_top">50</property>
+                <property name="margin_bottom">20</property>
+                <property name="label" translatable="yes">SM-13 HUMAN-MACHINE INTERFACE</property>
+                <attributes>
+                  <attribute name="font-desc" value="Sans Bold 10"/>
+                  <attribute name="background" value="#ffffffffffff"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_top">30</property>
+                <property name="margin_bottom">30</property>
+                <property name="label" translatable="yes">beta version  1.1</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_top">20</property>
+                <property name="label" translatable="yes">GERENCIA SERVICIOS PARA CENTRALES
+DIVISIÓN ELÉCTRICA-ELECTRÓNICA EMBALSE
+Central Nuclear EMBALSE
+
+Ruta Provincial E61, Camino La Cruz, Embalse, Córdoba, Argentina
+tel: +54 03571 486000 (Int. 66453/66726)</property>
+                <attributes>
+                  <attribute name="font-desc" value="FreeMono Italic 10"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
             </child>
           </object>
           <packing>

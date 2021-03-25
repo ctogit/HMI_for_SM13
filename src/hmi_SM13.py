@@ -38,7 +38,6 @@
 #   a_HMIDataByte[1]    <--     f_posCmdPole *
 #   a_HMIDataByte[2]    <--     ui_velCmdPole *
 #   a_HMIDataByte[3]    <--     ui_velCmdPole *
-#
 #   a_HMIDataString[0]  <--     s_mode *
 #   a_HMIDataString[1]  <--     s_freeRunAxis *
 #   a_HMIDataString[2]  <--     s_freeRunDir *
@@ -1392,6 +1391,8 @@ class hmi_SM13():
         depurador(1, "HMI", "- ")
 
         self.enviar_offsets_a_rtu()
+
+        self.actualizar_etiquetas_msg("System files loaded successfully!", "green")
         
         return True
     
@@ -1653,23 +1654,55 @@ class hmi_SM13():
         
         trash, s_x_pole_offset, s_x_arm_offset = offsets_lines[1].split(";")
 
-        # Se calculan los offset (trasladados a home) en base a la diferencia, en cuentas de resolver, de la posición real del tubo tomado como referencia y el 
-        # valor de cuenta resultante del cálculo matermático del mismo tubo.
+        # Condicionales para depuración de calibraciones
         if self.s_name_pivot_type == "main":
             # ejemplo corrido en campo
-            #_RTUDataRx[1] = 48000
+            # ejemplo campo tubo ]1, 1] M2
+            #a_RTUDataRx[1] = 48000
             #a_RTUDataRx[0] = 63000
-
-            ui_pole_rdc_offset = int(a_RTUDataRx[1] - self.ui_pole_res_for_cal) 
-            ui_arm_rdc_offset = int(a_RTUDataRx[0] - self.ui_arm_res_for_cal)
+            # ejemplo campo tubo ]55, 1] M2
+            #a_RTUDataRx[1] = 22657
+            #a_RTUDataRx[0] = 55801
+            #ejemplo campo tubo ]20, 9] M2
+            #a_RTUDataRx[1] = 1635
+            #a_RTUDataRx[0] = 45522
+            pass
 
         if self.s_name_pivot_type == "alternative":
             # ejemplo corrido en campo
+            # ejemplo campo tubo ]1, 1] M2
             #a_RTUDataRx[1] = 31851
             #a_RTUDataRx[0] = 20949
+            # ejemplo campo tubo ]55, 1] M2
+            #a_RTUDataRx[1] = 64477
+            #a_RTUDataRx[0] = 26263
+            pass
 
-            ui_pole_rdc_offset = int(a_RTUDataRx[1] - self.ui_pole_res_for_cal + self.ui_MAX_CUENTAS)
-            ui_arm_rdc_offset = int(a_RTUDataRx[0] - self.ui_arm_res_for_cal + self.ui_MAX_CUENTAS)
+        # Se calculan los offset (trasladados a home) en base a la diferencia, en cuentas de resolver, de la posición real del tubo tomado 
+        # como referencia y el valor de cuenta resultante del cálculo matermático del mismo tubo.
+        ui_pole_rdc_offset = int(a_RTUDataRx[1] - self.ui_pole_res_for_cal) 
+        ui_arm_rdc_offset = int(a_RTUDataRx[0] - self.ui_arm_res_for_cal) 
+
+        # Se evitan valores negativos de offset
+        if ui_pole_rdc_offset < 0:
+            ui_pole_rdc_offset = ui_pole_rdc_offset + self.ui_MAX_CUENTAS
+        if ui_arm_rdc_offset < 0:
+            ui_arm_rdc_offset = ui_arm_rdc_offset + self.ui_MAX_CUENTAS
+
+        # Se evitan valores de offset por encima del máximo de cuentas posibles 
+        if ui_pole_rdc_offset > self.ui_MAX_CUENTAS:
+            ui_pole_rdc_offset = ui_pole_rdc_offset - self.ui_MAX_CUENTAS
+        if ui_arm_rdc_offset > self.ui_MAX_CUENTAS:
+            ui_arm_rdc_offset = ui_arm_rdc_offset - self.ui_MAX_CUENTAS
+
+        depurador(1, "HMI", "- Pivot type: " + self.s_name_pivot_type)
+        depurador(1, "HMI", "- Valor resolver teórico: POLE "+ str(self.ui_pole_res_for_cal) + ", ARM " + str(self.ui_arm_res_for_cal))
+        depurador(1, "HMI", "- Valor resolver actual:  POLE "+ str(a_RTUDataRx[1]) + ", ARM " + str(a_RTUDataRx[0]))
+        depurador(1, "HMI", " ")
+        registrador.info("Pivot type: " + self.s_name_pivot_type)
+        registrador.info("Resolver values calculation: POLE "+ str(self.ui_pole_res_for_cal) + ", ARM " + str(self.ui_arm_res_for_cal))
+        registrador.info("Current resolver values    : POLE "+ str(a_RTUDataRx[1]) + ", ARM " + str(a_RTUDataRx[0]))
+        registrador.info("Offsets calculation    : POLE "+ str(ui_pole_rdc_offset) + ", ARM " + str(ui_arm_rdc_offset))
 
         # Se comprueba que el cálculo de offset de un valor coherente
         if (ui_pole_rdc_offset > self.ui_MAX_CUENTAS or ui_arm_rdc_offset > self.ui_MAX_CUENTAS) or (ui_pole_rdc_offset < 0 or ui_arm_rdc_offset < 0):
@@ -1677,13 +1710,10 @@ class hmi_SM13():
             depurador(1, "HMI", "-  ") 
             self.actualizar_etiquetas_msg("calibration point error...", "red")
             registrador.error("Calibration point error")
-            return True
 
-        depurador(1, "HMI", "- Valor resolver teórico: ")
-        depurador(1, "HMI", "- POLE res math: "+ str(self.ui_pole_res_for_cal) + ", ARM res math: " + str(self.ui_arm_res_for_cal))
-        depurador(1, "HMI", "- Valor resolver actual: ")
-        depurador(1, "HMI", "- POLE res real: "+ str(a_RTUDataRx[1]) + ", ARM res real: " + str(a_RTUDataRx[0]))
-        depurador(1, "HMI", " ")
+            # Se limpia la bandera de on_condition
+            b_on_condition = False
+            return True
         
         # Se comprueban cambios.
         if (ui_pole_rdc_offset == int(s_x_pole_offset) and ui_arm_rdc_offset == int(s_x_arm_offset)):
@@ -1730,6 +1760,8 @@ class hmi_SM13():
             registrador.info("POLE offset previous: "+ str(s_x_pole_offset) + ", ARM offset previous: " + str(s_x_arm_offset))
             registrador.info("POLE offset now     : "+ str(ui_pole_rdc_offset) + ", ARM offset now     : " + str(ui_arm_rdc_offset))
 
+            # Se limpia la bandera de on_condition
+            b_on_condition = False
             self.enviar_offsets_a_rtu()
 
         return True

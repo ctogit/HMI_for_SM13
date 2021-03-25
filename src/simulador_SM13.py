@@ -63,7 +63,7 @@ class simulador_SM13(object):
         
         # Initialize plot and line objects for target, end effector, and arm.
         # Turn on interactive plotting and show plot.   
-        self.fig, ax = plt.subplots(figsize=(6,4.7), dpi=100)
+        self.fig, ax = plt.subplots(figsize=(10,8), dpi=100)
         #self.fig, ax = plt.subplots(figsize=(5,5), dpi=100)
         self.fig.canvas.set_window_title('SM-13 on HX selected')
     
