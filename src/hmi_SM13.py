@@ -33,7 +33,8 @@
 #   ui_armRdcStatus     <--     a_RTUData[12] *
 #   ui_poleRdcStatus    <--     a_RTUData[13] *
 #   ui_status           <--     a_RTUData[14] *
-#
+
+
 #
 #   TX TO RTU                           
 #   --------------------------------------
@@ -98,6 +99,11 @@ global s_ip
 global ui_pole_rdc_offset
 global ui_arm_rdc_offset
 
+# Variables asociadas a los valores provenientes desde la RTU vía ethernet.
+global ui_rtu_armRdcStatus
+global ui_rtu_poleRdcStatus
+
+
 class hmi_SM13():   
     registrador.info(" ")
     registrador.info("********* Starting HUMAN-MACHINE-INTERFACE for SM-13 **********")
@@ -116,12 +122,38 @@ class hmi_SM13():
         global b_simulador
         global ui_pole_rdc_offset
         global ui_arm_rdc_offset
-
+        
+        # Valores ethernet desde RTU
+        global f_posActArm
+        global f_posActPole
+        
+        
         # Se inicializan variables globales comartidas por HMI y TM
         ## Variable global contiene la lista de datos que llegan desde RTU:
         # [f_posActArm, f_posActPole, f_velActArm, f_velActPole, 
-        # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm]
-        a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False, False]
+        # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, b_onCondition, 
+        # ui_armRdcStatus, ui_poleRdcStatus, ui_rtuStatus ]
+        f_posActArm = 0;
+        f_posActPole = 0;
+        
+        
+        a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False, 0, 0, 0]
+        
+        #   f_posActArm     <--     a_RTUData[0] *
+        #   f_posActPole    <--     a_RTUData[1] *
+        #   f_temperatura   <--     a_RTUData[2] *
+        #   f_velActPole    <--     a_RTUData[3] *
+        #   b_cwLimitArm    <--     a_RTUData[4] *
+        #   b_ccwLimitArm   <--     a_RTUData[5] *
+        #   b_cwLimitPole   <--     a_RTUData[6] *
+        #   b_ccwLimitPole  <--     a_RTUData[7] *
+        #   b_limitUp       <--     a_RTUData[8] *
+        #   b_limitDown     <--     a_RTUData[9] *
+        #   b_stallAlm      <--     a_RTUData[10] *
+        #   b_onCondition   <--     a_RTUData[11] *
+        #   ui_armRdcStatus  <--     a_RTUData[12] *
+        #   ui_poleRdcStatus <--     a_RTUData[13] *
+        #   ui_rtuStatus     <--     a_RTUData[14] *
         ## Variable global para que la vea HMI y el hilo TM. Almacena los datos 
         # de ángulos y velocidad comandados hacia la RTU:
         # [f_posCmdArm, f_posCmdPole, ui_velCmdArm, ui_velCmdPole]
@@ -1177,13 +1209,13 @@ class hmi_SM13():
         if b_connect == True:
             try:
                 # Se actualizan las etiquetas de cuentas y ángulos en las tres solapas
-                self.actualizar_etiquetas_enc_ang(a_RTUData[1], a_RTUData[0], a_RTUDataRx[1], a_RTUDataRx[0])
+                self.actualizar_etiquetas_enc_ang(f_posActPole, f_posActArm, a_RTUDataRx[1], a_RTUDataRx[0])
             except:
                 pass
 
         if (b_simulador):
             try:
-                simu.refrescar_pos_actual(np.deg2rad(a_RTUData[1]), np.deg2rad(a_RTUData[0]))
+                simu.refrescar_pos_actual(np.deg2rad(f_posActPole), np.deg2rad(f_posActArm))
             except:
                 pass
 
@@ -3009,6 +3041,28 @@ def tm():
     global b_simulador
     global ui_pole_rdc_offset
     global ui_arm_rdc_offset
+    # Valores ethernet desde RTU
+    global f_posActPole
+    global f_posActArm
+    
+    # Valores ethernet desde RTU   
+    f_posActArm = 0
+    f_posActPole = 0 
+    # f_temperatura = 0 
+    # f_velActPole = 0 
+    # b_cwLimitArm = 0 
+    # b_ccwLimitArm = 0 
+    # b_cwLimitPole = 0 
+    # b_ccwLimitPole = 0 
+    # b_limitUp = 0 
+    # b_limitDown = 0 
+    # b_stallAlm = 0 
+    # b_onCondition = 0 
+    # ui_armRdcStatus = 0 
+    # ui_poleRdcStatus = 0
+    # ui_rtuStatus = 0 
+    # ui_rtu_armRdcStatus = 0
+    # ui_rtu_poleRdcStatus = 0
 
     ui_PERIODO_ms_TRAMA = 10 # (mili-segundos)
     ui_PERIODO_ms_ANGULOS_SIMULADOS = 150
@@ -3021,7 +3075,7 @@ def tm():
     a_HMIDataByte[1] = 0
 
     a_HMIDataByteTx=[0, 0, 0 ,0]
-    a_RTUDataRx=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    a_RTUDataRx=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
     # Varialbe local para enviar un SET_CAL una sola vez con CONTROL_ENABLE
     toggle_enable = False
@@ -3030,8 +3084,8 @@ def tm():
         # Código de simulación de variación en ángulos actuales, sólo funciona off-line
         # Pemite que si no está activo el simulador y no hay conexión, intente reconectar más rápido.
         if (b_connect == False and b_simulador == False):
-            a_RTUData[1] = a_HMIDataByte[1]
-            a_RTUData[0] = a_HMIDataByte[0]
+            f_posActPole = a_HMIDataByte[1]
+            f_posActArm = a_HMIDataByte[0]
 
         # Si no hay conexión con RTU y el operador quiere simular el SM-13 se le da más prioridad que
         # la reconexión
@@ -3043,35 +3097,35 @@ def tm():
                 if a_HMIDataByte[0] < 0:
                     a_HMIDataByte[0] = a_HMIDataByte[0] + 360
 
-                if a_RTUData[0] == a_HMIDataByte[0]:
+                if f_posActArm == a_HMIDataByte[0]:
                     pass
                 else:
-                    if np.abs(a_HMIDataByte[0]) > a_RTUData[0]:
-                        a_RTUData[0] += f_INCREMENTO_ANGULOS_SIMULADOS
-                        if a_RTUData[0] >= 360:
-                            a_RTUData[0] = 0
-                    elif np.abs(a_HMIDataByte[0]) < a_RTUData[0]:
-                        a_RTUData[0] -= f_INCREMENTO_ANGULOS_SIMULADOS
-                        if a_RTUData[0] < 0:
-                            a_RTUData[0] = 0
+                    if np.abs(a_HMIDataByte[0]) > f_posActArm:
+                        f_posActArm += f_INCREMENTO_ANGULOS_SIMULADOS
+                        if f_posActArm >= 360:
+                            f_posActArm = 0
+                    elif np.abs(a_HMIDataByte[0]) < f_posActArm:
+                        f_posActArm -= f_INCREMENTO_ANGULOS_SIMULADOS
+                        if f_posActArm < 0:
+                            f_posActArm = 0
 
-                    if np.abs(a_RTUData[0] - a_HMIDataByte[0]) <= f_ERROR_ANGULOS_SIMULADOS:
-                        a_RTUData[0] = a_HMIDataByte[0]
+                    if np.abs(f_posActArm - a_HMIDataByte[0]) <= f_ERROR_ANGULOS_SIMULADOS:
+                        f_posActArm = a_HMIDataByte[0]
 
-                if a_RTUData[1] == a_HMIDataByte[1]:
+                if f_posActPole == a_HMIDataByte[1]:
                     pass
                 else:
-                    if np.abs(a_HMIDataByte[1]) > a_RTUData[1]:
-                        a_RTUData[1] += f_INCREMENTO_ANGULOS_SIMULADOS
-                        if a_RTUData[1] >= 360:
-                            a_RTUData[1] = 0
-                    elif np.abs(a_HMIDataByte[1]) < a_RTUData[1]:
-                        a_RTUData[1] -= f_INCREMENTO_ANGULOS_SIMULADOS
-                        if a_RTUData[1] < 0:
-                            a_RTUData[1] = 0
+                    if np.abs(a_HMIDataByte[1]) > f_posActPole:
+                        f_posActPole += f_INCREMENTO_ANGULOS_SIMULADOS
+                        if f_posActPole >= 360:
+                            f_posActPole = 0
+                    elif np.abs(a_HMIDataByte[1]) < f_posActPole:
+                        f_posActPole -= f_INCREMENTO_ANGULOS_SIMULADOS
+                        if f_posActPole < 0:
+                            f_posActPole = 0
 
-                    if np.abs(a_RTUData[1] - a_HMIDataByte[1]) <= f_ERROR_ANGULOS_SIMULADOS:
-                        a_RTUData[1] = a_HMIDataByte[1]
+                    if np.abs(f_posActPole - a_HMIDataByte[1]) <= f_ERROR_ANGULOS_SIMULADOS:
+                        f_posActPole = a_HMIDataByte[1]
                 # fin código de simulación de ángulos actuales SM-13
             except:
                 pass
@@ -3080,7 +3134,7 @@ def tm():
         
         # Si no se está jugando con el simulador de ángulos actuales y no hay conexión, se le da 
         # prioridad a la reconexión.
-        if (b_connect == False and a_RTUData[1] == a_HMIDataByte[1] and a_RTUData[0] == a_HMIDataByte[0]):
+        if (b_connect == False and f_posActPole == a_HMIDataByte[1] and f_posActArm == a_HMIDataByte[0]):
             # Cuando no hay conexión con RTU intenta 
             depurador(1, "TM", "****************************************")
             depurador(1, "TM", "- Intentando conectar con RTU...")
@@ -3130,16 +3184,22 @@ def tm():
 
                 # Se envían los paquetes DataBytes y DataStrings hacia RTU y se recibe un paquete proveniente de RTU 
                 a_RTUDataRx, b_connect, s_sock = enviar_a_y_recibir_de_rtu(a_HMIDataByteTx, a_HMIDataString, b_connect, s_sock, s_ip, s_port)#'192.168.0.193', 5020)
+                f_posActPole = a_RTUDataRx[1]
 
+              
+                
+                
                 # Apenas se actualiza a_RTUDataRx se convierten los elementos [0] y [1] de cuentas resolver a ángulos.
-                a_RTUData[1], a_RTUData[0] = conversor(a_RTUDataRx[1], a_RTUDataRx[0], 0, 0, ui_pole_rdc_offset, ui_arm_rdc_offset, "cuenta_a_angulo")
+                f_posActPole, f_posActArm = conversor(a_RTUDataRx[1], a_RTUDataRx[0], 0, 0, ui_pole_rdc_offset, ui_arm_rdc_offset, "cuenta_a_angulo")
                 # y también se actualizan los demás datos
                 
-                for i in range(2, len(a_RTUDataRx)):
+                for i in range(2, (len(a_RTUDataRx)-2)):
                     a_RTUData[i] = a_RTUDataRx[i]
 
                 a_RTUData[11] = a_RTUDataRx[11]
 
+                ui_rtu_armRdcStatus = a_RTUDataRx[12]
+                ui_rtu_poleRdcStatus = a_RTUDataRx[13]
                 
                 # Se monitorean continuamente los valores de cuenta comandada y recibida para establecer o no
                 # el estado de ON_CONDITION del FH.
@@ -3174,12 +3234,12 @@ def tm():
 
                 depurador(4, "TM", "****************************************")
                 depurador(4, "TM", "- POLE pos cmd [res] : " + str(a_HMIDataByteTx[1]).zfill(4) + "\t| POLE pos cmd [ang] (con offset): " + str(a_HMIDataByte[1]) + "º")
-                depurador(4, "TM", "- POLE pos act [res] : " + str(a_RTUDataRx[1]).zfill(4) + "\t| POLE pos act [ang] (con offset): " + str(round(a_RTUData[1], 3)) + "º")
+                depurador(4, "TM", "- POLE pos act [res] : " + str(a_RTUDataRx[1]).zfill(4) + "\t| POLE pos act [ang] (con offset): " + str(round(f_posActPole, 3)) + "º")
                 depurador(4, "TM", "- POLE vel cmd : " +str(a_HMIDataByte[3]) + "\t\t| POLE vel act: " + str(a_RTUData[3]))
                 
                 depurador(4, "TM", " ")                
                 depurador(4, "TM", "- ARM  pos cmd [res] : " + str(a_HMIDataByteTx[0]).zfill(4) + "\t|  ARM pos cmd [ang] (con offset): " + str(a_HMIDataByte[0]) + "º")
-                depurador(4, "TM", "- ARM  pos act [res] : " + str(a_RTUDataRx[0]).zfill(4) + "\t|  ARM pos act [ang] (con offset): " + str(round(a_RTUData[0], 3)) + "º")
+                depurador(4, "TM", "- ARM  pos act [res] : " + str(a_RTUDataRx[0]).zfill(4) + "\t|  ARM pos act [ang] (con offset): " + str(round(f_posActArm, 3)) + "º")
                 depurador(4, "TM", "- ARM  vel cmd: " +str(a_HMIDataByte[2]) + "\t\t\t|  ARM  vel act: " + str(a_RTUData[2]))
                 depurador(4, "TM", " ")  
 
@@ -3197,7 +3257,7 @@ def tm():
             
         # Esta porción de código permite que no se detenga el HMI con la llegada de
         # alguna trama corrupta+
-        for x in range(0, 11):
+        for x in range(0, 14):
             try:
                 if a_RTUData[x] == True:
                     pass
@@ -3207,7 +3267,7 @@ def tm():
                 ## Variable global contiene la lista de datos que llegan desde RTU:
                 # [f_posActArm, f_posActPole, f_velActArm, f_velActPole, 
                 # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, ui_status]
-                a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False, False]  
+                a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False, False, 0, ui_rtu_armRdcStatus, ui_rtu_poleRdcStatus, 0]
                 pass  
         
                 
