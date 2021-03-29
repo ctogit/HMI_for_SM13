@@ -2473,6 +2473,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="tooltip_text" translatable="yes">Calibre usando movimientos Free-Run, desactivar y no usar Jog</property>
                         <property name="halign">center</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
@@ -5695,7 +5696,7 @@ Tube</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkLabel">
+              <object class="GtkLabel" id="about_etiqueta_HMI">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_top">50</property>
@@ -5713,12 +5714,12 @@ Tube</property>
               </packing>
             </child>
             <child>
-              <object class="GtkLabel">
+              <object class="GtkLabel" id="about_etiqueta_version">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_top">30</property>
                 <property name="margin_bottom">30</property>
-                <property name="label" translatable="yes">beta version  1.1</property>
+                <property name="label" translatable="yes">beta version  1.2</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -5727,7 +5728,7 @@ Tube</property>
               </packing>
             </child>
             <child>
-              <object class="GtkLabel">
+              <object class="GtkLabel" id="about_etiqueta_contact">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_top">20</property>
@@ -5753,10 +5754,10 @@ tel: +54 03571 486000 (Int. 66453/66726)</property>
           </packing>
         </child>
         <child type="tab">
-          <object class="GtkLabel" id="solapa_help">
+          <object class="GtkLabel" id="solapa_about">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Help</property>
+            <property name="label" translatable="yes">About</property>
             <property name="xalign">0.46000000834465027</property>
           </object>
           <packing>

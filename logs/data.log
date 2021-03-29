@@ -3443,3 +3443,1311 @@
 2021-03-29 12:00:40,237 - INFO - Moving POLE , DIR_CW
 2021-03-29 12:00:40,629 - INFO - Stopping movement POLE
 2021-03-29 12:01:00,665 - INFO - ---------- Closing HUMAN-MACHINE-INTERFACE for SM-13 -----------
+2021-03-29 14:00:37,159 - INFO -  
+2021-03-29 14:00:37,160 - INFO - ********* Starting HUMAN-MACHINE-INTERFACE for SM-13 **********
+2021-03-29 14:00:37,336 - INFO - Fixture harness stall function is enabled
+2021-03-29 14:00:38,506 - INFO - Stopping movement TOTAL
+2021-03-29 14:00:38,506 - ERROR - Attempting to connect to NFC
+2021-03-29 14:03:39,959 - INFO - HMI connected to NFC successfully
+2021-03-29 14:04:10,783 - INFO - Fixture harness stall function is disabled
+2021-03-29 14:04:11,469 - INFO - Fixture harness main control is enabled
+2021-03-29 14:04:20,396 - INFO - System files loaded:
+2021-03-29 14:04:20,396 - INFO - HX file        : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/tubesheet.csv
+2021-03-29 14:04:20,396 - INFO - Inspection Plan: /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/InspPlan3_M_2.csv
+2021-03-29 14:04:20,396 - INFO - Fixture Model  : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Robots/Zetec/SM-13.csv
+2021-03-29 14:04:23,498 - INFO - Starting SM-13 simulator
+2021-03-29 14:05:54,262 - INFO - Moving to tube ROW : 11, COL : 5
+2021-03-29 14:06:08,041 - INFO - System files loaded:
+2021-03-29 14:06:08,041 - INFO - HX file        : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/tubesheet.csv
+2021-03-29 14:06:08,041 - INFO - Inspection Plan: /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/InspPlan1_M_1.csv
+2021-03-29 14:06:08,041 - INFO - Fixture Model  : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Robots/Zetec/SM-13.csv
+2021-03-29 14:06:09,067 - INFO - Calibration point success at COL: 5, ROW: 11
+2021-03-29 14:06:22,602 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 14:06:49,823 - INFO - Jogging the end effector position
+2021-03-29 14:06:49,823 - INFO - Jog col total: 0.25
+2021-03-29 14:06:49,824 - INFO - Jog row total: 0.0
+2021-03-29 14:06:50,800 - INFO - Jogging the end effector position
+2021-03-29 14:06:50,800 - INFO - Jog col total: 0.5
+2021-03-29 14:06:50,800 - INFO - Jog row total: 0.0
+2021-03-29 14:06:51,627 - INFO - Jogging the end effector position
+2021-03-29 14:06:51,627 - INFO - Jog col total: 0.75
+2021-03-29 14:06:51,627 - INFO - Jog row total: 0.0
+2021-03-29 14:06:52,425 - INFO - Jogging the end effector position
+2021-03-29 14:06:52,425 - INFO - Jog col total: 1.0
+2021-03-29 14:06:52,425 - INFO - Jog row total: 0.0
+2021-03-29 14:06:55,158 - INFO - Jogging the end effector position
+2021-03-29 14:06:55,158 - INFO - Jog col total: 1.25
+2021-03-29 14:06:55,159 - INFO - Jog row total: 0.0
+2021-03-29 14:06:55,949 - INFO - Jogging the end effector position
+2021-03-29 14:06:55,949 - INFO - Jog col total: 1.5
+2021-03-29 14:06:55,950 - INFO - Jog row total: 0.0
+2021-03-29 14:06:56,736 - INFO - Jogging the end effector position
+2021-03-29 14:06:56,736 - INFO - Jog col total: 1.75
+2021-03-29 14:06:56,736 - INFO - Jog row total: 0.0
+2021-03-29 14:06:57,441 - INFO - Jogging the end effector position
+2021-03-29 14:06:57,441 - INFO - Jog col total: 2.0
+2021-03-29 14:06:57,441 - INFO - Jog row total: 0.0
+2021-03-29 14:07:10,436 - INFO - Jogging the end effector position
+2021-03-29 14:07:10,436 - INFO - Jog col total: 2.0
+2021-03-29 14:07:10,436 - INFO - Jog row total: 0.25
+2021-03-29 14:07:12,670 - INFO - Jogging the end effector position
+2021-03-29 14:07:12,670 - INFO - Jog col total: 2.0
+2021-03-29 14:07:12,671 - INFO - Jog row total: 0.0
+2021-03-29 14:07:13,466 - INFO - Jogging the end effector position
+2021-03-29 14:07:13,466 - INFO - Jog col total: 2.0
+2021-03-29 14:07:13,466 - INFO - Jog row total: -0.25
+2021-03-29 14:07:14,242 - INFO - Jogging the end effector position
+2021-03-29 14:07:14,242 - INFO - Jog col total: 2.0
+2021-03-29 14:07:14,243 - INFO - Jog row total: -0.5
+2021-03-29 14:07:14,858 - INFO - Jogging the end effector position
+2021-03-29 14:07:14,858 - INFO - Jog col total: 2.0
+2021-03-29 14:07:14,858 - INFO - Jog row total: -0.75
+2021-03-29 14:07:18,920 - INFO - Jogging the end effector position
+2021-03-29 14:07:18,921 - INFO - Jog col total: 2.0
+2021-03-29 14:07:18,921 - INFO - Jog row total: -1.0
+2021-03-29 14:07:19,982 - INFO - Jogging the end effector position
+2021-03-29 14:07:19,983 - INFO - Jog col total: 2.0
+2021-03-29 14:07:19,983 - INFO - Jog row total: -1.25
+2021-03-29 14:07:20,732 - INFO - Jogging the end effector position
+2021-03-29 14:07:20,733 - INFO - Jog col total: 2.0
+2021-03-29 14:07:20,733 - INFO - Jog row total: -1.5
+2021-03-29 14:07:21,550 - INFO - Jogging the end effector position
+2021-03-29 14:07:21,550 - INFO - Jog col total: 2.0
+2021-03-29 14:07:21,550 - INFO - Jog row total: -1.75
+2021-03-29 14:07:22,153 - INFO - Jogging the end effector position
+2021-03-29 14:07:22,153 - INFO - Jog col total: 2.0
+2021-03-29 14:07:22,153 - INFO - Jog row total: -2.0
+2021-03-29 14:08:16,333 - INFO - Moving to tube ROW : 1, COL : 3
+2021-03-29 14:21:40,141 - INFO - ---------- Closing HUMAN-MACHINE-INTERFACE for SM-13 -----------
+2021-03-29 14:21:43,244 - INFO -  
+2021-03-29 14:21:43,244 - INFO - ********* Starting HUMAN-MACHINE-INTERFACE for SM-13 **********
+2021-03-29 14:21:43,370 - INFO - Fixture harness stall function is enabled
+2021-03-29 14:21:44,212 - INFO - Stopping movement TOTAL
+2021-03-29 14:21:44,212 - ERROR - Attempting to connect to NFC
+2021-03-29 14:21:45,182 - INFO - HMI connected to NFC successfully
+2021-03-29 14:21:52,449 - INFO - System files loaded:
+2021-03-29 14:21:52,449 - INFO - HX file        : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/tubesheet.csv
+2021-03-29 14:21:52,449 - INFO - Inspection Plan: /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/InspPlan1_M_1.csv
+2021-03-29 14:21:52,449 - INFO - Fixture Model  : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Robots/Zetec/SM-13.csv
+2021-03-29 14:21:53,636 - INFO - Fixture harness stall function is disabled
+2021-03-29 14:21:54,235 - INFO - Fixture harness main control is enabled
+2021-03-29 14:21:55,782 - INFO - Starting SM-13 simulator
+2021-03-29 14:22:09,387 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 14:22:16,387 - INFO - Jogging the end effector position
+2021-03-29 14:22:16,387 - INFO - Jog col total: 0.25
+2021-03-29 14:22:16,387 - INFO - Jog row total: 0.0
+2021-03-29 14:22:16,745 - INFO - Jogging the end effector position
+2021-03-29 14:22:16,745 - INFO - Jog col total: 0.5
+2021-03-29 14:22:16,745 - INFO - Jog row total: 0.0
+2021-03-29 14:22:17,350 - INFO - Jogging the end effector position
+2021-03-29 14:22:17,350 - INFO - Jog col total: 0.75
+2021-03-29 14:22:17,350 - INFO - Jog row total: 0.0
+2021-03-29 14:22:17,808 - INFO - Jogging the end effector position
+2021-03-29 14:22:17,808 - INFO - Jog col total: 1.0
+2021-03-29 14:22:17,808 - INFO - Jog row total: 0.0
+2021-03-29 14:22:18,409 - INFO - Jogging the end effector position
+2021-03-29 14:22:18,409 - INFO - Jog col total: 1.25
+2021-03-29 14:22:18,409 - INFO - Jog row total: 0.0
+2021-03-29 14:22:18,873 - INFO - Jogging the end effector position
+2021-03-29 14:22:18,873 - INFO - Jog col total: 1.5
+2021-03-29 14:22:18,873 - INFO - Jog row total: 0.0
+2021-03-29 14:22:19,456 - INFO - Jogging the end effector position
+2021-03-29 14:22:19,456 - INFO - Jog col total: 1.75
+2021-03-29 14:22:19,456 - INFO - Jog row total: 0.0
+2021-03-29 14:22:19,971 - INFO - Jogging the end effector position
+2021-03-29 14:22:19,972 - INFO - Jog col total: 2.0
+2021-03-29 14:22:19,972 - INFO - Jog row total: 0.0
+2021-03-29 14:22:20,827 - INFO - Jogging the end effector position
+2021-03-29 14:22:20,828 - INFO - Jog col total: 2.0
+2021-03-29 14:22:20,828 - INFO - Jog row total: -0.25
+2021-03-29 14:22:21,535 - INFO - Jogging the end effector position
+2021-03-29 14:22:21,535 - INFO - Jog col total: 2.0
+2021-03-29 14:22:21,535 - INFO - Jog row total: -0.5
+2021-03-29 14:22:21,951 - INFO - Jogging the end effector position
+2021-03-29 14:22:21,951 - INFO - Jog col total: 2.0
+2021-03-29 14:22:21,951 - INFO - Jog row total: -0.75
+2021-03-29 14:22:22,572 - INFO - Jogging the end effector position
+2021-03-29 14:22:22,572 - INFO - Jog col total: 2.0
+2021-03-29 14:22:22,572 - INFO - Jog row total: -1.0
+2021-03-29 14:22:23,117 - INFO - Jogging the end effector position
+2021-03-29 14:22:23,117 - INFO - Jog col total: 2.0
+2021-03-29 14:22:23,117 - INFO - Jog row total: -1.25
+2021-03-29 14:22:23,711 - INFO - Jogging the end effector position
+2021-03-29 14:22:23,711 - INFO - Jog col total: 2.0
+2021-03-29 14:22:23,712 - INFO - Jog row total: -1.5
+2021-03-29 14:22:24,175 - INFO - Jogging the end effector position
+2021-03-29 14:22:24,175 - INFO - Jog col total: 2.0
+2021-03-29 14:22:24,175 - INFO - Jog row total: -1.75
+2021-03-29 14:22:24,794 - INFO - Jogging the end effector position
+2021-03-29 14:22:24,794 - INFO - Jog col total: 2.0
+2021-03-29 14:22:24,794 - INFO - Jog row total: -2.0
+2021-03-29 14:22:51,614 - INFO - Moving to tube ROW : 1, COL : 3
+2021-03-29 14:29:04,089 - INFO - ---------- Closing HUMAN-MACHINE-INTERFACE for SM-13 -----------
+2021-03-29 14:29:06,502 - INFO -  
+2021-03-29 14:29:06,503 - INFO - ********* Starting HUMAN-MACHINE-INTERFACE for SM-13 **********
+2021-03-29 14:29:06,630 - INFO - Fixture harness stall function is enabled
+2021-03-29 14:29:07,463 - INFO - Stopping movement TOTAL
+2021-03-29 14:29:07,464 - ERROR - Attempting to connect to NFC
+2021-03-29 14:29:08,449 - INFO - HMI connected to NFC successfully
+2021-03-29 14:29:16,274 - INFO - System files loaded:
+2021-03-29 14:29:16,274 - INFO - HX file        : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/tubesheet.csv
+2021-03-29 14:29:16,274 - INFO - Inspection Plan: /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/InspPlan4_M_2.csv
+2021-03-29 14:29:16,274 - INFO - Fixture Model  : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Robots/Zetec/SM-13.csv
+2021-03-29 14:29:19,813 - INFO - System files loaded:
+2021-03-29 14:29:19,814 - INFO - HX file        : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/tubesheet.csv
+2021-03-29 14:29:19,814 - INFO - Inspection Plan: /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/InspPlan1_M_1.csv
+2021-03-29 14:29:19,814 - INFO - Fixture Model  : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Robots/Zetec/SM-13.csv
+2021-03-29 14:29:21,121 - INFO - Fixture harness main control is enabled
+2021-03-29 14:29:21,704 - INFO - Fixture harness stall function is disabled
+2021-03-29 14:29:23,263 - INFO - Starting SM-13 simulator
+2021-03-29 14:29:32,989 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 14:29:41,828 - INFO - Jogging the end effector position
+2021-03-29 14:29:41,829 - INFO - Jog col total: 0.25
+2021-03-29 14:29:41,829 - INFO - Jog row total: 0.0
+2021-03-29 14:29:42,194 - INFO - Jogging the end effector position
+2021-03-29 14:29:42,194 - INFO - Jog col total: 0.5
+2021-03-29 14:29:42,194 - INFO - Jog row total: 0.0
+2021-03-29 14:29:42,783 - INFO - Jogging the end effector position
+2021-03-29 14:29:42,783 - INFO - Jog col total: 0.75
+2021-03-29 14:29:42,783 - INFO - Jog row total: 0.0
+2021-03-29 14:29:43,131 - INFO - Jogging the end effector position
+2021-03-29 14:29:43,131 - INFO - Jog col total: 1.0
+2021-03-29 14:29:43,131 - INFO - Jog row total: 0.0
+2021-03-29 14:29:43,770 - INFO - Jogging the end effector position
+2021-03-29 14:29:43,770 - INFO - Jog col total: 1.25
+2021-03-29 14:29:43,770 - INFO - Jog row total: 0.0
+2021-03-29 14:29:44,190 - INFO - Jogging the end effector position
+2021-03-29 14:29:44,190 - INFO - Jog col total: 1.5
+2021-03-29 14:29:44,190 - INFO - Jog row total: 0.0
+2021-03-29 14:29:44,790 - INFO - Jogging the end effector position
+2021-03-29 14:29:44,790 - INFO - Jog col total: 1.75
+2021-03-29 14:29:44,790 - INFO - Jog row total: 0.0
+2021-03-29 14:29:45,164 - INFO - Jogging the end effector position
+2021-03-29 14:29:45,164 - INFO - Jog col total: 2.0
+2021-03-29 14:29:45,164 - INFO - Jog row total: 0.0
+2021-03-29 14:29:46,167 - INFO - Jogging the end effector position
+2021-03-29 14:29:46,168 - INFO - Jog col total: 2.0
+2021-03-29 14:29:46,168 - INFO - Jog row total: -0.25
+2021-03-29 14:29:46,772 - INFO - Jogging the end effector position
+2021-03-29 14:29:46,772 - INFO - Jog col total: 2.0
+2021-03-29 14:29:46,772 - INFO - Jog row total: -0.5
+2021-03-29 14:29:47,134 - INFO - Jogging the end effector position
+2021-03-29 14:29:47,134 - INFO - Jog col total: 2.0
+2021-03-29 14:29:47,134 - INFO - Jog row total: -0.75
+2021-03-29 14:29:47,788 - INFO - Jogging the end effector position
+2021-03-29 14:29:47,788 - INFO - Jog col total: 2.0
+2021-03-29 14:29:47,789 - INFO - Jog row total: -1.0
+2021-03-29 14:29:48,132 - INFO - Jogging the end effector position
+2021-03-29 14:29:48,132 - INFO - Jog col total: 2.0
+2021-03-29 14:29:48,132 - INFO - Jog row total: -1.25
+2021-03-29 14:29:48,763 - INFO - Jogging the end effector position
+2021-03-29 14:29:48,763 - INFO - Jog col total: 2.0
+2021-03-29 14:29:48,763 - INFO - Jog row total: -1.5
+2021-03-29 14:29:49,145 - INFO - Jogging the end effector position
+2021-03-29 14:29:49,145 - INFO - Jog col total: 2.0
+2021-03-29 14:29:49,146 - INFO - Jog row total: -1.75
+2021-03-29 14:29:49,784 - INFO - Jogging the end effector position
+2021-03-29 14:29:49,785 - INFO - Jog col total: 2.0
+2021-03-29 14:29:49,785 - INFO - Jog row total: -2.0
+2021-03-29 14:30:10,043 - INFO - Moving to tube ROW : 1, COL : 3
+2021-03-29 14:30:17,072 - INFO - ---------- Closing HUMAN-MACHINE-INTERFACE for SM-13 -----------
+2021-03-29 14:36:30,112 - INFO -  
+2021-03-29 14:36:30,112 - INFO - ********* Starting HUMAN-MACHINE-INTERFACE for SM-13 **********
+2021-03-29 14:36:30,252 - INFO - Fixture harness stall function is enabled
+2021-03-29 14:36:31,082 - INFO - Stopping movement TOTAL
+2021-03-29 14:36:31,083 - ERROR - Attempting to connect to NFC
+2021-03-29 14:36:32,054 - INFO - HMI connected to NFC successfully
+2021-03-29 14:36:41,131 - INFO - System files loaded:
+2021-03-29 14:36:41,131 - INFO - HX file        : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/tubesheet.csv
+2021-03-29 14:36:41,132 - INFO - Inspection Plan: /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/InspPlan1_M_1.csv
+2021-03-29 14:36:41,132 - INFO - Fixture Model  : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Robots/Zetec/SM-13.csv
+2021-03-29 14:36:44,486 - INFO - Fixture harness main control is enabled
+2021-03-29 14:36:45,085 - INFO - Fixture harness stall function is disabled
+2021-03-29 14:36:46,499 - INFO - Starting SM-13 simulator
+2021-03-29 14:36:57,684 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 14:37:05,265 - INFO - Jogging the end effector position
+2021-03-29 14:37:05,266 - INFO - Jog col total: 0.25
+2021-03-29 14:37:05,266 - INFO - Jog row total: 0.0
+2021-03-29 14:37:05,716 - INFO - Jogging the end effector position
+2021-03-29 14:37:05,716 - INFO - Jog col total: 0.5
+2021-03-29 14:37:05,716 - INFO - Jog row total: 0.0
+2021-03-29 14:37:06,320 - INFO - Jogging the end effector position
+2021-03-29 14:37:06,321 - INFO - Jog col total: 0.75
+2021-03-29 14:37:06,321 - INFO - Jog row total: 0.0
+2021-03-29 14:37:06,822 - INFO - Jogging the end effector position
+2021-03-29 14:37:06,822 - INFO - Jog col total: 1.0
+2021-03-29 14:37:06,822 - INFO - Jog row total: 0.0
+2021-03-29 14:37:07,430 - INFO - Jogging the end effector position
+2021-03-29 14:37:07,430 - INFO - Jog col total: 1.25
+2021-03-29 14:37:07,430 - INFO - Jog row total: 0.0
+2021-03-29 14:37:07,962 - INFO - Jogging the end effector position
+2021-03-29 14:37:07,962 - INFO - Jog col total: 1.5
+2021-03-29 14:37:07,962 - INFO - Jog row total: 0.0
+2021-03-29 14:37:08,565 - INFO - Jogging the end effector position
+2021-03-29 14:37:08,566 - INFO - Jog col total: 1.75
+2021-03-29 14:37:08,566 - INFO - Jog row total: 0.0
+2021-03-29 14:37:09,143 - INFO - Jogging the end effector position
+2021-03-29 14:37:09,144 - INFO - Jog col total: 2.0
+2021-03-29 14:37:09,144 - INFO - Jog row total: 0.0
+2021-03-29 14:37:14,372 - INFO - Jogging the end effector position
+2021-03-29 14:37:14,373 - INFO - Jog col total: 2.0
+2021-03-29 14:37:14,373 - INFO - Jog row total: 0.25
+2021-03-29 14:37:15,132 - INFO - Jogging the end effector position
+2021-03-29 14:37:15,132 - INFO - Jog col total: 2.0
+2021-03-29 14:37:15,132 - INFO - Jog row total: 0.5
+2021-03-29 14:37:15,951 - INFO - Jogging the end effector position
+2021-03-29 14:37:15,951 - INFO - Jog col total: 2.0
+2021-03-29 14:37:15,951 - INFO - Jog row total: 0.75
+2021-03-29 14:37:16,457 - INFO - Jogging the end effector position
+2021-03-29 14:37:16,458 - INFO - Jog col total: 2.0
+2021-03-29 14:37:16,458 - INFO - Jog row total: 1.0
+2021-03-29 14:37:17,158 - INFO - Jogging the end effector position
+2021-03-29 14:37:17,158 - INFO - Jog col total: 2.0
+2021-03-29 14:37:17,158 - INFO - Jog row total: 1.25
+2021-03-29 14:37:17,757 - INFO - Jogging the end effector position
+2021-03-29 14:37:17,757 - INFO - Jog col total: 2.0
+2021-03-29 14:37:17,757 - INFO - Jog row total: 1.5
+2021-03-29 14:37:18,347 - INFO - Jogging the end effector position
+2021-03-29 14:37:18,347 - INFO - Jog col total: 2.0
+2021-03-29 14:37:18,347 - INFO - Jog row total: 1.75
+2021-03-29 14:37:18,960 - INFO - Jogging the end effector position
+2021-03-29 14:37:18,960 - INFO - Jog col total: 2.0
+2021-03-29 14:37:18,960 - INFO - Jog row total: 2.0
+2021-03-29 14:37:28,740 - INFO - Moving to tube ROW : 1, COL : 3
+2021-03-29 14:37:41,013 - ERROR - Inverse kinematics error at px 3.9774000000000003, py 2.6516
+2021-03-29 14:41:23,437 - INFO - ---------- Closing HUMAN-MACHINE-INTERFACE for SM-13 -----------
+2021-03-29 14:41:30,535 - INFO -  
+2021-03-29 14:41:30,535 - INFO - ********* Starting HUMAN-MACHINE-INTERFACE for SM-13 **********
+2021-03-29 14:41:30,666 - INFO - Fixture harness stall function is enabled
+2021-03-29 14:41:31,489 - INFO - Stopping movement TOTAL
+2021-03-29 14:41:31,489 - ERROR - Attempting to connect to NFC
+2021-03-29 14:41:32,461 - INFO - HMI connected to NFC successfully
+2021-03-29 14:41:40,720 - INFO - System files loaded:
+2021-03-29 14:41:40,720 - INFO - HX file        : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/tubesheet.csv
+2021-03-29 14:41:40,721 - INFO - Inspection Plan: /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/InspPlan1_M_1.csv
+2021-03-29 14:41:40,721 - INFO - Fixture Model  : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Robots/Zetec/SM-13.csv
+2021-03-29 14:41:42,881 - INFO - Fixture harness stall function is disabled
+2021-03-29 14:41:43,369 - INFO - Fixture harness main control is enabled
+2021-03-29 14:41:45,025 - INFO - Starting SM-13 simulator
+2021-03-29 14:41:52,403 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 14:41:56,124 - INFO - Jogging the end effector position
+2021-03-29 14:41:56,125 - INFO - Jog col total: 0.25
+2021-03-29 14:41:56,125 - INFO - Jog row total: 0.0
+2021-03-29 14:41:56,521 - INFO - Jogging the end effector position
+2021-03-29 14:41:56,521 - INFO - Jog col total: 0.5
+2021-03-29 14:41:56,521 - INFO - Jog row total: 0.0
+2021-03-29 14:41:57,118 - INFO - Jogging the end effector position
+2021-03-29 14:41:57,118 - INFO - Jog col total: 0.75
+2021-03-29 14:41:57,118 - INFO - Jog row total: 0.0
+2021-03-29 14:41:57,478 - INFO - Jogging the end effector position
+2021-03-29 14:41:57,479 - INFO - Jog col total: 1.0
+2021-03-29 14:41:57,479 - INFO - Jog row total: 0.0
+2021-03-29 14:41:57,860 - INFO - Jogging the end effector position
+2021-03-29 14:41:57,860 - INFO - Jog col total: 1.25
+2021-03-29 14:41:57,860 - INFO - Jog row total: 0.0
+2021-03-29 14:41:58,472 - INFO - Jogging the end effector position
+2021-03-29 14:41:58,472 - INFO - Jog col total: 1.5
+2021-03-29 14:41:58,472 - INFO - Jog row total: 0.0
+2021-03-29 14:41:58,832 - INFO - Jogging the end effector position
+2021-03-29 14:41:58,833 - INFO - Jog col total: 1.75
+2021-03-29 14:41:58,833 - INFO - Jog row total: 0.0
+2021-03-29 14:41:59,206 - INFO - Jogging the end effector position
+2021-03-29 14:41:59,206 - INFO - Jog col total: 2.0
+2021-03-29 14:41:59,206 - INFO - Jog row total: 0.0
+2021-03-29 14:42:02,785 - INFO - Jogging the end effector position
+2021-03-29 14:42:02,785 - INFO - Jog col total: 2.0
+2021-03-29 14:42:02,785 - INFO - Jog row total: 0.25
+2021-03-29 14:42:03,203 - INFO - Jogging the end effector position
+2021-03-29 14:42:03,204 - INFO - Jog col total: 2.0
+2021-03-29 14:42:03,204 - INFO - Jog row total: 0.5
+2021-03-29 14:42:03,809 - INFO - Jogging the end effector position
+2021-03-29 14:42:03,810 - INFO - Jog col total: 2.0
+2021-03-29 14:42:03,810 - INFO - Jog row total: 0.75
+2021-03-29 14:42:04,164 - INFO - Jogging the end effector position
+2021-03-29 14:42:04,164 - INFO - Jog col total: 2.0
+2021-03-29 14:42:04,164 - INFO - Jog row total: 1.0
+2021-03-29 14:42:04,815 - INFO - Jogging the end effector position
+2021-03-29 14:42:04,815 - INFO - Jog col total: 2.0
+2021-03-29 14:42:04,815 - INFO - Jog row total: 1.25
+2021-03-29 14:42:05,168 - INFO - Jogging the end effector position
+2021-03-29 14:42:05,169 - INFO - Jog col total: 2.0
+2021-03-29 14:42:05,169 - INFO - Jog row total: 1.5
+2021-03-29 14:42:05,570 - INFO - Jogging the end effector position
+2021-03-29 14:42:05,570 - INFO - Jog col total: 2.0
+2021-03-29 14:42:05,570 - INFO - Jog row total: 1.75
+2021-03-29 14:42:06,175 - INFO - Jogging the end effector position
+2021-03-29 14:42:06,175 - INFO - Jog col total: 2.0
+2021-03-29 14:42:06,176 - INFO - Jog row total: 2.0
+2021-03-29 14:42:24,828 - INFO - Jogging the end effector position
+2021-03-29 14:42:24,829 - INFO - Jog col total: 0.25
+2021-03-29 14:42:24,829 - INFO - Jog row total: 0.0
+2021-03-29 14:42:25,195 - INFO - Jogging the end effector position
+2021-03-29 14:42:25,195 - INFO - Jog col total: 0.5
+2021-03-29 14:42:25,195 - INFO - Jog row total: 0.0
+2021-03-29 14:42:25,806 - INFO - Jogging the end effector position
+2021-03-29 14:42:25,806 - INFO - Jog col total: 0.75
+2021-03-29 14:42:25,806 - INFO - Jog row total: 0.0
+2021-03-29 14:42:26,162 - INFO - Jogging the end effector position
+2021-03-29 14:42:26,162 - INFO - Jog col total: 1.0
+2021-03-29 14:42:26,162 - INFO - Jog row total: 0.0
+2021-03-29 14:42:26,802 - INFO - Jogging the end effector position
+2021-03-29 14:42:26,802 - INFO - Jog col total: 1.25
+2021-03-29 14:42:26,802 - INFO - Jog row total: 0.0
+2021-03-29 14:42:27,185 - INFO - Jogging the end effector position
+2021-03-29 14:42:27,185 - INFO - Jog col total: 1.5
+2021-03-29 14:42:27,185 - INFO - Jog row total: 0.0
+2021-03-29 14:42:27,560 - INFO - Jogging the end effector position
+2021-03-29 14:42:27,561 - INFO - Jog col total: 1.75
+2021-03-29 14:42:27,561 - INFO - Jog row total: 0.0
+2021-03-29 14:42:28,189 - INFO - Jogging the end effector position
+2021-03-29 14:42:28,190 - INFO - Jog col total: 2.0
+2021-03-29 14:42:28,190 - INFO - Jog row total: 0.0
+2021-03-29 14:42:31,540 - INFO - Jogging the end effector position
+2021-03-29 14:42:31,540 - INFO - Jog col total: 2.0
+2021-03-29 14:42:31,540 - INFO - Jog row total: 0.25
+2021-03-29 14:42:32,310 - INFO - Jogging the end effector position
+2021-03-29 14:42:32,311 - INFO - Jog col total: 2.0
+2021-03-29 14:42:32,311 - INFO - Jog row total: 0.5
+2021-03-29 14:42:32,847 - INFO - Jogging the end effector position
+2021-03-29 14:42:32,847 - INFO - Jog col total: 2.0
+2021-03-29 14:42:32,847 - INFO - Jog row total: 0.75
+2021-03-29 14:42:33,453 - INFO - Jogging the end effector position
+2021-03-29 14:42:33,453 - INFO - Jog col total: 2.0
+2021-03-29 14:42:33,453 - INFO - Jog row total: 1.0
+2021-03-29 14:42:33,849 - INFO - Jogging the end effector position
+2021-03-29 14:42:33,849 - INFO - Jog col total: 2.0
+2021-03-29 14:42:33,849 - INFO - Jog row total: 1.25
+2021-03-29 14:42:34,434 - INFO - Jogging the end effector position
+2021-03-29 14:42:34,434 - INFO - Jog col total: 2.0
+2021-03-29 14:42:34,434 - INFO - Jog row total: 1.5
+2021-03-29 14:42:34,821 - INFO - Jogging the end effector position
+2021-03-29 14:42:34,821 - INFO - Jog col total: 2.0
+2021-03-29 14:42:34,821 - INFO - Jog row total: 1.75
+2021-03-29 14:42:35,440 - INFO - Jogging the end effector position
+2021-03-29 14:42:35,440 - INFO - Jog col total: 2.0
+2021-03-29 14:42:35,440 - INFO - Jog row total: 2.0
+2021-03-29 14:42:42,294 - INFO - Moving to tube ROW : 1, COL : 3
+2021-03-29 14:44:10,358 - INFO - Jogging the end effector position
+2021-03-29 14:44:10,359 - INFO - Jog col total: -0.25
+2021-03-29 14:44:10,359 - INFO - Jog row total: 0.0
+2021-03-29 14:44:11,027 - INFO - Jogging the end effector position
+2021-03-29 14:44:11,027 - INFO - Jog col total: -0.5
+2021-03-29 14:44:11,027 - INFO - Jog row total: 0.0
+2021-03-29 14:44:11,399 - INFO - Jogging the end effector position
+2021-03-29 14:44:11,400 - INFO - Jog col total: -0.75
+2021-03-29 14:44:11,400 - INFO - Jog row total: 0.0
+2021-03-29 14:44:12,040 - INFO - Jogging the end effector position
+2021-03-29 14:44:12,040 - INFO - Jog col total: -1.0
+2021-03-29 14:44:12,040 - INFO - Jog row total: 0.0
+2021-03-29 14:44:12,460 - INFO - Jogging the end effector position
+2021-03-29 14:44:12,460 - INFO - Jog col total: -1.25
+2021-03-29 14:44:12,460 - INFO - Jog row total: 0.0
+2021-03-29 14:44:13,069 - INFO - Jogging the end effector position
+2021-03-29 14:44:13,069 - INFO - Jog col total: -1.5
+2021-03-29 14:44:13,069 - INFO - Jog row total: 0.0
+2021-03-29 14:44:13,497 - INFO - Jogging the end effector position
+2021-03-29 14:44:13,497 - INFO - Jog col total: -1.75
+2021-03-29 14:44:13,497 - INFO - Jog row total: 0.0
+2021-03-29 14:44:14,109 - INFO - Jogging the end effector position
+2021-03-29 14:44:14,109 - INFO - Jog col total: -2.0
+2021-03-29 14:44:14,110 - INFO - Jog row total: 0.0
+2021-03-29 14:44:18,232 - INFO - Jogging the end effector position
+2021-03-29 14:44:18,232 - INFO - Jog col total: -2.0
+2021-03-29 14:44:18,232 - INFO - Jog row total: -0.25
+2021-03-29 14:44:19,080 - INFO - Jogging the end effector position
+2021-03-29 14:44:19,080 - INFO - Jog col total: -2.0
+2021-03-29 14:44:19,081 - INFO - Jog row total: -0.5
+2021-03-29 14:44:19,509 - INFO - Jogging the end effector position
+2021-03-29 14:44:19,509 - INFO - Jog col total: -2.0
+2021-03-29 14:44:19,509 - INFO - Jog row total: -0.75
+2021-03-29 14:44:20,128 - INFO - Jogging the end effector position
+2021-03-29 14:44:20,128 - INFO - Jog col total: -2.0
+2021-03-29 14:44:20,128 - INFO - Jog row total: -1.0
+2021-03-29 14:44:20,642 - INFO - Jogging the end effector position
+2021-03-29 14:44:20,642 - INFO - Jog col total: -2.0
+2021-03-29 14:44:20,642 - INFO - Jog row total: -1.25
+2021-03-29 14:44:21,229 - INFO - Jogging the end effector position
+2021-03-29 14:44:21,229 - INFO - Jog col total: -2.0
+2021-03-29 14:44:21,229 - INFO - Jog row total: -1.5
+2021-03-29 14:44:21,768 - INFO - Jogging the end effector position
+2021-03-29 14:44:21,768 - INFO - Jog col total: -2.0
+2021-03-29 14:44:21,768 - INFO - Jog row total: -1.75
+2021-03-29 14:44:22,392 - INFO - Jogging the end effector position
+2021-03-29 14:44:22,392 - INFO - Jog col total: -2.0
+2021-03-29 14:44:22,392 - INFO - Jog row total: -2.0
+2021-03-29 14:44:33,979 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 14:46:55,106 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 14:47:04,020 - INFO - Jogging the end effector position
+2021-03-29 14:47:04,020 - INFO - Jog col total: -0.25
+2021-03-29 14:47:04,020 - INFO - Jog row total: 0.0
+2021-03-29 14:47:04,513 - INFO - Jogging the end effector position
+2021-03-29 14:47:04,513 - INFO - Jog col total: -0.5
+2021-03-29 14:47:04,513 - INFO - Jog row total: 0.0
+2021-03-29 14:47:05,126 - INFO - Jogging the end effector position
+2021-03-29 14:47:05,126 - INFO - Jog col total: -0.75
+2021-03-29 14:47:05,126 - INFO - Jog row total: 0.0
+2021-03-29 14:47:05,702 - INFO - Jogging the end effector position
+2021-03-29 14:47:05,703 - INFO - Jog col total: -1.0
+2021-03-29 14:47:05,703 - INFO - Jog row total: 0.0
+2021-03-29 14:47:06,334 - INFO - Jogging the end effector position
+2021-03-29 14:47:06,334 - INFO - Jog col total: -1.25
+2021-03-29 14:47:06,334 - INFO - Jog row total: 0.0
+2021-03-29 14:47:06,797 - INFO - Jogging the end effector position
+2021-03-29 14:47:06,798 - INFO - Jog col total: -1.5
+2021-03-29 14:47:06,798 - INFO - Jog row total: 0.0
+2021-03-29 14:47:07,399 - INFO - Jogging the end effector position
+2021-03-29 14:47:07,399 - INFO - Jog col total: -1.75
+2021-03-29 14:47:07,399 - INFO - Jog row total: 0.0
+2021-03-29 14:47:07,907 - INFO - Jogging the end effector position
+2021-03-29 14:47:07,908 - INFO - Jog col total: -2.0
+2021-03-29 14:47:07,908 - INFO - Jog row total: 0.0
+2021-03-29 14:47:11,485 - INFO - Jogging the end effector position
+2021-03-29 14:47:11,485 - INFO - Jog col total: -2.0
+2021-03-29 14:47:11,485 - INFO - Jog row total: -0.25
+2021-03-29 14:47:12,473 - INFO - Jogging the end effector position
+2021-03-29 14:47:12,474 - INFO - Jog col total: -2.0
+2021-03-29 14:47:12,474 - INFO - Jog row total: -0.5
+2021-03-29 14:47:13,063 - INFO - Jogging the end effector position
+2021-03-29 14:47:13,064 - INFO - Jog col total: -2.0
+2021-03-29 14:47:13,064 - INFO - Jog row total: -0.75
+2021-03-29 14:47:13,713 - INFO - Jogging the end effector position
+2021-03-29 14:47:13,713 - INFO - Jog col total: -2.0
+2021-03-29 14:47:13,713 - INFO - Jog row total: -1.0
+2021-03-29 14:47:14,327 - INFO - Jogging the end effector position
+2021-03-29 14:47:14,327 - INFO - Jog col total: -2.0
+2021-03-29 14:47:14,327 - INFO - Jog row total: -1.25
+2021-03-29 14:47:14,960 - INFO - Jogging the end effector position
+2021-03-29 14:47:14,960 - INFO - Jog col total: -2.0
+2021-03-29 14:47:14,960 - INFO - Jog row total: -1.5
+2021-03-29 14:47:15,595 - INFO - Jogging the end effector position
+2021-03-29 14:47:15,595 - INFO - Jog col total: -2.0
+2021-03-29 14:47:15,596 - INFO - Jog row total: -1.75
+2021-03-29 14:47:16,242 - INFO - Jogging the end effector position
+2021-03-29 14:47:16,243 - INFO - Jog col total: -2.0
+2021-03-29 14:47:16,243 - INFO - Jog row total: -2.0
+2021-03-29 14:47:20,170 - INFO - Moving to tube ROW : 1, COL : 3
+2021-03-29 14:49:30,968 - INFO - ---------- Closing HUMAN-MACHINE-INTERFACE for SM-13 -----------
+2021-03-29 14:49:33,321 - INFO -  
+2021-03-29 14:49:33,321 - INFO - ********* Starting HUMAN-MACHINE-INTERFACE for SM-13 **********
+2021-03-29 14:49:33,453 - INFO - Fixture harness stall function is enabled
+2021-03-29 14:49:34,279 - INFO - Stopping movement TOTAL
+2021-03-29 14:49:34,280 - ERROR - Attempting to connect to NFC
+2021-03-29 14:49:35,255 - INFO - HMI connected to NFC successfully
+2021-03-29 14:49:51,248 - INFO - System files loaded:
+2021-03-29 14:49:51,249 - INFO - HX file        : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/tubesheet.csv
+2021-03-29 14:49:51,249 - INFO - Inspection Plan: /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/InspPlan1_M_1.csv
+2021-03-29 14:49:51,249 - INFO - Fixture Model  : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Robots/Zetec/SM-13.csv
+2021-03-29 14:49:52,674 - INFO - Fixture harness main control is enabled
+2021-03-29 14:49:53,209 - INFO - Fixture harness stall function is disabled
+2021-03-29 14:49:54,644 - INFO - Starting SM-13 simulator
+2021-03-29 14:50:05,236 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 14:50:08,351 - INFO - Jogging the end effector position
+2021-03-29 14:50:08,351 - INFO - Jog col total: 0.25
+2021-03-29 14:50:08,351 - INFO - Jog row total: 0.0
+2021-03-29 14:50:09,014 - INFO - Jogging the end effector position
+2021-03-29 14:50:09,014 - INFO - Jog col total: 0.5
+2021-03-29 14:50:09,014 - INFO - Jog row total: 0.0
+2021-03-29 14:50:09,594 - INFO - Jogging the end effector position
+2021-03-29 14:50:09,595 - INFO - Jog col total: 0.75
+2021-03-29 14:50:09,595 - INFO - Jog row total: 0.0
+2021-03-29 14:50:10,192 - INFO - Jogging the end effector position
+2021-03-29 14:50:10,192 - INFO - Jog col total: 1.0
+2021-03-29 14:50:10,192 - INFO - Jog row total: 0.0
+2021-03-29 14:50:10,705 - INFO - Jogging the end effector position
+2021-03-29 14:50:10,705 - INFO - Jog col total: 1.25
+2021-03-29 14:50:10,705 - INFO - Jog row total: 0.0
+2021-03-29 14:50:11,298 - INFO - Jogging the end effector position
+2021-03-29 14:50:11,298 - INFO - Jog col total: 1.5
+2021-03-29 14:50:11,298 - INFO - Jog row total: 0.0
+2021-03-29 14:50:11,826 - INFO - Jogging the end effector position
+2021-03-29 14:50:11,826 - INFO - Jog col total: 1.75
+2021-03-29 14:50:11,826 - INFO - Jog row total: 0.0
+2021-03-29 14:50:12,424 - INFO - Jogging the end effector position
+2021-03-29 14:50:12,424 - INFO - Jog col total: 2.0
+2021-03-29 14:50:12,424 - INFO - Jog row total: 0.0
+2021-03-29 14:50:14,400 - INFO - Jogging the end effector position
+2021-03-29 14:50:14,401 - INFO - Jog col total: 2.0
+2021-03-29 14:50:14,401 - INFO - Jog row total: -0.25
+2021-03-29 14:50:14,936 - INFO - Jogging the end effector position
+2021-03-29 14:50:14,936 - INFO - Jog col total: 2.0
+2021-03-29 14:50:14,936 - INFO - Jog row total: -0.5
+2021-03-29 14:50:15,545 - INFO - Jogging the end effector position
+2021-03-29 14:50:15,545 - INFO - Jog col total: 2.0
+2021-03-29 14:50:15,545 - INFO - Jog row total: -0.75
+2021-03-29 14:50:16,066 - INFO - Jogging the end effector position
+2021-03-29 14:50:16,067 - INFO - Jog col total: 2.0
+2021-03-29 14:50:16,067 - INFO - Jog row total: -1.0
+2021-03-29 14:50:16,677 - INFO - Jogging the end effector position
+2021-03-29 14:50:16,678 - INFO - Jog col total: 2.0
+2021-03-29 14:50:16,678 - INFO - Jog row total: -1.25
+2021-03-29 14:50:17,260 - INFO - Jogging the end effector position
+2021-03-29 14:50:17,260 - INFO - Jog col total: 2.0
+2021-03-29 14:50:17,260 - INFO - Jog row total: -1.5
+2021-03-29 14:50:17,835 - INFO - Jogging the end effector position
+2021-03-29 14:50:17,835 - INFO - Jog col total: 2.0
+2021-03-29 14:50:17,835 - INFO - Jog row total: -1.75
+2021-03-29 14:50:18,380 - INFO - Jogging the end effector position
+2021-03-29 14:50:18,380 - INFO - Jog col total: 2.0
+2021-03-29 14:50:18,380 - INFO - Jog row total: -2.0
+2021-03-29 14:50:29,283 - INFO - Moving to tube ROW : 1, COL : 3
+2021-03-29 14:50:44,903 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 14:50:48,725 - INFO - Moving to tube ROW : 1, COL : 3
+2021-03-29 14:50:55,301 - INFO - Jogging the end effector position
+2021-03-29 14:50:55,301 - INFO - Jog col total: 0.0
+2021-03-29 14:50:55,301 - INFO - Jog row total: 0.25
+2021-03-29 14:50:55,884 - INFO - Jogging the end effector position
+2021-03-29 14:50:55,885 - INFO - Jog col total: 0.0
+2021-03-29 14:50:55,885 - INFO - Jog row total: 0.5
+2021-03-29 14:50:56,299 - INFO - Jogging the end effector position
+2021-03-29 14:50:56,299 - INFO - Jog col total: 0.0
+2021-03-29 14:50:56,299 - INFO - Jog row total: 0.75
+2021-03-29 14:50:56,905 - INFO - Jogging the end effector position
+2021-03-29 14:50:56,905 - INFO - Jog col total: 0.0
+2021-03-29 14:50:56,905 - INFO - Jog row total: 1.0
+2021-03-29 14:50:57,415 - INFO - Jogging the end effector position
+2021-03-29 14:50:57,415 - INFO - Jog col total: 0.0
+2021-03-29 14:50:57,416 - INFO - Jog row total: 1.25
+2021-03-29 14:50:58,595 - INFO - Jogging the end effector position
+2021-03-29 14:50:58,595 - INFO - Jog col total: 0.0
+2021-03-29 14:50:58,595 - INFO - Jog row total: 1.5
+2021-03-29 14:50:59,572 - INFO - Jogging the end effector position
+2021-03-29 14:50:59,572 - INFO - Jog col total: 0.0
+2021-03-29 14:50:59,572 - INFO - Jog row total: 1.75
+2021-03-29 14:51:00,328 - INFO - Jogging the end effector position
+2021-03-29 14:51:00,329 - INFO - Jog col total: 0.0
+2021-03-29 14:51:00,329 - INFO - Jog row total: 2.0
+2021-03-29 14:51:07,621 - INFO - Jogging the end effector position
+2021-03-29 14:51:07,622 - INFO - Jog col total: -0.25
+2021-03-29 14:51:07,622 - INFO - Jog row total: 2.0
+2021-03-29 14:51:08,228 - INFO - Jogging the end effector position
+2021-03-29 14:51:08,228 - INFO - Jog col total: -0.5
+2021-03-29 14:51:08,228 - INFO - Jog row total: 2.0
+2021-03-29 14:51:08,635 - INFO - Jogging the end effector position
+2021-03-29 14:51:08,635 - INFO - Jog col total: -0.75
+2021-03-29 14:51:08,635 - INFO - Jog row total: 2.0
+2021-03-29 14:51:09,219 - INFO - Jogging the end effector position
+2021-03-29 14:51:09,220 - INFO - Jog col total: -1.0
+2021-03-29 14:51:09,220 - INFO - Jog row total: 2.0
+2021-03-29 14:51:09,629 - INFO - Jogging the end effector position
+2021-03-29 14:51:09,629 - INFO - Jog col total: -1.25
+2021-03-29 14:51:09,629 - INFO - Jog row total: 2.0
+2021-03-29 14:51:10,231 - INFO - Jogging the end effector position
+2021-03-29 14:51:10,231 - INFO - Jog col total: -1.5
+2021-03-29 14:51:10,231 - INFO - Jog row total: 2.0
+2021-03-29 14:51:10,646 - INFO - Jogging the end effector position
+2021-03-29 14:51:10,646 - INFO - Jog col total: -1.75
+2021-03-29 14:51:10,646 - INFO - Jog row total: 2.0
+2021-03-29 14:51:11,231 - INFO - Jogging the end effector position
+2021-03-29 14:51:11,232 - INFO - Jog col total: -2.0
+2021-03-29 14:51:11,232 - INFO - Jog row total: 2.0
+2021-03-29 14:51:20,728 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 14:51:35,645 - INFO - Jogging the end effector position
+2021-03-29 14:51:35,646 - INFO - Jog col total: -0.25
+2021-03-29 14:51:35,646 - INFO - Jog row total: 0.0
+2021-03-29 14:51:36,315 - INFO - Jogging the end effector position
+2021-03-29 14:51:36,315 - INFO - Jog col total: -0.5
+2021-03-29 14:51:36,315 - INFO - Jog row total: 0.0
+2021-03-29 14:51:36,744 - INFO - Jogging the end effector position
+2021-03-29 14:51:36,744 - INFO - Jog col total: -0.75
+2021-03-29 14:51:36,744 - INFO - Jog row total: 0.0
+2021-03-29 14:51:37,324 - INFO - Jogging the end effector position
+2021-03-29 14:51:37,324 - INFO - Jog col total: -1.0
+2021-03-29 14:51:37,325 - INFO - Jog row total: 0.0
+2021-03-29 14:51:37,685 - INFO - Jogging the end effector position
+2021-03-29 14:51:37,685 - INFO - Jog col total: -1.25
+2021-03-29 14:51:37,686 - INFO - Jog row total: 0.0
+2021-03-29 14:51:38,330 - INFO - Jogging the end effector position
+2021-03-29 14:51:38,330 - INFO - Jog col total: -1.5
+2021-03-29 14:51:38,330 - INFO - Jog row total: 0.0
+2021-03-29 14:51:38,692 - INFO - Jogging the end effector position
+2021-03-29 14:51:38,693 - INFO - Jog col total: -1.75
+2021-03-29 14:51:38,693 - INFO - Jog row total: 0.0
+2021-03-29 14:51:39,049 - INFO - Jogging the end effector position
+2021-03-29 14:51:39,050 - INFO - Jog col total: -2.0
+2021-03-29 14:51:39,050 - INFO - Jog row total: 0.0
+2021-03-29 14:51:40,633 - INFO - Jogging the end effector position
+2021-03-29 14:51:40,633 - INFO - Jog col total: -2.0
+2021-03-29 14:51:40,634 - INFO - Jog row total: 0.25
+2021-03-29 14:51:41,137 - INFO - Jogging the end effector position
+2021-03-29 14:51:41,137 - INFO - Jog col total: -2.0
+2021-03-29 14:51:41,137 - INFO - Jog row total: 0.5
+2021-03-29 14:51:42,223 - INFO - Jogging the end effector position
+2021-03-29 14:51:42,224 - INFO - Jog col total: -2.0
+2021-03-29 14:51:42,224 - INFO - Jog row total: 0.25
+2021-03-29 14:51:42,822 - INFO - Jogging the end effector position
+2021-03-29 14:51:42,823 - INFO - Jog col total: -2.0
+2021-03-29 14:51:42,823 - INFO - Jog row total: 0.0
+2021-03-29 14:51:44,172 - INFO - Jogging the end effector position
+2021-03-29 14:51:44,173 - INFO - Jog col total: -2.0
+2021-03-29 14:51:44,173 - INFO - Jog row total: -0.25
+2021-03-29 14:51:44,546 - INFO - Jogging the end effector position
+2021-03-29 14:51:44,546 - INFO - Jog col total: -2.0
+2021-03-29 14:51:44,546 - INFO - Jog row total: -0.5
+2021-03-29 14:51:45,127 - INFO - Jogging the end effector position
+2021-03-29 14:51:45,127 - INFO - Jog col total: -2.0
+2021-03-29 14:51:45,127 - INFO - Jog row total: -0.75
+2021-03-29 14:51:45,470 - INFO - Jogging the end effector position
+2021-03-29 14:51:45,471 - INFO - Jog col total: -2.0
+2021-03-29 14:51:45,471 - INFO - Jog row total: -1.0
+2021-03-29 14:51:45,835 - INFO - Jogging the end effector position
+2021-03-29 14:51:45,836 - INFO - Jog col total: -2.0
+2021-03-29 14:51:45,836 - INFO - Jog row total: -1.25
+2021-03-29 14:51:46,438 - INFO - Jogging the end effector position
+2021-03-29 14:51:46,438 - INFO - Jog col total: -2.0
+2021-03-29 14:51:46,438 - INFO - Jog row total: -1.5
+2021-03-29 14:51:46,795 - INFO - Jogging the end effector position
+2021-03-29 14:51:46,796 - INFO - Jog col total: -2.0
+2021-03-29 14:51:46,796 - INFO - Jog row total: -1.75
+2021-03-29 14:51:47,936 - INFO - Jogging the end effector position
+2021-03-29 14:51:47,936 - INFO - Jog col total: -2.0
+2021-03-29 14:51:47,936 - INFO - Jog row total: -2.0
+2021-03-29 14:51:53,513 - INFO - Moving to tube ROW : 1, COL : 3
+2021-03-29 14:52:24,285 - INFO - Moving to tube ROW : 10, COL : 35
+2021-03-29 14:52:27,492 - INFO - Moving to tube ROW : 9, COL : 30
+2021-03-29 14:52:30,076 - INFO - Moving to tube ROW : 6, COL : 40
+2021-03-29 14:52:32,469 - INFO - Moving to tube ROW : 6, COL : 38
+2021-03-29 14:52:33,095 - INFO - Moving to tube ROW : 6, COL : 35
+2021-03-29 14:52:33,467 - INFO - Moving to tube ROW : 6, COL : 33
+2021-03-29 14:52:33,815 - INFO - Moving to tube ROW : 6, COL : 31
+2021-03-29 14:52:36,439 - INFO - Moving to tube ROW : 6, COL : 33
+2021-03-29 14:52:45,395 - INFO - Jogging the end effector position
+2021-03-29 14:52:45,395 - INFO - Jog col total: 0.05
+2021-03-29 14:52:45,395 - INFO - Jog row total: 0.0
+2021-03-29 14:52:45,871 - INFO - Jogging the end effector position
+2021-03-29 14:52:45,871 - INFO - Jog col total: 0.1
+2021-03-29 14:52:45,872 - INFO - Jog row total: 0.0
+2021-03-29 14:52:46,465 - INFO - Jogging the end effector position
+2021-03-29 14:52:46,466 - INFO - Jog col total: 0.15
+2021-03-29 14:52:46,466 - INFO - Jog row total: 0.0
+2021-03-29 14:52:47,031 - INFO - Jogging the end effector position
+2021-03-29 14:52:47,031 - INFO - Jog col total: 0.2
+2021-03-29 14:52:47,031 - INFO - Jog row total: 0.0
+2021-03-29 14:52:47,614 - INFO - Jogging the end effector position
+2021-03-29 14:52:47,614 - INFO - Jog col total: 0.25
+2021-03-29 14:52:47,615 - INFO - Jog row total: 0.0
+2021-03-29 14:52:48,131 - INFO - Jogging the end effector position
+2021-03-29 14:52:48,131 - INFO - Jog col total: 0.3
+2021-03-29 14:52:48,131 - INFO - Jog row total: 0.0
+2021-03-29 14:52:48,711 - INFO - Jogging the end effector position
+2021-03-29 14:52:48,711 - INFO - Jog col total: 0.35
+2021-03-29 14:52:48,711 - INFO - Jog row total: 0.0
+2021-03-29 14:52:49,070 - INFO - Jogging the end effector position
+2021-03-29 14:52:49,070 - INFO - Jog col total: 0.4
+2021-03-29 14:52:49,070 - INFO - Jog row total: 0.0
+2021-03-29 14:52:49,433 - INFO - Jogging the end effector position
+2021-03-29 14:52:49,433 - INFO - Jog col total: 0.45
+2021-03-29 14:52:49,433 - INFO - Jog row total: 0.0
+2021-03-29 14:52:50,027 - INFO - Jogging the end effector position
+2021-03-29 14:52:50,027 - INFO - Jog col total: 0.5
+2021-03-29 14:52:50,027 - INFO - Jog row total: 0.0
+2021-03-29 14:52:50,383 - INFO - Jogging the end effector position
+2021-03-29 14:52:50,384 - INFO - Jog col total: 0.55
+2021-03-29 14:52:50,384 - INFO - Jog row total: 0.0
+2021-03-29 14:52:50,725 - INFO - Jogging the end effector position
+2021-03-29 14:52:50,725 - INFO - Jog col total: 0.6
+2021-03-29 14:52:50,726 - INFO - Jog row total: 0.0
+2021-03-29 14:52:51,313 - INFO - Jogging the end effector position
+2021-03-29 14:52:51,313 - INFO - Jog col total: 0.65
+2021-03-29 14:52:51,313 - INFO - Jog row total: 0.0
+2021-03-29 14:52:51,678 - INFO - Jogging the end effector position
+2021-03-29 14:52:51,679 - INFO - Jog col total: 0.7
+2021-03-29 14:52:51,679 - INFO - Jog row total: 0.0
+2021-03-29 14:52:52,038 - INFO - Jogging the end effector position
+2021-03-29 14:52:52,038 - INFO - Jog col total: 0.75
+2021-03-29 14:52:52,038 - INFO - Jog row total: 0.0
+2021-03-29 14:52:52,649 - INFO - Jogging the end effector position
+2021-03-29 14:52:52,650 - INFO - Jog col total: 0.8
+2021-03-29 14:52:52,650 - INFO - Jog row total: 0.0
+2021-03-29 14:52:52,999 - INFO - Jogging the end effector position
+2021-03-29 14:52:52,999 - INFO - Jog col total: 0.85
+2021-03-29 14:52:52,999 - INFO - Jog row total: 0.0
+2021-03-29 14:52:53,358 - INFO - Jogging the end effector position
+2021-03-29 14:52:53,358 - INFO - Jog col total: 0.9
+2021-03-29 14:52:53,358 - INFO - Jog row total: 0.0
+2021-03-29 14:52:53,970 - INFO - Jogging the end effector position
+2021-03-29 14:52:53,970 - INFO - Jog col total: 0.95
+2021-03-29 14:52:53,970 - INFO - Jog row total: 0.0
+2021-03-29 14:52:54,336 - INFO - Jogging the end effector position
+2021-03-29 14:52:54,337 - INFO - Jog col total: 1.0
+2021-03-29 14:52:54,337 - INFO - Jog row total: 0.0
+2021-03-29 14:52:54,693 - INFO - Jogging the end effector position
+2021-03-29 14:52:54,693 - INFO - Jog col total: 1.05
+2021-03-29 14:52:54,694 - INFO - Jog row total: 0.0
+2021-03-29 14:52:57,729 - INFO - Jogging the end effector position
+2021-03-29 14:52:57,730 - INFO - Jog col total: 1.05
+2021-03-29 14:52:57,730 - INFO - Jog row total: -0.05
+2021-03-29 14:52:58,316 - INFO - Jogging the end effector position
+2021-03-29 14:52:58,316 - INFO - Jog col total: 1.05
+2021-03-29 14:52:58,316 - INFO - Jog row total: -0.1
+2021-03-29 14:52:58,681 - INFO - Jogging the end effector position
+2021-03-29 14:52:58,681 - INFO - Jog col total: 1.05
+2021-03-29 14:52:58,681 - INFO - Jog row total: -0.15
+2021-03-29 14:52:59,030 - INFO - Jogging the end effector position
+2021-03-29 14:52:59,030 - INFO - Jog col total: 1.05
+2021-03-29 14:52:59,030 - INFO - Jog row total: -0.2
+2021-03-29 14:52:59,613 - INFO - Jogging the end effector position
+2021-03-29 14:52:59,613 - INFO - Jog col total: 1.05
+2021-03-29 14:52:59,613 - INFO - Jog row total: -0.25
+2021-03-29 14:52:59,976 - INFO - Jogging the end effector position
+2021-03-29 14:52:59,976 - INFO - Jog col total: 1.05
+2021-03-29 14:52:59,976 - INFO - Jog row total: -0.3
+2021-03-29 14:53:00,335 - INFO - Jogging the end effector position
+2021-03-29 14:53:00,335 - INFO - Jog col total: 1.05
+2021-03-29 14:53:00,336 - INFO - Jog row total: -0.35
+2021-03-29 14:53:00,918 - INFO - Jogging the end effector position
+2021-03-29 14:53:00,918 - INFO - Jog col total: 1.05
+2021-03-29 14:53:00,918 - INFO - Jog row total: -0.4
+2021-03-29 14:53:01,285 - INFO - Jogging the end effector position
+2021-03-29 14:53:01,286 - INFO - Jog col total: 1.05
+2021-03-29 14:53:01,286 - INFO - Jog row total: -0.45
+2021-03-29 14:53:01,644 - INFO - Jogging the end effector position
+2021-03-29 14:53:01,644 - INFO - Jog col total: 1.05
+2021-03-29 14:53:01,644 - INFO - Jog row total: -0.5
+2021-03-29 14:53:02,245 - INFO - Jogging the end effector position
+2021-03-29 14:53:02,245 - INFO - Jog col total: 1.05
+2021-03-29 14:53:02,245 - INFO - Jog row total: -0.55
+2021-03-29 14:53:02,606 - INFO - Jogging the end effector position
+2021-03-29 14:53:02,606 - INFO - Jog col total: 1.05
+2021-03-29 14:53:02,606 - INFO - Jog row total: -0.6
+2021-03-29 14:53:02,975 - INFO - Jogging the end effector position
+2021-03-29 14:53:02,976 - INFO - Jog col total: 1.05
+2021-03-29 14:53:02,976 - INFO - Jog row total: -0.65
+2021-03-29 14:53:03,595 - INFO - Jogging the end effector position
+2021-03-29 14:53:03,595 - INFO - Jog col total: 1.05
+2021-03-29 14:53:03,595 - INFO - Jog row total: -0.7
+2021-03-29 14:53:03,952 - INFO - Jogging the end effector position
+2021-03-29 14:53:03,952 - INFO - Jog col total: 1.05
+2021-03-29 14:53:03,952 - INFO - Jog row total: -0.75
+2021-03-29 14:53:04,312 - INFO - Jogging the end effector position
+2021-03-29 14:53:04,312 - INFO - Jog col total: 1.05
+2021-03-29 14:53:04,313 - INFO - Jog row total: -0.8
+2021-03-29 14:53:04,922 - INFO - Jogging the end effector position
+2021-03-29 14:53:04,922 - INFO - Jog col total: 1.05
+2021-03-29 14:53:04,922 - INFO - Jog row total: -0.85
+2021-03-29 14:53:05,284 - INFO - Jogging the end effector position
+2021-03-29 14:53:05,284 - INFO - Jog col total: 1.05
+2021-03-29 14:53:05,284 - INFO - Jog row total: -0.9
+2021-03-29 14:53:05,648 - INFO - Jogging the end effector position
+2021-03-29 14:53:05,649 - INFO - Jog col total: 1.05
+2021-03-29 14:53:05,649 - INFO - Jog row total: -0.95
+2021-03-29 14:53:06,262 - INFO - Jogging the end effector position
+2021-03-29 14:53:06,262 - INFO - Jog col total: 1.05
+2021-03-29 14:53:06,262 - INFO - Jog row total: -1.0
+2021-03-29 14:53:06,621 - INFO - Jogging the end effector position
+2021-03-29 14:53:06,621 - INFO - Jog col total: 1.05
+2021-03-29 14:53:06,621 - INFO - Jog row total: -1.05
+2021-03-29 14:53:06,989 - INFO - Jogging the end effector position
+2021-03-29 14:53:06,989 - INFO - Jog col total: 1.05
+2021-03-29 14:53:06,989 - INFO - Jog row total: -1.1
+2021-03-29 14:53:07,582 - INFO - Jogging the end effector position
+2021-03-29 14:53:07,582 - INFO - Jog col total: 1.05
+2021-03-29 14:53:07,583 - INFO - Jog row total: -1.15
+2021-03-29 14:53:07,937 - INFO - Jogging the end effector position
+2021-03-29 14:53:07,937 - INFO - Jog col total: 1.05
+2021-03-29 14:53:07,937 - INFO - Jog row total: -1.2
+2021-03-29 14:53:08,292 - INFO - Jogging the end effector position
+2021-03-29 14:53:08,293 - INFO - Jog col total: 1.05
+2021-03-29 14:53:08,293 - INFO - Jog row total: -1.25
+2021-03-29 14:53:08,900 - INFO - Jogging the end effector position
+2021-03-29 14:53:08,900 - INFO - Jog col total: 1.05
+2021-03-29 14:53:08,900 - INFO - Jog row total: -1.3
+2021-03-29 14:53:09,248 - INFO - Jogging the end effector position
+2021-03-29 14:53:09,249 - INFO - Jog col total: 1.05
+2021-03-29 14:53:09,249 - INFO - Jog row total: -1.35
+2021-03-29 14:53:09,606 - INFO - Jogging the end effector position
+2021-03-29 14:53:09,606 - INFO - Jog col total: 1.05
+2021-03-29 14:53:09,606 - INFO - Jog row total: -1.4
+2021-03-29 14:53:10,203 - INFO - Jogging the end effector position
+2021-03-29 14:53:10,203 - INFO - Jog col total: 1.05
+2021-03-29 14:53:10,203 - INFO - Jog row total: -1.45
+2021-03-29 14:53:10,545 - INFO - Jogging the end effector position
+2021-03-29 14:53:10,546 - INFO - Jog col total: 1.05
+2021-03-29 14:53:10,546 - INFO - Jog row total: -1.5
+2021-03-29 14:53:10,900 - INFO - Jogging the end effector position
+2021-03-29 14:53:10,900 - INFO - Jog col total: 1.05
+2021-03-29 14:53:10,900 - INFO - Jog row total: -1.55
+2021-03-29 14:53:11,493 - INFO - Jogging the end effector position
+2021-03-29 14:53:11,494 - INFO - Jog col total: 1.05
+2021-03-29 14:53:11,494 - INFO - Jog row total: -1.6
+2021-03-29 14:53:11,844 - INFO - Jogging the end effector position
+2021-03-29 14:53:11,844 - INFO - Jog col total: 1.05
+2021-03-29 14:53:11,845 - INFO - Jog row total: -1.65
+2021-03-29 14:53:12,210 - INFO - Jogging the end effector position
+2021-03-29 14:53:12,211 - INFO - Jog col total: 1.05
+2021-03-29 14:53:12,211 - INFO - Jog row total: -1.7
+2021-03-29 14:53:12,805 - INFO - Jogging the end effector position
+2021-03-29 14:53:12,805 - INFO - Jog col total: 1.05
+2021-03-29 14:53:12,805 - INFO - Jog row total: -1.75
+2021-03-29 14:53:13,171 - INFO - Jogging the end effector position
+2021-03-29 14:53:13,171 - INFO - Jog col total: 1.05
+2021-03-29 14:53:13,171 - INFO - Jog row total: -1.8
+2021-03-29 14:53:13,520 - INFO - Jogging the end effector position
+2021-03-29 14:53:13,521 - INFO - Jog col total: 1.05
+2021-03-29 14:53:13,521 - INFO - Jog row total: -1.85
+2021-03-29 14:53:14,129 - INFO - Jogging the end effector position
+2021-03-29 14:53:14,129 - INFO - Jog col total: 1.05
+2021-03-29 14:53:14,129 - INFO - Jog row total: -1.9
+2021-03-29 14:53:14,477 - INFO - Jogging the end effector position
+2021-03-29 14:53:14,477 - INFO - Jog col total: 1.05
+2021-03-29 14:53:14,478 - INFO - Jog row total: -1.95
+2021-03-29 14:53:14,837 - INFO - Jogging the end effector position
+2021-03-29 14:53:14,837 - INFO - Jog col total: 1.05
+2021-03-29 14:53:14,837 - INFO - Jog row total: -2.0
+2021-03-29 14:53:17,903 - INFO - Jogging the end effector position
+2021-03-29 14:53:17,903 - INFO - Jog col total: 1.05
+2021-03-29 14:53:17,903 - INFO - Jog row total: -1.95
+2021-03-29 14:53:18,508 - INFO - Jogging the end effector position
+2021-03-29 14:53:18,508 - INFO - Jog col total: 1.05
+2021-03-29 14:53:18,509 - INFO - Jog row total: -1.9
+2021-03-29 14:53:18,867 - INFO - Jogging the end effector position
+2021-03-29 14:53:18,867 - INFO - Jog col total: 1.05
+2021-03-29 14:53:18,867 - INFO - Jog row total: -1.85
+2021-03-29 14:53:19,219 - INFO - Jogging the end effector position
+2021-03-29 14:53:19,219 - INFO - Jog col total: 1.05
+2021-03-29 14:53:19,219 - INFO - Jog row total: -1.8
+2021-03-29 14:53:19,832 - INFO - Jogging the end effector position
+2021-03-29 14:53:19,832 - INFO - Jog col total: 1.05
+2021-03-29 14:53:19,832 - INFO - Jog row total: -1.75
+2021-03-29 14:53:20,200 - INFO - Jogging the end effector position
+2021-03-29 14:53:20,200 - INFO - Jog col total: 1.05
+2021-03-29 14:53:20,200 - INFO - Jog row total: -1.7
+2021-03-29 14:53:20,552 - INFO - Jogging the end effector position
+2021-03-29 14:53:20,552 - INFO - Jog col total: 1.05
+2021-03-29 14:53:20,552 - INFO - Jog row total: -1.65
+2021-03-29 14:53:21,161 - INFO - Jogging the end effector position
+2021-03-29 14:53:21,162 - INFO - Jog col total: 1.05
+2021-03-29 14:53:21,162 - INFO - Jog row total: -1.6
+2021-03-29 14:53:21,518 - INFO - Jogging the end effector position
+2021-03-29 14:53:21,518 - INFO - Jog col total: 1.05
+2021-03-29 14:53:21,518 - INFO - Jog row total: -1.55
+2021-03-29 14:53:21,867 - INFO - Jogging the end effector position
+2021-03-29 14:53:21,867 - INFO - Jog col total: 1.05
+2021-03-29 14:53:21,867 - INFO - Jog row total: -1.5
+2021-03-29 14:53:23,713 - INFO - Jogging the end effector position
+2021-03-29 14:53:23,713 - INFO - Jog col total: 1.05
+2021-03-29 14:53:23,713 - INFO - Jog row total: -1.45
+2021-03-29 14:53:24,506 - INFO - Jogging the end effector position
+2021-03-29 14:53:24,506 - INFO - Jog col total: 1.05
+2021-03-29 14:53:24,506 - INFO - Jog row total: -1.4
+2021-03-29 14:53:25,014 - INFO - Jogging the end effector position
+2021-03-29 14:53:25,014 - INFO - Jog col total: 1.05
+2021-03-29 14:53:25,014 - INFO - Jog row total: -1.35
+2021-03-29 14:53:25,658 - INFO - Jogging the end effector position
+2021-03-29 14:53:25,658 - INFO - Jog col total: 1.05
+2021-03-29 14:53:25,658 - INFO - Jog row total: -1.3
+2021-03-29 14:53:26,012 - INFO - Jogging the end effector position
+2021-03-29 14:53:26,012 - INFO - Jog col total: 1.05
+2021-03-29 14:53:26,013 - INFO - Jog row total: -1.25
+2021-03-29 14:53:27,097 - INFO - Jogging the end effector position
+2021-03-29 14:53:27,097 - INFO - Jog col total: 1.05
+2021-03-29 14:53:27,097 - INFO - Jog row total: -1.2
+2021-03-29 14:53:27,723 - INFO - Jogging the end effector position
+2021-03-29 14:53:27,724 - INFO - Jog col total: 1.05
+2021-03-29 14:53:27,724 - INFO - Jog row total: -1.15
+2021-03-29 14:53:28,081 - INFO - Jogging the end effector position
+2021-03-29 14:53:28,081 - INFO - Jog col total: 1.05
+2021-03-29 14:53:28,081 - INFO - Jog row total: -1.1
+2021-03-29 14:53:28,436 - INFO - Jogging the end effector position
+2021-03-29 14:53:28,436 - INFO - Jog col total: 1.05
+2021-03-29 14:53:28,436 - INFO - Jog row total: -1.05
+2021-03-29 14:53:30,733 - INFO - Jogging the end effector position
+2021-03-29 14:53:30,733 - INFO - Jog col total: 1.05
+2021-03-29 14:53:30,733 - INFO - Jog row total: -1.0
+2021-03-29 14:53:34,619 - INFO - Jogging the end effector position
+2021-03-29 14:53:34,619 - INFO - Jog col total: 1.0
+2021-03-29 14:53:34,619 - INFO - Jog row total: -1.0
+2021-03-29 14:53:45,868 - INFO - Moving to tube ROW : 6, COL : 31
+2021-03-29 14:53:48,513 - INFO - Moving to tube ROW : 6, COL : 29
+2021-03-29 14:53:49,456 - INFO - Moving to tube ROW : 6, COL : 27
+2021-03-29 14:53:50,449 - INFO - Moving to tube ROW : 6, COL : 25
+2021-03-29 14:53:51,875 - INFO - Moving to tube ROW : 5, COL : 24
+2021-03-29 14:53:55,587 - INFO - Moving to tube ROW : 5, COL : 26
+2021-03-29 14:55:28,686 - INFO - Jogging the end effector position
+2021-03-29 14:55:28,687 - INFO - Jog col total: 0.0
+2021-03-29 14:55:28,687 - INFO - Jog row total: -0.25
+2021-03-29 14:55:29,287 - INFO - Jogging the end effector position
+2021-03-29 14:55:29,287 - INFO - Jog col total: 0.0
+2021-03-29 14:55:29,288 - INFO - Jog row total: -0.5
+2021-03-29 14:55:29,638 - INFO - Jogging the end effector position
+2021-03-29 14:55:29,638 - INFO - Jog col total: 0.0
+2021-03-29 14:55:29,638 - INFO - Jog row total: -0.75
+2021-03-29 14:55:29,997 - INFO - Jogging the end effector position
+2021-03-29 14:55:29,997 - INFO - Jog col total: 0.0
+2021-03-29 14:55:29,997 - INFO - Jog row total: -1.0
+2021-03-29 14:55:30,574 - INFO - Jogging the end effector position
+2021-03-29 14:55:30,574 - INFO - Jog col total: 0.0
+2021-03-29 14:55:30,574 - INFO - Jog row total: -1.25
+2021-03-29 14:55:30,922 - INFO - Jogging the end effector position
+2021-03-29 14:55:30,922 - INFO - Jog col total: 0.0
+2021-03-29 14:55:30,922 - INFO - Jog row total: -1.5
+2021-03-29 14:55:31,286 - INFO - Jogging the end effector position
+2021-03-29 14:55:31,286 - INFO - Jog col total: 0.0
+2021-03-29 14:55:31,286 - INFO - Jog row total: -1.75
+2021-03-29 14:55:31,880 - INFO - Jogging the end effector position
+2021-03-29 14:55:31,880 - INFO - Jog col total: 0.0
+2021-03-29 14:55:31,880 - INFO - Jog row total: -2.0
+2021-03-29 14:55:35,262 - INFO - Jogging the end effector position
+2021-03-29 14:55:35,263 - INFO - Jog col total: 0.0
+2021-03-29 14:55:35,263 - INFO - Jog row total: -2.25
+2021-03-29 14:55:35,894 - INFO - Jogging the end effector position
+2021-03-29 14:55:35,895 - INFO - Jog col total: 0.0
+2021-03-29 14:55:35,895 - INFO - Jog row total: -2.5
+2021-03-29 14:55:36,251 - INFO - Jogging the end effector position
+2021-03-29 14:55:36,251 - INFO - Jog col total: 0.0
+2021-03-29 14:55:36,251 - INFO - Jog row total: -2.75
+2021-03-29 14:55:36,599 - INFO - Jogging the end effector position
+2021-03-29 14:55:36,599 - INFO - Jog col total: 0.0
+2021-03-29 14:55:36,600 - INFO - Jog row total: -3.0
+2021-03-29 14:55:37,197 - INFO - Jogging the end effector position
+2021-03-29 14:55:37,197 - INFO - Jog col total: 0.0
+2021-03-29 14:55:37,197 - INFO - Jog row total: -3.25
+2021-03-29 14:55:37,565 - INFO - Jogging the end effector position
+2021-03-29 14:55:37,565 - INFO - Jog col total: 0.0
+2021-03-29 14:55:37,565 - INFO - Jog row total: -3.5
+2021-03-29 14:55:37,918 - INFO - Jogging the end effector position
+2021-03-29 14:55:37,918 - INFO - Jog col total: 0.0
+2021-03-29 14:55:37,918 - INFO - Jog row total: -3.75
+2021-03-29 14:55:38,491 - INFO - Jogging the end effector position
+2021-03-29 14:55:38,491 - INFO - Jog col total: 0.0
+2021-03-29 14:55:38,491 - INFO - Jog row total: -4.0
+2021-03-29 14:55:50,371 - INFO - Jogging the end effector position
+2021-03-29 14:55:50,371 - INFO - Jog col total: -0.25
+2021-03-29 14:55:50,371 - INFO - Jog row total: -4.0
+2021-03-29 14:55:50,949 - INFO - Jogging the end effector position
+2021-03-29 14:55:50,949 - INFO - Jog col total: -0.5
+2021-03-29 14:55:50,949 - INFO - Jog row total: -4.0
+2021-03-29 14:55:51,296 - INFO - Jogging the end effector position
+2021-03-29 14:55:51,296 - INFO - Jog col total: -0.75
+2021-03-29 14:55:51,296 - INFO - Jog row total: -4.0
+2021-03-29 14:55:51,704 - INFO - Jogging the end effector position
+2021-03-29 14:55:51,704 - INFO - Jog col total: -1.0
+2021-03-29 14:55:51,705 - INFO - Jog row total: -4.0
+2021-03-29 14:55:52,300 - INFO - Jogging the end effector position
+2021-03-29 14:55:52,301 - INFO - Jog col total: -1.25
+2021-03-29 14:55:52,301 - INFO - Jog row total: -4.0
+2021-03-29 14:55:52,746 - INFO - Jogging the end effector position
+2021-03-29 14:55:52,746 - INFO - Jog col total: -1.5
+2021-03-29 14:55:52,747 - INFO - Jog row total: -4.0
+2021-03-29 14:55:54,519 - INFO - Jogging the end effector position
+2021-03-29 14:55:54,519 - INFO - Jog col total: -1.75
+2021-03-29 14:55:54,519 - INFO - Jog row total: -4.0
+2021-03-29 14:55:55,349 - INFO - Jogging the end effector position
+2021-03-29 14:55:55,350 - INFO - Jog col total: -2.0
+2021-03-29 14:55:55,350 - INFO - Jog row total: -4.0
+2021-03-29 14:59:22,666 - INFO - Jogging the end effector position
+2021-03-29 14:59:22,666 - INFO - Jog col total: 0.25
+2021-03-29 14:59:22,666 - INFO - Jog row total: 0.0
+2021-03-29 14:59:23,082 - INFO - Jogging the end effector position
+2021-03-29 14:59:23,082 - INFO - Jog col total: 0.5
+2021-03-29 14:59:23,082 - INFO - Jog row total: 0.0
+2021-03-29 14:59:23,691 - INFO - Jogging the end effector position
+2021-03-29 14:59:23,691 - INFO - Jog col total: 0.75
+2021-03-29 14:59:23,691 - INFO - Jog row total: 0.0
+2021-03-29 14:59:24,056 - INFO - Jogging the end effector position
+2021-03-29 14:59:24,056 - INFO - Jog col total: 1.0
+2021-03-29 14:59:24,056 - INFO - Jog row total: 0.0
+2021-03-29 14:59:26,927 - INFO - Jogging the end effector position
+2021-03-29 14:59:26,927 - INFO - Jog col total: 1.0
+2021-03-29 14:59:26,927 - INFO - Jog row total: 0.25
+2021-03-29 14:59:27,442 - INFO - Jogging the end effector position
+2021-03-29 14:59:27,442 - INFO - Jog col total: 1.0
+2021-03-29 14:59:27,442 - INFO - Jog row total: 0.5
+2021-03-29 14:59:28,049 - INFO - Jogging the end effector position
+2021-03-29 14:59:28,049 - INFO - Jog col total: 1.0
+2021-03-29 14:59:28,049 - INFO - Jog row total: 0.75
+2021-03-29 14:59:28,450 - INFO - Jogging the end effector position
+2021-03-29 14:59:28,450 - INFO - Jog col total: 1.0
+2021-03-29 14:59:28,450 - INFO - Jog row total: 1.0
+2021-03-29 14:59:36,571 - INFO - Moving to tube ROW : 5, COL : 28
+2021-03-29 15:00:00,978 - INFO - Jogging the end effector position
+2021-03-29 15:00:00,979 - INFO - Jog col total: 0.0
+2021-03-29 15:00:00,979 - INFO - Jog row total: -0.25
+2021-03-29 15:00:01,356 - INFO - Jogging the end effector position
+2021-03-29 15:00:01,356 - INFO - Jog col total: 0.0
+2021-03-29 15:00:01,356 - INFO - Jog row total: -0.5
+2021-03-29 15:00:01,975 - INFO - Jogging the end effector position
+2021-03-29 15:00:01,975 - INFO - Jog col total: 0.0
+2021-03-29 15:00:01,975 - INFO - Jog row total: -0.75
+2021-03-29 15:00:02,381 - INFO - Jogging the end effector position
+2021-03-29 15:00:02,381 - INFO - Jog col total: 0.0
+2021-03-29 15:00:02,382 - INFO - Jog row total: -1.0
+2021-03-29 15:00:03,032 - INFO - Jogging the end effector position
+2021-03-29 15:00:03,032 - INFO - Jog col total: 0.0
+2021-03-29 15:00:03,032 - INFO - Jog row total: -1.25
+2021-03-29 15:00:03,436 - INFO - Jogging the end effector position
+2021-03-29 15:00:03,436 - INFO - Jog col total: 0.0
+2021-03-29 15:00:03,436 - INFO - Jog row total: -1.5
+2021-03-29 15:00:04,037 - INFO - Jogging the end effector position
+2021-03-29 15:00:04,037 - INFO - Jog col total: 0.0
+2021-03-29 15:00:04,037 - INFO - Jog row total: -1.75
+2021-03-29 15:00:04,454 - INFO - Jogging the end effector position
+2021-03-29 15:00:04,454 - INFO - Jog col total: 0.0
+2021-03-29 15:00:04,455 - INFO - Jog row total: -2.0
+2021-03-29 15:00:08,524 - INFO - Jogging the end effector position
+2021-03-29 15:00:08,525 - INFO - Jog col total: 0.25
+2021-03-29 15:00:08,525 - INFO - Jog row total: -2.0
+2021-03-29 15:00:09,196 - INFO - Jogging the end effector position
+2021-03-29 15:00:09,196 - INFO - Jog col total: 0.5
+2021-03-29 15:00:09,196 - INFO - Jog row total: -2.0
+2021-03-29 15:00:09,843 - INFO - Jogging the end effector position
+2021-03-29 15:00:09,843 - INFO - Jog col total: 0.75
+2021-03-29 15:00:09,843 - INFO - Jog row total: -2.0
+2021-03-29 15:00:10,454 - INFO - Jogging the end effector position
+2021-03-29 15:00:10,454 - INFO - Jog col total: 1.0
+2021-03-29 15:00:10,454 - INFO - Jog row total: -2.0
+2021-03-29 15:00:11,090 - INFO - Jogging the end effector position
+2021-03-29 15:00:11,090 - INFO - Jog col total: 1.25
+2021-03-29 15:00:11,090 - INFO - Jog row total: -2.0
+2021-03-29 15:00:11,684 - INFO - Jogging the end effector position
+2021-03-29 15:00:11,685 - INFO - Jog col total: 1.5
+2021-03-29 15:00:11,685 - INFO - Jog row total: -2.0
+2021-03-29 15:00:12,254 - INFO - Jogging the end effector position
+2021-03-29 15:00:12,254 - INFO - Jog col total: 1.75
+2021-03-29 15:00:12,254 - INFO - Jog row total: -2.0
+2021-03-29 15:00:12,859 - INFO - Jogging the end effector position
+2021-03-29 15:00:12,860 - INFO - Jog col total: 2.0
+2021-03-29 15:00:12,860 - INFO - Jog row total: -2.0
+2021-03-29 15:00:26,774 - INFO - Moving to tube ROW : 5, COL : 30
+2021-03-29 15:01:09,944 - INFO - Jogging the end effector position
+2021-03-29 15:01:09,944 - INFO - Jog col total: 0.0
+2021-03-29 15:01:09,945 - INFO - Jog row total: 0.25
+2021-03-29 15:01:10,563 - INFO - Jogging the end effector position
+2021-03-29 15:01:10,563 - INFO - Jog col total: 0.0
+2021-03-29 15:01:10,563 - INFO - Jog row total: 0.5
+2021-03-29 15:01:11,140 - INFO - Jogging the end effector position
+2021-03-29 15:01:11,140 - INFO - Jog col total: 0.0
+2021-03-29 15:01:11,140 - INFO - Jog row total: 0.75
+2021-03-29 15:01:11,677 - INFO - Jogging the end effector position
+2021-03-29 15:01:11,678 - INFO - Jog col total: 0.0
+2021-03-29 15:01:11,678 - INFO - Jog row total: 1.0
+2021-03-29 15:01:13,248 - INFO - Jogging the end effector position
+2021-03-29 15:01:13,249 - INFO - Jog col total: 0.0
+2021-03-29 15:01:13,249 - INFO - Jog row total: 1.25
+2021-03-29 15:01:13,848 - INFO - Jogging the end effector position
+2021-03-29 15:01:13,849 - INFO - Jog col total: 0.0
+2021-03-29 15:01:13,849 - INFO - Jog row total: 1.5
+2021-03-29 15:01:14,444 - INFO - Jogging the end effector position
+2021-03-29 15:01:14,444 - INFO - Jog col total: 0.0
+2021-03-29 15:01:14,445 - INFO - Jog row total: 1.75
+2021-03-29 15:01:14,980 - INFO - Jogging the end effector position
+2021-03-29 15:01:14,980 - INFO - Jog col total: 0.0
+2021-03-29 15:01:14,980 - INFO - Jog row total: 2.0
+2021-03-29 15:01:18,112 - INFO - Jogging the end effector position
+2021-03-29 15:01:18,112 - INFO - Jog col total: -0.25
+2021-03-29 15:01:18,112 - INFO - Jog row total: 2.0
+2021-03-29 15:01:18,730 - INFO - Jogging the end effector position
+2021-03-29 15:01:18,730 - INFO - Jog col total: -0.5
+2021-03-29 15:01:18,730 - INFO - Jog row total: 2.0
+2021-03-29 15:01:19,319 - INFO - Jogging the end effector position
+2021-03-29 15:01:19,320 - INFO - Jog col total: -0.75
+2021-03-29 15:01:19,320 - INFO - Jog row total: 2.0
+2021-03-29 15:01:19,922 - INFO - Jogging the end effector position
+2021-03-29 15:01:19,923 - INFO - Jog col total: -1.0
+2021-03-29 15:01:19,923 - INFO - Jog row total: 2.0
+2021-03-29 15:01:20,440 - INFO - Jogging the end effector position
+2021-03-29 15:01:20,441 - INFO - Jog col total: -1.25
+2021-03-29 15:01:20,441 - INFO - Jog row total: 2.0
+2021-03-29 15:01:21,038 - INFO - Jogging the end effector position
+2021-03-29 15:01:21,038 - INFO - Jog col total: -1.5
+2021-03-29 15:01:21,038 - INFO - Jog row total: 2.0
+2021-03-29 15:01:21,546 - INFO - Jogging the end effector position
+2021-03-29 15:01:21,547 - INFO - Jog col total: -1.75
+2021-03-29 15:01:21,547 - INFO - Jog row total: 2.0
+2021-03-29 15:01:22,259 - INFO - Jogging the end effector position
+2021-03-29 15:01:22,260 - INFO - Jog col total: -2.0
+2021-03-29 15:01:22,260 - INFO - Jog row total: 2.0
+2021-03-29 15:01:27,431 - INFO - Moving to tube ROW : 5, COL : 32
+2021-03-29 15:01:30,152 - INFO - Moving to tube ROW : 5, COL : 34
+2021-03-29 15:01:31,124 - INFO - Moving to tube ROW : 5, COL : 36
+2021-03-29 15:06:57,289 - INFO - Moving to tube ROW : 5, COL : 37
+2021-03-29 15:06:57,980 - INFO - Moving to tube ROW : 5, COL : 39
+2021-03-29 15:06:58,746 - INFO - Moving to tube ROW : 5, COL : 41
+2021-03-29 15:06:59,376 - INFO - Moving to tube ROW : 4, COL : 40
+2021-03-29 15:06:59,907 - INFO - Moving to tube ROW : 4, COL : 38
+2021-03-29 15:07:00,549 - INFO - Moving to tube ROW : 4, COL : 35
+2021-03-29 15:07:00,966 - INFO - Moving to tube ROW : 4, COL : 33
+2021-03-29 15:07:01,537 - INFO - Moving to tube ROW : 4, COL : 31
+2021-03-29 15:07:02,012 - INFO - Moving to tube ROW : 4, COL : 29
+2021-03-29 15:07:02,625 - INFO - Moving to tube ROW : 4, COL : 27
+2021-03-29 15:07:02,985 - INFO - Moving to tube ROW : 4, COL : 25
+2021-03-29 15:07:03,622 - INFO - Moving to tube ROW : 3, COL : 24
+2021-03-29 15:07:04,122 - INFO - Moving to tube ROW : 3, COL : 26
+2021-03-29 15:07:04,704 - INFO - Moving to tube ROW : 3, COL : 28
+2021-03-29 15:07:05,197 - INFO - Moving to tube ROW : 3, COL : 30
+2021-03-29 15:07:05,803 - INFO - Moving to tube ROW : 3, COL : 32
+2021-03-29 15:07:06,151 - INFO - Moving to tube ROW : 3, COL : 34
+2021-03-29 15:07:07,543 - INFO - Moving to tube ROW : 3, COL : 36
+2021-03-29 15:07:08,139 - INFO - Moving to tube ROW : 3, COL : 37
+2021-03-29 15:07:08,608 - INFO - Moving to tube ROW : 3, COL : 39
+2021-03-29 15:07:09,212 - INFO - Moving to tube ROW : 3, COL : 41
+2021-03-29 15:07:09,801 - INFO - Moving to tube ROW : 2, COL : 40
+2021-03-29 15:07:10,382 - INFO - Moving to tube ROW : 2, COL : 38
+2021-03-29 15:07:10,910 - INFO - Moving to tube ROW : 2, COL : 35
+2021-03-29 15:07:11,530 - INFO - Moving to tube ROW : 2, COL : 33
+2021-03-29 15:07:12,075 - INFO - Moving to tube ROW : 2, COL : 31
+2021-03-29 15:07:12,709 - INFO - Moving to tube ROW : 2, COL : 29
+2021-03-29 15:07:13,194 - INFO - Moving to tube ROW : 2, COL : 27
+2021-03-29 15:07:13,780 - INFO - Moving to tube ROW : 2, COL : 25
+2021-03-29 15:07:14,333 - INFO - Moving to tube ROW : 1, COL : 24
+2021-03-29 15:07:14,929 - INFO - Moving to tube ROW : 1, COL : 26
+2021-03-29 15:07:15,608 - INFO - Moving to tube ROW : 1, COL : 28
+2021-03-29 15:07:16,232 - INFO - Moving to tube ROW : 1, COL : 30
+2021-03-29 15:07:16,762 - INFO - Moving to tube ROW : 1, COL : 32
+2021-03-29 15:07:17,342 - INFO - Moving to tube ROW : 1, COL : 34
+2021-03-29 15:07:17,805 - INFO - Moving to tube ROW : 1, COL : 36
+2021-03-29 15:07:18,402 - INFO - Moving to tube ROW : 1, COL : 37
+2021-03-29 15:07:18,832 - INFO - Moving to tube ROW : 1, COL : 39
+2021-03-29 15:07:19,441 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:07:19,942 - INFO - Moving to tube ROW : 9, COL : 3
+2021-03-29 15:07:20,700 - INFO - Moving to tube ROW : 8, COL : 2
+2021-03-29 15:07:21,597 - INFO - Moving to tube ROW : 7, COL : 3
+2021-03-29 15:07:22,517 - INFO - Moving to tube ROW : 6, COL : 2
+2021-03-29 15:07:22,990 - INFO - Moving to tube ROW : 5, COL : 1
+2021-03-29 15:07:23,729 - INFO - Moving to tube ROW : 5, COL : 3
+2021-03-29 15:07:24,571 - INFO - Moving to tube ROW : 4, COL : 2
+2021-03-29 15:07:25,133 - INFO - Moving to tube ROW : 3, COL : 1
+2021-03-29 15:07:25,835 - INFO - Moving to tube ROW : 3, COL : 3
+2021-03-29 15:07:26,492 - INFO - Moving to tube ROW : 2, COL : 2
+2021-03-29 15:07:27,237 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 15:07:28,067 - INFO - Moving to tube ROW : 1, COL : 3
+2021-03-29 15:12:38,419 - INFO - System files loaded:
+2021-03-29 15:12:38,419 - INFO - HX file        : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/tubesheet.csv
+2021-03-29 15:12:38,419 - INFO - Inspection Plan: /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/InspPlan2_M_1.csv
+2021-03-29 15:12:38,419 - INFO - Fixture Model  : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Robots/Zetec/SM-13.csv
+2021-03-29 15:12:39,415 - INFO - Calibration point success at COL: 3, ROW: 1
+2021-03-29 15:12:53,449 - INFO - Moving to tube ROW : 5, COL : 1
+2021-03-29 15:13:00,305 - INFO - Moving to tube ROW : 5, COL : 3
+2021-03-29 15:13:01,075 - INFO - Moving to tube ROW : 4, COL : 2
+2021-03-29 15:13:02,005 - INFO - Moving to tube ROW : 3, COL : 1
+2021-03-29 15:13:03,016 - INFO - Moving to tube ROW : 3, COL : 3
+2021-03-29 15:13:03,999 - INFO - Moving to tube ROW : 2, COL : 2
+2021-03-29 15:13:05,005 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 15:13:05,742 - INFO - Moving to tube ROW : 1, COL : 3
+2021-03-29 15:14:31,589 - INFO - System files loaded:
+2021-03-29 15:14:31,589 - INFO - HX file        : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/tubesheet.csv
+2021-03-29 15:14:31,589 - INFO - Inspection Plan: /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/InspPlan1_M_1.csv
+2021-03-29 15:14:31,589 - INFO - Fixture Model  : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Robots/Zetec/SM-13.csv
+2021-03-29 15:14:32,559 - INFO - Calibration point success at COL: 3, ROW: 1
+2021-03-29 15:14:41,108 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 15:14:48,313 - INFO - System files loaded:
+2021-03-29 15:14:48,313 - INFO - HX file        : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/tubesheet.csv
+2021-03-29 15:14:48,314 - INFO - Inspection Plan: /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/InspPlan2_M_1.csv
+2021-03-29 15:14:48,314 - INFO - Fixture Model  : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Robots/Zetec/SM-13.csv
+2021-03-29 15:14:49,274 - INFO - Calibration point success at COL: 1, ROW: 1
+2021-03-29 15:14:55,602 - INFO - Moving to tube ROW : 5, COL : 1
+2021-03-29 15:14:57,158 - INFO - Moving to tube ROW : 5, COL : 3
+2021-03-29 15:14:58,093 - INFO - Moving to tube ROW : 4, COL : 2
+2021-03-29 15:14:58,933 - INFO - Moving to tube ROW : 3, COL : 1
+2021-03-29 15:14:59,800 - INFO - Moving to tube ROW : 3, COL : 3
+2021-03-29 15:15:00,730 - INFO - Moving to tube ROW : 2, COL : 2
+2021-03-29 15:15:01,485 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 15:15:05,083 - INFO - Moving to tube ROW : 1, COL : 3
+2021-03-29 15:15:40,152 - INFO - System files loaded:
+2021-03-29 15:15:40,152 - INFO - HX file        : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/tubesheet.csv
+2021-03-29 15:15:40,152 - INFO - Inspection Plan: /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/InspPlan1_M_1.csv
+2021-03-29 15:15:40,152 - INFO - Fixture Model  : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Robots/Zetec/SM-13.csv
+2021-03-29 15:15:41,130 - INFO - Calibration point success at COL: 3, ROW: 1
+2021-03-29 15:15:52,950 - INFO - Moving to tube ROW : 9, COL : 3
+2021-03-29 15:15:54,009 - INFO - Moving to tube ROW : 8, COL : 2
+2021-03-29 15:15:54,746 - INFO - Moving to tube ROW : 7, COL : 3
+2021-03-29 15:15:55,563 - INFO - Moving to tube ROW : 6, COL : 2
+2021-03-29 15:15:56,253 - INFO - Moving to tube ROW : 5, COL : 1
+2021-03-29 15:15:57,147 - INFO - Moving to tube ROW : 5, COL : 3
+2021-03-29 15:15:57,875 - INFO - Moving to tube ROW : 4, COL : 2
+2021-03-29 15:15:58,804 - INFO - Moving to tube ROW : 3, COL : 1
+2021-03-29 15:15:59,511 - INFO - Moving to tube ROW : 3, COL : 3
+2021-03-29 15:16:00,275 - INFO - Moving to tube ROW : 2, COL : 2
+2021-03-29 15:16:01,059 - INFO - Moving to tube ROW : 1, COL : 3
+2021-03-29 15:16:01,749 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 15:16:03,288 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 15:16:03,837 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 15:16:09,957 - INFO - System files loaded:
+2021-03-29 15:16:09,958 - INFO - HX file        : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/tubesheet.csv
+2021-03-29 15:16:09,958 - INFO - Inspection Plan: /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/InspPlan2_M_1.csv
+2021-03-29 15:16:09,958 - INFO - Fixture Model  : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Robots/Zetec/SM-13.csv
+2021-03-29 15:16:10,905 - INFO - Calibration point success at COL: 1, ROW: 1
+2021-03-29 15:16:19,085 - INFO - Moving to tube ROW : 5, COL : 1
+2021-03-29 15:16:23,075 - INFO - Fixture alternative pivot type selected
+2021-03-29 15:16:25,696 - INFO - Moving to tube ROW : 5, COL : 1
+2021-03-29 15:16:28,083 - INFO - Moving to tube ROW : 5, COL : 3
+2021-03-29 15:16:28,935 - INFO - Moving to tube ROW : 4, COL : 2
+2021-03-29 15:16:29,647 - INFO - Moving to tube ROW : 3, COL : 1
+2021-03-29 15:16:30,407 - INFO - Moving to tube ROW : 3, COL : 3
+2021-03-29 15:16:31,129 - INFO - Moving to tube ROW : 2, COL : 2
+2021-03-29 15:16:31,963 - INFO - Moving to tube ROW : 1, COL : 3
+2021-03-29 15:16:32,723 - INFO - Moving to tube ROW : 1, COL : 1
+2021-03-29 15:16:33,497 - INFO - Moving to tube ROW : 5, COL : 24
+2021-03-29 15:16:34,526 - INFO - Moving to tube ROW : 5, COL : 26
+2021-03-29 15:16:35,332 - INFO - Moving to tube ROW : 5, COL : 28
+2021-03-29 15:16:35,941 - INFO - Moving to tube ROW : 5, COL : 30
+2021-03-29 15:16:36,556 - INFO - Moving to tube ROW : 5, COL : 32
+2021-03-29 15:16:37,050 - INFO - Moving to tube ROW : 5, COL : 34
+2021-03-29 15:16:37,616 - INFO - Moving to tube ROW : 5, COL : 36
+2021-03-29 15:16:37,949 - INFO - Moving to tube ROW : 5, COL : 37
+2021-03-29 15:16:38,286 - INFO - Moving to tube ROW : 5, COL : 39
+2021-03-29 15:16:38,841 - INFO - Moving to tube ROW : 5, COL : 41
+2021-03-29 15:16:39,182 - INFO - Moving to tube ROW : 4, COL : 40
+2021-03-29 15:16:40,297 - INFO - Moving to tube ROW : 4, COL : 38
+2021-03-29 15:16:40,882 - INFO - Moving to tube ROW : 4, COL : 35
+2021-03-29 15:16:41,370 - INFO - Moving to tube ROW : 4, COL : 33
+2021-03-29 15:16:41,958 - INFO - Moving to tube ROW : 4, COL : 31
+2021-03-29 15:16:42,285 - INFO - Moving to tube ROW : 4, COL : 29
+2021-03-29 15:16:42,687 - INFO - Moving to tube ROW : 4, COL : 27
+2021-03-29 15:16:43,252 - INFO - Moving to tube ROW : 4, COL : 25
+2021-03-29 15:16:43,730 - INFO - Moving to tube ROW : 3, COL : 24
+2021-03-29 15:16:44,304 - INFO - Moving to tube ROW : 3, COL : 26
+2021-03-29 15:16:44,770 - INFO - Moving to tube ROW : 3, COL : 28
+2021-03-29 15:16:45,340 - INFO - Moving to tube ROW : 3, COL : 30
+2021-03-29 15:16:45,710 - INFO - Moving to tube ROW : 3, COL : 32
+2021-03-29 15:16:46,087 - INFO - Moving to tube ROW : 3, COL : 34
+2021-03-29 15:16:46,644 - INFO - Moving to tube ROW : 3, COL : 36
+2021-03-29 15:16:47,082 - INFO - Moving to tube ROW : 3, COL : 37
+2021-03-29 15:16:47,701 - INFO - Moving to tube ROW : 3, COL : 39
+2021-03-29 15:16:48,298 - INFO - Moving to tube ROW : 3, COL : 41
+2021-03-29 15:16:48,949 - INFO - Moving to tube ROW : 2, COL : 40
+2021-03-29 15:16:49,530 - INFO - Moving to tube ROW : 2, COL : 38
+2021-03-29 15:16:50,206 - INFO - Moving to tube ROW : 2, COL : 35
+2021-03-29 15:16:50,696 - INFO - Moving to tube ROW : 2, COL : 33
+2021-03-29 15:16:51,309 - INFO - Moving to tube ROW : 2, COL : 31
+2021-03-29 15:16:51,651 - INFO - Moving to tube ROW : 2, COL : 29
+2021-03-29 15:16:52,017 - INFO - Moving to tube ROW : 2, COL : 27
+2021-03-29 15:16:52,587 - INFO - Moving to tube ROW : 2, COL : 25
+2021-03-29 15:16:53,098 - INFO - Moving to tube ROW : 1, COL : 24
+2021-03-29 15:16:53,682 - INFO - Moving to tube ROW : 1, COL : 26
+2021-03-29 15:16:54,162 - INFO - Moving to tube ROW : 1, COL : 28
+2021-03-29 15:16:54,757 - INFO - Moving to tube ROW : 1, COL : 30
+2021-03-29 15:16:55,192 - INFO - Moving to tube ROW : 1, COL : 32
+2021-03-29 15:16:55,773 - INFO - Moving to tube ROW : 1, COL : 34
+2021-03-29 15:16:56,201 - INFO - Moving to tube ROW : 1, COL : 36
+2021-03-29 15:16:56,789 - INFO - Moving to tube ROW : 1, COL : 37
+2021-03-29 15:16:57,244 - INFO - Moving to tube ROW : 1, COL : 39
+2021-03-29 15:16:57,821 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:16:58,394 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:16:59,253 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:16:59,653 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:17:00,220 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:17:00,559 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:17:00,897 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:17:01,490 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:17:01,841 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:17:02,205 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:17:02,826 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:17:03,166 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:17:03,517 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:17:04,105 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:17:04,454 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:17:04,812 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:17:05,386 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:17:05,733 - INFO - Moving to tube ROW : 1, COL : 41
+2021-03-29 15:17:16,742 - INFO - ---------- Closing HUMAN-MACHINE-INTERFACE for SM-13 -----------
+2021-03-29 15:19:55,633 - INFO -  
+2021-03-29 15:19:55,633 - INFO - ********* Starting HUMAN-MACHINE-INTERFACE for SM-13 **********
+2021-03-29 15:19:55,761 - INFO - Fixture harness stall function is enabled
+2021-03-29 15:19:56,586 - INFO - Stopping movement TOTAL
+2021-03-29 15:19:56,587 - ERROR - Attempting to connect to NFC
+2021-03-29 15:19:57,553 - INFO - HMI connected to NFC successfully
+2021-03-29 15:20:06,042 - INFO - System files loaded:
+2021-03-29 15:20:06,042 - INFO - HX file        : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/tubesheet.csv
+2021-03-29 15:20:06,042 - INFO - Inspection Plan: /home/gspc/Proyectos/SM-13/hmi/cfg_files/Heat_exchangers/_cne_purificador_3335_HX2/InspPlan1_M_1.csv
+2021-03-29 15:20:06,042 - INFO - Fixture Model  : /home/gspc/Proyectos/SM-13/hmi/cfg_files/Robots/Zetec/SM-13.csv
+2021-03-29 15:20:31,590 - INFO - ---------- Closing HUMAN-MACHINE-INTERFACE for SM-13 -----------

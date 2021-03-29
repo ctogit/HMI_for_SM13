@@ -2473,6 +2473,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="tooltip_text" translatable="yes">Calibrar usando movimientos Free-Run, desactivar y no usar Jog</property>
                         <property name="halign">center</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
@@ -5718,7 +5719,7 @@ Tube</property>
                 <property name="can_focus">False</property>
                 <property name="margin_top">30</property>
                 <property name="margin_bottom">30</property>
-                <property name="label" translatable="yes">beta version  1.1</property>
+                <property name="label" translatable="yes">beta version  1.2</property>
               </object>
               <packing>
                 <property name="expand">False</property>

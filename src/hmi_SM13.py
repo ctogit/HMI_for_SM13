@@ -18,18 +18,21 @@
 #
 #                           RX FROM RTU
 #   --------------------------------------
-#   f_posActArm     <--     a_RTUData[0] *
-#   f_posActPole    <--     a_RTUData[1] *
-#   f_temperatura   <--     a_RTUData[2] *
-#   f_velActPole    <--     a_RTUData[3] *
-#   b_cwLimitArm    <--     a_RTUData[4] *
-#   b_ccwLimitArm   <--     a_RTUData[5] *
-#   b_cwLimitPole   <--     a_RTUData[6] *
-#   b_ccwLimitPole  <--     a_RTUData[7] *
-#   b_limitUp       <--     a_RTUData[8] *
-#   b_limitDown     <--     a_RTUData[9] *
-#   b_stallAlm      <--     a_RTUData[10] *
-#   b_onCondition   <--     a_RTUData[11] *
+#   f_posActArm         <--     a_RTUData[0] *
+#   f_posActPole        <--     a_RTUData[1] *
+#   f_temperatura       <--     a_RTUData[2] *
+#   f_velActPole        <--     a_RTUData[3] *
+#   b_cwLimitArm        <--     a_RTUData[4] *
+#   b_ccwLimitArm       <--     a_RTUData[5] *
+#   b_cwLimitPole       <--     a_RTUData[6] *
+#   b_ccwLimitPole      <--     a_RTUData[7] *
+#   b_limitUp           <--     a_RTUData[8] *
+#   b_limitDown         <--     a_RTUData[9] *
+#   b_stallAlm          <--     a_RTUData[10] *
+#   b_onCondition       <--     a_RTUData[11] *
+#   ui_armRdcStatus     <--     a_RTUData[12] *
+#   ui_poleRdcStatus    <--     a_RTUData[13] *
+#   ui_status           <--     a_RTUData[14] *
 #
 #
 #   TX TO RTU                           
@@ -819,16 +822,21 @@ class hmi_SM13():
         if (self.ui_plan_col != 0 and self.ui_plan_row != 0):
             # Extrae las distancias x,y desde el archivo del hx (en pulgadas) según tubo seleccionado
             self.f_px_tubo, self.f_py_tubo, self.a_lista_px, self.a_lista_py, b_error_coordenada = leer_archivo_hx(self.ui_plan_col, self.ui_plan_row, self.s_archivo_hx)
-            
+            depurador(1, "HMI", "- Px sin jog = " + str(self.f_px_tubo) + " in")
+            depurador(1, "HMI", "- Py sin jog = " + str(self.f_py_tubo) + " in")
+
             self.corregir_ordenadas_plan_par()
 
             #if self.s_archivo_plan == 
 
             # Se agrega el jog si lo hubiere
             depurador(1, "HMI", "- Jog aplicado a Px = " + str(round(self.f_incremento_acumulado_jog_col*self.f_x_pitch, 2)) + " in")
-            self.f_px_tubo -= self.f_incremento_acumulado_jog_col*self.f_x_pitch
+            self.f_px_tubo += self.f_incremento_acumulado_jog_col*self.f_x_pitch
             depurador(1, "HMI", "- Jog aplicado a Py = " + str(round(self.f_incremento_acumulado_jog_row*self.f_y_pitch, 2)) + " in")
-            self.f_py_tubo -= self.f_incremento_acumulado_jog_row*self.f_y_pitch
+            self.f_py_tubo += self.f_incremento_acumulado_jog_row*self.f_y_pitch
+
+            depurador(1, "HMI", "- Px con jog = " + str(self.f_px_tubo) + " in")
+            depurador(1, "HMI", "- Py con jog = " + str(self.f_py_tubo) + " in")
         else:
             # Posición inicial de la boquilla al arrancar el simulador 
             self.f_px_tubo = self.f_Lx - self.f_incremento_acumulado_jog_col*self.f_x_pitch
@@ -992,14 +1000,19 @@ class hmi_SM13():
         if (self.ui_plan_col != 0 and self.ui_plan_row != 0):
             # Extrae las distancias x,y desde el archivo del hx (en pulgadas) según tubo seleccionado
             self.f_px_tubo, self.f_py_tubo, self.a_lista_px, self.a_lista_py, b_error_coordenada = leer_archivo_hx(self.ui_plan_col, self.ui_plan_row, self.s_archivo_hx)
+            depurador(1, "HMI", "- Px sin jog = " + str(self.f_px_tubo) + " in")
+            depurador(1, "HMI", "- Py sin jog = " + str(self.f_py_tubo) + " in")
 
             self.corregir_ordenadas_plan_par()
 
             # Se agrega el jog si lo hubiere
             depurador(1, "HMI", "- Jog aplicado a Px = " + str(round(self.f_incremento_acumulado_jog_col*self.f_x_pitch, 2)) + " in")
-            self.f_px_tubo -= self.f_incremento_acumulado_jog_col*self.f_x_pitch
+            self.f_px_tubo += self.f_incremento_acumulado_jog_col*self.f_x_pitch
             depurador(1, "HMI", "- Jog aplicado a Py = " + str(round(self.f_incremento_acumulado_jog_row*self.f_y_pitch, 2)) + " in")
-            self.f_py_tubo -= self.f_incremento_acumulado_jog_row*self.f_y_pitch
+            self.f_py_tubo += self.f_incremento_acumulado_jog_row*self.f_y_pitch
+
+            depurador(1, "HMI", "- Px con jog = " + str(self.f_px_tubo) + " in")
+            depurador(1, "HMI", "- Py con jog = " + str(self.f_py_tubo) + " in")
         else:
             # Posición inicial de la boquilla al arrancar el simulador 
             self.f_px_tubo = self.f_Lx - self.f_incremento_acumulado_jog_col*self.f_x_pitch
@@ -1112,9 +1125,9 @@ class hmi_SM13():
 
                 # Se agrega el jog si lo hubiere
                 depurador(1, "HMI", "- Jog aplicado a Px = " + str(round(self.f_incremento_acumulado_jog_col*self.f_x_pitch, 2)) + " in")
-                self.f_px_tubo -= self.f_incremento_acumulado_jog_col*self.f_x_pitch
+                self.f_px_tubo += self.f_incremento_acumulado_jog_col*self.f_x_pitch
                 depurador(1, "HMI", "- Jog aplicado a Py = " + str(round(self.f_incremento_acumulado_jog_row*self.f_y_pitch, 2)) + " in")
-                self.f_py_tubo -= self.f_incremento_acumulado_jog_row*self.f_y_pitch
+                self.f_py_tubo += self.f_incremento_acumulado_jog_row*self.f_y_pitch
             else:
                 # Posición inicial de la boquilla al arrancar el simulador 
                 self.f_px_tubo = self.f_Lx - self.f_incremento_acumulado_jog_col*self.f_x_pitch
@@ -1436,8 +1449,8 @@ class hmi_SM13():
                 self.actualizar_etiquetas_msg("Jog control disabled...", "green")
 
                 # Restablecemos la posición de la boquilla sin ningún Jog.
-                self.f_px_tubo -= self.f_incremento_acumulado_jog_col*self.f_x_pitch*2
-                self.f_py_tubo += self.f_incremento_acumulado_jog_row*self.f_y_pitch
+                self.f_px_tubo -= self.f_incremento_acumulado_jog_col*self.f_x_pitch
+                self.f_py_tubo -= self.f_incremento_acumulado_jog_row*self.f_y_pitch
                 
                 # Calcula los ángulos de los ejes POLE y ARM en base al corrimiento
                 self.f_pole, self.f_arm, self.b_ik_success = ik_SM13(self.f_px_tubo, self.f_py_tubo, self.f_Lx, self.f_Ly, self.f_Lp, self.f_La, self.s_name_pivot_type)   
@@ -1575,11 +1588,11 @@ class hmi_SM13():
             self.f_incremento_acumulado_jog_col -= self.f_incremento_jog
             
         if (s_boton_jog == "jog_to_north"):
-            self.f_py_tubo -= self.f_incremento_jog*self.f_y_pitch
+            self.f_py_tubo += self.f_incremento_jog*self.f_y_pitch
             self.f_incremento_acumulado_jog_row += self.f_incremento_jog
         
         elif (s_boton_jog == "jog_to_south"):
-            self.f_py_tubo += self.f_incremento_jog*self.f_y_pitch
+            self.f_py_tubo -= self.f_incremento_jog*self.f_y_pitch
             self.f_incremento_acumulado_jog_row -= self.f_incremento_jog
             
         try:
