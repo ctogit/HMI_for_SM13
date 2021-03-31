@@ -33,7 +33,8 @@
 #   ui_armRdcStatus     <--     a_RTUData[12] *
 #   ui_poleRdcStatus    <--     a_RTUData[13] *
 #   ui_status           <--     a_RTUData[14] *
-#
+
+
 #
 #   TX TO RTU                           
 #   --------------------------------------
@@ -98,6 +99,11 @@ global s_ip
 global ui_pole_rdc_offset
 global ui_arm_rdc_offset
 
+# Variables asociadas a los valores provenientes desde la RTU vía ethernet.
+global rtu_ui_armRdcStatus
+global rtu_ui_poleRdcStatus
+
+
 class hmi_SM13():   
     registrador.info(" ")
     registrador.info("********* Starting HUMAN-MACHINE-INTERFACE for SM-13 **********")
@@ -116,12 +122,38 @@ class hmi_SM13():
         global b_simulador
         global ui_pole_rdc_offset
         global ui_arm_rdc_offset
-
+        
+        # Valores ethernet desde RTU
+        
+        global ui_rtu_armRdcStatus
+        global ui_rtu_poleRdcStatus
+        
+        
         # Se inicializan variables globales comartidas por HMI y TM
         ## Variable global contiene la lista de datos que llegan desde RTU:
         # [f_posActArm, f_posActPole, f_velActArm, f_velActPole, 
-        # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm]
-        a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False, False]
+        # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, b_onCondition, 
+        # ui_armRdcStatus, ui_poleRdcStatus, ui_rtuStatus ]
+        ui_rtu_armRdcStatus = 0;
+        ui_rtu_poleRdcStatus = 0;
+        
+        a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False, ui_rtu_armRdcStatus, ui_rtu_poleRdcStatus, 0]
+        
+        #   f_posActArm     <--     a_RTUData[0] *
+        #   f_posActPole    <--     a_RTUData[1] *
+        #   f_temperatura   <--     a_RTUData[2] *
+        #   f_velActPole    <--     a_RTUData[3] *
+        #   b_cwLimitArm    <--     a_RTUData[4] *
+        #   b_ccwLimitArm   <--     a_RTUData[5] *
+        #   b_cwLimitPole   <--     a_RTUData[6] *
+        #   b_ccwLimitPole  <--     a_RTUData[7] *
+        #   b_limitUp       <--     a_RTUData[8] *
+        #   b_limitDown     <--     a_RTUData[9] *
+        #   b_stallAlm      <--     a_RTUData[10] *
+        #   b_onCondition   <--     a_RTUData[11] *
+        #   ui_armRdcStatus  <--     a_RTUData[12] *
+        #   ui_poleRdcStatus <--     a_RTUData[13] *
+        #   ui_rtuStatus     <--     a_RTUData[14] *
         ## Variable global para que la vea HMI y el hilo TM. Almacena los datos 
         # de ángulos y velocidad comandados hacia la RTU:
         # [f_posCmdArm, f_posCmdPole, ui_velCmdArm, ui_velCmdPole]
@@ -3009,6 +3041,12 @@ def tm():
     global b_simulador
     global ui_pole_rdc_offset
     global ui_arm_rdc_offset
+    # Valores ethernet desde RTU
+    global ui_rtu_armRdcStatus
+    global ui_rtu_poleRdcStatus
+
+    ui_rtu_armRdcStatus = 0
+    ui_rtu_poleRdcStatus = 0
 
     ui_PERIODO_ms_TRAMA = 10 # (mili-segundos)
     ui_PERIODO_ms_ANGULOS_SIMULADOS = 150
@@ -3021,7 +3059,7 @@ def tm():
     a_HMIDataByte[1] = 0
 
     a_HMIDataByteTx=[0, 0, 0 ,0]
-    a_RTUDataRx=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    a_RTUDataRx=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
     # Varialbe local para enviar un SET_CAL una sola vez con CONTROL_ENABLE
     toggle_enable = False
@@ -3135,11 +3173,13 @@ def tm():
                 a_RTUData[1], a_RTUData[0] = conversor(a_RTUDataRx[1], a_RTUDataRx[0], 0, 0, ui_pole_rdc_offset, ui_arm_rdc_offset, "cuenta_a_angulo")
                 # y también se actualizan los demás datos
                 
-                for i in range(2, len(a_RTUDataRx)):
+                for i in range(2, (len(a_RTUDataRx)-2)):
                     a_RTUData[i] = a_RTUDataRx[i]
 
                 a_RTUData[11] = a_RTUDataRx[11]
 
+                ui_rtu_armRdcStatus = a_RTUDataRx[12]
+                ui_rtu_poleRdcStatus = a_RTUDataRx[13]
                 
                 # Se monitorean continuamente los valores de cuenta comandada y recibida para establecer o no
                 # el estado de ON_CONDITION del FH.
@@ -3197,7 +3237,7 @@ def tm():
             
         # Esta porción de código permite que no se detenga el HMI con la llegada de
         # alguna trama corrupta+
-        for x in range(0, 11):
+        for x in range(0, 14):
             try:
                 if a_RTUData[x] == True:
                     pass
@@ -3207,7 +3247,7 @@ def tm():
                 ## Variable global contiene la lista de datos que llegan desde RTU:
                 # [f_posActArm, f_posActPole, f_velActArm, f_velActPole, 
                 # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, ui_status]
-                a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False, False]  
+                a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False, False, 0, rtu_ui_armRdcStatus, rtu_ui_poleRdcStatus, 0]
                 pass  
         
                 
