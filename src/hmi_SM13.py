@@ -137,7 +137,7 @@ class hmi_SM13():
         ui_rtu_armRdcStatus = 0;
         ui_rtu_poleRdcStatus = 0;
         
-        a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False, ui_rtu_armRdcStatus, ui_rtu_poleRdcStatus, 0]
+        a_RTUData = [0, 0, 0, 0, False, False, False, False, False, False, False, False, ui_rtu_armRdcStatus, ui_rtu_poleRdcStatus, 0]
         
         #   f_posActArm     <--     a_RTUData[0] *
         #   f_posActPole    <--     a_RTUData[1] *
@@ -151,8 +151,8 @@ class hmi_SM13():
         #   b_limitDown     <--     a_RTUData[9] *
         #   b_stallAlm      <--     a_RTUData[10] *
         #   b_onCondition   <--     a_RTUData[11] *
-        #   ui_armRdcStatus  <--     a_RTUData[12] *
-        #   ui_poleRdcStatus <--     a_RTUData[13] *
+        #   ui_rtu_armRdcStatus  <--     a_RTUData[12] *
+        #   ui_rtu_poleRdcStatus <--     a_RTUData[13] *
         #   ui_rtuStatus     <--     a_RTUData[14] *
         ## Variable global para que la vea HMI y el hilo TM. Almacena los datos 
         # de ángulos y velocidad comandados hacia la RTU:
@@ -499,6 +499,19 @@ class hmi_SM13():
         
         ## Etiqueta de actualización de Temperatura en solapa inspection
         self.inspection_etiqueta_valor_temperatura = self.builder.get_object("inspection_etiqueta_valor_temperatura")
+
+        ## LED estado RDC ARM, solapa FR
+        self.fr_etiqueta_arm_led_error = self.builder.get_object("fr_etiqueta_arm_led_error")
+        ## LED estado RDC ARM, solapa MANUAL
+        self.manual_etiqueta_arm_led_error = self.builder.get_object("manual_etiqueta_arm_led_error")
+        ## LED estado RDC ARM, solapa INSPECTION
+        self.inspection_etiqueta_arm_led_error = self.builder.get_object("inspection_etiqueta_arm_led_error")
+        ## LED estado RDC POLE, solapa FR
+        self.fr_etiqueta_pole_led_error = self.builder.get_object("fr_etiqueta_pole_led_error")
+        ## LED estado RDC POLE, solapa MANUAL
+        self.manual_etiqueta_pole_led_error = self.builder.get_object("manual_etiqueta_pole_led_error")
+        ## LED estado RDC POLE, solapa INSPECTION
+        self.inspection_etiqueta_pole_led_error = self.builder.get_object("inspection_etiqueta_pole_led_error")
         
         ## Ventana principal del HMI
         self.window = self.builder.get_object("ventana_principal")
@@ -1913,6 +1926,36 @@ class hmi_SM13():
         return True
 
     ##
+    # @brief Función que actualiza los colores de los LEDs de estado de los RDC
+    # simultáneamente en las  solapas FR, MANUAL, INSPECTION.
+    # @param self puntero al objeto HMI
+    # @param s_eje ARM, POLE
+    # @param s_color Color del LED, verde OK, rojo FALLA
+    # @return none
+    def estado_leds_rdc(self, s_eje, s_color): 
+        if s_eje == "arm":
+            if s_color == "red":
+                self.fr_etiqueta_arm_led_error.set_markup("<span foreground='red'> " + "l" + " </span>")
+                self.manual_etiqueta_arm_led_error.set_markup("<span foreground='red'> " + "l" + " </span>")
+                self.inspection_etiqueta_arm_led_error.set_markup("<span foreground='red'> " + "l" + " </span>")
+            if s_color == "green":
+                self.fr_etiqueta_arm_led_error.set_markup("<span foreground='green'> " + "l" + " </span>")
+                self.manual_etiqueta_arm_led_error.set_markup("<span foreground='green'> " + "l" + " </span>")
+                self.inspection_etiqueta_arm_led_error.set_markup("<span foreground='green'> " + "l" + " </span>")
+
+        if s_eje == "pole":
+            if s_color == "red":
+                self.fr_etiqueta_pole_led_error.set_markup("<span foreground='red'> " + "l" + " </span>")
+                self.manual_etiqueta_pole_led_error.set_markup("<span foreground='red'> " + "l" + " </span>")
+                self.inspection_etiqueta_pole_led_error.set_markup("<span foreground='red'> " + "l" + " </span>")
+            if s_color == "green":
+                self.fr_etiqueta_pole_led_error.set_markup("<span foreground='green'> " + "l" + " </span>")
+                self.manual_etiqueta_pole_led_error.set_markup("<span foreground='green'> " + "l" + " </span>")
+                self.inspection_etiqueta_pole_led_error.set_markup("<span foreground='green'> " + "l" + " </span>")
+        
+        return True
+
+    ##
     # @brief Función que optimiza la actualización de hora y fecha en las 
     # etiquetas de las diferentes solapas
     # @param self puntero al objeto HMI
@@ -2954,6 +2997,8 @@ class hmi_SM13():
         global a_RTUData
         global a_HMIDataString
         global a_HMIDataByte
+        global ui_rtu_armRdcStatus
+        global ui_rtu_poleRdcStatus
 
         s_fecha, s_hora = str(dt.datetime.now()).split(' ')
         s_anio, s_mes, s_dia = s_fecha.split('-')
@@ -3009,6 +3054,48 @@ class hmi_SM13():
             time.sleep(0.015)
             # Se limpia la bandera de calibración, la cual solo se activa una vez al presionar botón SET CAL POINT o al iniciar el sistema
             a_HMIDataString[6] = "NOP_CAL"  
+
+        if (ui_rtu_armRdcStatus == 0):
+            self.estado_leds_rdc("arm", "green")
+        else:
+            if (ui_rtu_armRdcStatus == 1):
+                registrador.error("ARM RDC: Configuration parity error")
+            if (ui_rtu_armRdcStatus == 2):
+                registrador.error("ARM RDC: Phase error exceeds phase lock range")
+            if (ui_rtu_armRdcStatus == 4):
+                registrador.error("ARM RDC: Velocity exceeds maximum tracking rate")
+            if (ui_rtu_armRdcStatus == 8):
+                registrador.error("ARM RDC: Tracking error exceeds LOT threshold")
+            if (ui_rtu_armRdcStatus == 16):
+                registrador.error("ARM RDC: Sine/Cosine inputs exceed DOS mismatch threshold")
+            if (ui_rtu_armRdcStatus == 32):
+                registrador.error("ARM RDC: Sine/Cosine inputs exceed DOS overrange threshold")
+            if (ui_rtu_armRdcStatus == 64):
+                registrador.error("ARM RDC: Sine/Cosine inputs below LOS threshold")
+            if (ui_rtu_armRdcStatus == 128):
+                registrador.error("ARM RDC: Sine/Cosine inputs clipped")
+            self.estado_leds_rdc("arm", "red")
+
+        if (ui_rtu_poleRdcStatus == 0):
+            self.estado_leds_rdc("pole", "green")
+        else:
+            if (ui_rtu_poleRdcStatus == 1):
+                registrador.error("POLE RDC: Configuration parity error")
+            if (ui_rtu_poleRdcStatus == 2):
+                registrador.error("POLE RDC: Phase error exceeds phase lock range")
+            if (ui_rtu_poleRdcStatus == 4):
+                registrador.error("POLE RDC: Velocity exceeds maximum tracking rate")
+            if (ui_rtu_poleRdcStatus == 8):
+                registrador.error("POLE RDC: Tracking error exceeds LOT threshold")
+            if (ui_rtu_poleRdcStatus == 16):
+                registrador.error("POLE RDC: Sine/Cosine inputs exceed DOS mismatch threshold")
+            if (ui_rtu_poleRdcStatus == 32):
+                registrador.error("POLE RDC: Sine/Cosine inputs exceed DOS overrange threshold")
+            if (ui_rtu_poleRdcStatus == 64):
+                registrador.error("POLE RDC: Sine/Cosine inputs below LOS threshold")
+            if (ui_rtu_poleRdcStatus == 128):
+                registrador.error("POLE RDC: Sine/Cosine inputs clipped")
+            self.estado_leds_rdc("pole", "red")
 
         return True
 

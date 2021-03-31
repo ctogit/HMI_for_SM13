@@ -1808,7 +1808,18 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkLabel" id="fr_etiqueta_arm_led_error">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">l</property>
+                        <attributes>
+                          <attribute name="font-desc" value="D050000L Bold 10"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">0</property>
+                      </packing>
                     </child>
                     <child>
                       <placeholder/>
@@ -2132,7 +2143,18 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkLabel" id="fr_etiqueta_pole_led_error">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">l</property>
+                        <attributes>
+                          <attribute name="font-desc" value="D050000L Bold 10"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">0</property>
+                      </packing>
                     </child>
                     <child>
                       <placeholder/>
@@ -2473,7 +2495,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="tooltip_text" translatable="yes">Calibre usando movimientos Free-Run, desactivar y no usar Jog</property>
+                        <property name="tooltip_text" translatable="yes">Calibrar usando movimientos Free-Run, desactivar y no usar Jog</property>
                         <property name="halign">center</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
@@ -3087,7 +3109,18 @@
                               </packing>
                             </child>
                             <child>
-                              <placeholder/>
+                              <object class="GtkLabel" id="manual_etiqueta_arm_led_error">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">l</property>
+                                <attributes>
+                                  <attribute name="font-desc" value="D050000L Bold 10"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">0</property>
+                              </packing>
                             </child>
                           </object>
                           <packing>
@@ -3213,7 +3246,18 @@
                               </packing>
                             </child>
                             <child>
-                              <placeholder/>
+                              <object class="GtkLabel" id="manual_etiqueta_pole_led_error">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">l</property>
+                                <attributes>
+                                  <attribute name="font-desc" value="D050000L Bold 10"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">0</property>
+                              </packing>
                             </child>
                           </object>
                           <packing>
@@ -4663,7 +4707,18 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <placeholder/>
+                                  <object class="GtkLabel" id="inspection_etiqueta_arm_led_error">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">l</property>
+                                    <attributes>
+                                      <attribute name="font-desc" value="D050000L Bold 10"/>
+                                    </attributes>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">0</property>
+                                  </packing>
                                 </child>
                               </object>
                               <packing>
@@ -4777,7 +4832,18 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <placeholder/>
+                                  <object class="GtkLabel" id="inspection_etiqueta_pole_led_error">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">l</property>
+                                    <attributes>
+                                      <attribute name="font-desc" value="D050000L Bold 10"/>
+                                    </attributes>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">0</property>
+                                  </packing>
                                 </child>
                               </object>
                               <packing>
