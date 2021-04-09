@@ -21,11 +21,11 @@
 #   f_resActArm         <--     a_RTUDataRx[0] *
 #   f_resActPole        <--     a_RTUDataRx[1] *
 #   f_temperatura       <--     a_RTUDataRx[2] *
-#   b_stallAlm          <--     a_RTUDataRx[10] *
-#   b_onCondition       <--     a_RTUDataRx[11] *
-#   ui_armRdcStatus     <--     a_RTUDataRx[12] *
-#   ui_poleRdcStatus    <--     a_RTUDataRx[13] *
-#   ui_status           <--     a_RTUDataRx[14] *
+#   b_stallAlm          <--     a_RTUDataRx[3] *
+#   b_onCondition       <--     a_RTUDataRx[4] *
+#   ui_armRdcStatus     <--     a_RTUDataRx[5] *
+#   ui_poleRdcStatus    <--     a_RTUDataRx[6] *
+#   ui_status           <--     a_RTUDataRx[7] *
 
 
 #
@@ -151,11 +151,11 @@ class hmi_SM13():
         #   f_resActArm     <--     a_RTUDataRx[0] *
         #   f_resActPole    <--     a_RTUDataRx[1] *
         #   f_temperatura   <--     a_RTUDataRx[2] *
-        #   b_stallAlm      <--     a_RTUDataRx[10] *
-        #   b_onCondition   <--     a_RTUDataRx[11] *
-        #   ui_armRdcStatus  <--     a_RTUDataRx[12] *
-        #   ui_poleRdcStatus <--     a_RTUDataRx[13] *
-        #   ui_rtuStatus     <--     a_RTUDataRx[14] *
+        #   b_stallAlm      <--     a_RTUDataRx[3] *
+        #   b_onCondition   <--     a_RTUDataRx[4] *
+        #   ui_armRdcStatus  <--     a_RTUDataRx[5] *
+        #   ui_poleRdcStatus <--     a_RTUDataRx[6] *
+        #   ui_rtuStatus     <--     a_RTUDataRx[7] *
         ## Variable global para que la vea HMI y el hilo TM. Almacena los datos 
         # de ángulos y velocidad comandados hacia la RTU:
         # [f_posCmdArm, f_posCmdPole, ui_velCmdArm, ui_velCmdPole]
@@ -2961,11 +2961,11 @@ def tm():
 #   f_resActArm     <--     a_RTUDataRx[0] *
 #   f_resActPole    <--     a_RTUDataRx[1] *
 #   f_temperatura   <--     a_RTUDataRx[2] *
-#   b_stallAlm      <--     a_RTUDataRx[10] *
-#   b_onCondition   <--     a_RTUDataRx[11] *
-#   rtu_b_armRdcStatus  <--     a_RTUDataRx[12] *
-#   rtu_b_poleRdcStatus <--     a_RTUDataRx[13] *
-#   b_rtuStatus     <--     a_RTUDataRx[14] *
+#   b_stallAlm      <--     a_RTUDataRx[3] *
+#   b_onCondition   <--     a_RTUDataRx[4] *
+#   rtu_b_armRdcStatus  <--     a_RTUDataRx[5] *
+#   rtu_b_poleRdcStatus <--     a_RTUDataRx[6] *
+#   b_rtuStatus     <--     a_RTUDataRx[7] *
 #
     
     ui_PERIODO_ms_TRAMA = 10 # (mili-segundos)
@@ -2989,11 +2989,11 @@ def tm():
 #   f_resActArm     <--     a_RTUDataRx[0] *
 #   f_resActPole    <--     a_RTUDataRx[1] *
 #   f_temperatura   <--     a_RTUDataRx[2] *
-#   b_stallAlm      <--     a_RTUDataRx[10] *
-#   b_onCondition   <--     a_RTUDataRx[11] *
-#   rtu_b_armRdcStatus  <--     a_RTUDataRx[12] *
-#   rtu_b_poleRdcStatus <--     a_RTUDataRx[13] *
-#   b_rtuStatus     <--     a_RTUDataRx[14] *
+#   b_stallAlm      <--     a_RTUDataRx[3] *
+#   b_onCondition   <--     a_RTUDataRx[4] *
+#   rtu_b_armRdcStatus  <--     a_RTUDataRx[5] *
+#   rtu_b_poleRdcStatus <--     a_RTUDataRx[6] *
+#   b_rtuStatus     <--     a_RTUDataRx[7] *
 #
         # Código de simulación de variación en ángulos actuales, sólo funciona off-line
         # Pemite que si no está activo el simulador y no hay conexión, intente reconectar más rápido.
@@ -3103,11 +3103,11 @@ def tm():
                 f_resActArm = a_RTUDataRx[0]  # Cuentas de Resolver
                 f_resActPole = a_RTUDataRx[1] # Cuentas de Resolver
                 f_temperatura = a_RTUDataRx[2]
-                b_stallAlm  = a_RTUDataRx[10]
-                b_onCondition = a_RTUDataRx[11]
-                ui_armRdcStatus = a_RTUDataRx[12]
-                ui_poleRdcStatus = a_RTUDataRx[13]
-                #b_rtuStatus = a_RTUDataRx[14]
+                b_stallAlm  = a_RTUDataRx[3]
+                b_onCondition = a_RTUDataRx[4]
+                ui_armRdcStatus = a_RTUDataRx[5]
+                ui_poleRdcStatus = a_RTUDataRx[6]
+                #b_rtuStatus = a_RTUDataRx[7]
               
                 
                 
