@@ -95,25 +95,32 @@ global ui_arm_rdc_offset
 # Valores ethernet desde RTU
 global f_resActArm
 global f_resActPole
-global f_angActPole
-global f_angActArm
 global f_temperatura  
 global b_stallAlm 
 global b_onCondition 
 global ui_armRdcStatus 
 global ui_poleRdcStatus
 global ui_rtuStatus 
+global ui_largoRTUDataRx
+
+# Variables convertidas 
+global f_angActPole
+global f_angActArm
+
 
 # Valores ethernet desde RTU   
-f_angActArm = 0
-f_angActPole = 0 
+f_resActArm = 0
+f_resActPole = 0 
 f_temperatura = 0  
 b_stallAlm = 0 
 b_onCondition = 0 
 ui_armRdcStatus = 0 
 ui_poleRdcStatus = 0
 ui_rtuStatus = 0 
+ui_largoRTUDataRx = 0
 
+f_angActPole = 0
+f_angActArm = 0
 
 class hmi_SM13():   
     registrador.info(" ")
@@ -145,17 +152,6 @@ class hmi_SM13():
         f_angActArm = 0;
         f_angActPole = 0;
         
-        
-        
-        
-        #   f_resActArm     <--     a_RTUDataRx[0] *
-        #   f_resActPole    <--     a_RTUDataRx[1] *
-        #   f_temperatura   <--     a_RTUDataRx[2] *
-        #   b_stallAlm      <--     a_RTUDataRx[3] *
-        #   b_onCondition   <--     a_RTUDataRx[4] *
-        #   ui_armRdcStatus  <--     a_RTUDataRx[5] *
-        #   ui_poleRdcStatus <--     a_RTUDataRx[6] *
-        #   ui_rtuStatus     <--     a_RTUDataRx[7] *
         ## Variable global para que la vea HMI y el hilo TM. Almacena los datos 
         # de ángulos y velocidad comandados hacia la RTU:
         # [f_posCmdArm, f_posCmdPole, ui_velCmdArm, ui_velCmdPole]
@@ -2945,28 +2941,36 @@ def tm():
     
     
     # Valores ethernet desde RTU
-    global f_angActPole
-    global f_angActArm
+    global f_resActArm
+    global f_resActPole
     global f_temperatura 
     global b_stallAlm 
     global b_onCondition 
     global ui_armRdcStatus 
     global ui_poleRdcStatus
     global ui_rtuStatus 
-    global ui_armRdcStatus
-    global ui_poleRdcStatus
+    global ui_largoRTUDataRx
+    
+    global f_angActArm
+    global f_angActPole
     
 #                           RX FROM RTU
 #   --------------------------------------
-#   f_resActArm     <--     a_RTUDataRx[0] *
-#   f_resActPole    <--     a_RTUDataRx[1] *
-#   f_temperatura   <--     a_RTUDataRx[2] *
-#   b_stallAlm      <--     a_RTUDataRx[3] *
-#   b_onCondition   <--     a_RTUDataRx[4] *
+#   f_resActArm         <--     a_RTUDataRx[0] *
+#   f_resActPole        <--     a_RTUDataRx[1] *
+#   f_temperatura       <--     a_RTUDataRx[2] *
+#   b_stallAlm          <--     a_RTUDataRx[3] *
+#   b_onCondition       <--     a_RTUDataRx[4] *
 #   rtu_b_armRdcStatus  <--     a_RTUDataRx[5] *
 #   rtu_b_poleRdcStatus <--     a_RTUDataRx[6] *
-#   b_rtuStatus     <--     a_RTUDataRx[7] *
+#   b_rtuStatus         <--     a_RTUDataRx[7] *
 #
+    
+    a_RTUDataRx = [f_resActArm, f_resActPole, f_temperatura, b_stallAlm, 
+                   b_onCondition, ui_armRdcStatus, ui_poleRdcStatus, ui_rtuStatus  ]
+    
+    ui_largoRTUDataRx = len(a_RTUDataRx)
+    
     
     ui_PERIODO_ms_TRAMA = 10 # (mili-segundos)
     ui_PERIODO_ms_ANGULOS_SIMULADOS = 150
@@ -2980,21 +2984,13 @@ def tm():
 
     a_HMIDataByteTx=[0, 0, 0 ,0]
 
+    
+
     # Varialbe local para enviar un SET_CAL una sola vez con CONTROL_ENABLE
     toggle_enable = False
 
     while(True):                          
-#        RX FROM RTU
-#   --------------------------------------
-#   f_resActArm     <--     a_RTUDataRx[0] *
-#   f_resActPole    <--     a_RTUDataRx[1] *
-#   f_temperatura   <--     a_RTUDataRx[2] *
-#   b_stallAlm      <--     a_RTUDataRx[3] *
-#   b_onCondition   <--     a_RTUDataRx[4] *
-#   rtu_b_armRdcStatus  <--     a_RTUDataRx[5] *
-#   rtu_b_poleRdcStatus <--     a_RTUDataRx[6] *
-#   b_rtuStatus     <--     a_RTUDataRx[7] *
-#
+
         # Código de simulación de variación en ángulos actuales, sólo funciona off-line
         # Pemite que si no está activo el simulador y no hay conexión, intente reconectar más rápido.
         if (b_connect == False and b_simulador == False):
@@ -3075,7 +3071,7 @@ def tm():
 
                 if a_HMIDataString[3] == "CONTROL_ENABLE" and toggle_enable == True:
                     # Se actualiza byte de Tx con el ángulo de offset correspondiente, luego el conversor lo pasará a cuentas
-                    # sin corregir con offset 
+                    # sin corregir con offset
                     a_HMIDataByte[1] = float((ui_pole_rdc_offset/65535)*360.0)
                     a_HMIDataByte[0] = float((ui_arm_rdc_offset/65535)*360.0)
                     # Se envía el comando de "CAL_SET" para establecer la calibración del punto seleccionados en la RTU
@@ -3107,7 +3103,7 @@ def tm():
                 b_onCondition = a_RTUDataRx[4]
                 ui_armRdcStatus = a_RTUDataRx[5]
                 ui_poleRdcStatus = a_RTUDataRx[6]
-                #b_rtuStatus = a_RTUDataRx[7]
+                b_rtuStatus = a_RTUDataRx[7]
               
                 
                 
@@ -3172,7 +3168,7 @@ def tm():
             
         # Esta porción de código permite que no se detenga el HMI con la llegada de
         # alguna trama corrupta+
-        for x in range(0, 14):
+        for x in range(0, ui_largoRTUDataRx-1):
             try:
                 if a_RTUDataRx[x] == True:
                     pass
@@ -3182,7 +3178,8 @@ def tm():
                 ## Variable global contiene la lista de datos que llegan desde RTU:
                 # [f_angActArm, f_angActPole, f_temperatura, 
                 # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, ui_status]
-                a_RTUDataRx = [0, 0, 0,False, False, ui_armRdcStatus, ui_poleRdcStatus, 0]
+                a_RTUDataRx = [f_resActArm, f_resActPole, f_temperatura, b_stallAlm, 
+                   b_onCondition, ui_armRdcStatus, ui_poleRdcStatus, ui_rtuStatus  ]
                 pass  
         
                 
