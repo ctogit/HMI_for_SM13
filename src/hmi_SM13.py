@@ -21,12 +21,6 @@
 #   f_resActArm         <--     a_RTUDataRx[0] *
 #   f_resActPole        <--     a_RTUDataRx[1] *
 #   f_temperatura       <--     a_RTUDataRx[2] *
-#   b_cwLimitArm        <--     a_RTUDataRx[4] *
-#   b_ccwLimitArm       <--     a_RTUDataRx[5] *
-#   b_cwLimitPole       <--     a_RTUDataRx[6] *
-#   b_ccwLimitPole      <--     a_RTUDataRx[7] *
-#   b_limitUp           <--     a_RTUDataRx[8] *
-#   b_limitDown         <--     a_RTUDataRx[9] *
 #   b_stallAlm          <--     a_RTUDataRx[10] *
 #   b_onCondition       <--     a_RTUDataRx[11] *
 #   ui_armRdcStatus     <--     a_RTUDataRx[12] *
@@ -103,13 +97,7 @@ global f_resActArm
 global f_resActPole
 global f_angActPole
 global f_angActArm
-global f_temperatura 
-global b_cwLimitArm 
-global b_ccwLimitArm 
-global b_cwLimitPole 
-global b_ccwLimitPole 
-global b_limitUp 
-global b_limitDown 
+global f_temperatura  
 global b_stallAlm 
 global b_onCondition 
 global ui_armRdcStatus 
@@ -120,12 +108,6 @@ global ui_rtuStatus
 f_angActArm = 0
 f_angActPole = 0 
 f_temperatura = 0  
-b_cwLimitArm = 0 
-b_ccwLimitArm = 0 
-b_cwLimitPole = 0 
-b_ccwLimitPole = 0 
-b_limitUp = 0 
-b_limitDown = 0 
 b_stallAlm = 0 
 b_onCondition = 0 
 ui_armRdcStatus = 0 
@@ -158,7 +140,7 @@ class hmi_SM13():
         # Se inicializan variables globales comartidas por HMI y TM
         ## Variable global contiene la lista de datos que llegan desde RTU:
         # [f_angActArm, f_angActPole, 
-        # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, b_onCondition, 
+        # b_stallAlm, b_onCondition, 
         # ui_armRdcStatus, ui_poleRdcStatus, ui_rtuStatus ]
         f_angActArm = 0;
         f_angActPole = 0;
@@ -169,12 +151,6 @@ class hmi_SM13():
         #   f_resActArm     <--     a_RTUDataRx[0] *
         #   f_resActPole    <--     a_RTUDataRx[1] *
         #   f_temperatura   <--     a_RTUDataRx[2] *
-        #   b_cwLimitArm    <--     a_RTUDataRx[4] *
-        #   b_ccwLimitArm   <--     a_RTUDataRx[5] *
-        #   b_cwLimitPole   <--     a_RTUDataRx[6] *
-        #   b_ccwLimitPole  <--     a_RTUDataRx[7] *
-        #   b_limitUp       <--     a_RTUDataRx[8] *
-        #   b_limitDown     <--     a_RTUDataRx[9] *
         #   b_stallAlm      <--     a_RTUDataRx[10] *
         #   b_onCondition   <--     a_RTUDataRx[11] *
         #   ui_armRdcStatus  <--     a_RTUDataRx[12] *
@@ -2370,14 +2346,7 @@ class hmi_SM13():
         global a_HMIDataByte
         global a_HMIDataString
         global b_on_condition
-        global b_cwLimitArm
-        global b_cwLimitPole
-        global b_ccwLimitArm
-        global b_ccwLimitPole
      
-        
-        
-
         ui_DELAY_ms_TOGGLE = 100
 
         # Antes de mover verifica si está activado el control principal
@@ -2419,20 +2388,6 @@ class hmi_SM13():
                     zumbador.beep_stop()
 
                 return
-                
-            # Si hay un límite de movimiento por software se cancela el movimiento
-            elif(b_cwLimitArm == True):
-                a_HMIDataString[0] = "STOP"
-                a_HMIDataString[1] = "ARM"
-                self.fr_etiqueta_msg.set_text("ARM CW limit alarm!")
-                depurador(1, "HMI", "****************************************")
-                depurador(1, "HMI", "- Límite horario alcanzado en ARM")
-                depurador(1, "HMI", " ")
-
-                if self.b_beeps == True:
-                    zumbador.beep_alarm()
-
-                return
     
             else:
                 # si no hay alarmas de software desde RTU se mueve ARM CW
@@ -2460,19 +2415,6 @@ class hmi_SM13():
 
                 return
                 
-            elif (b_ccwLimitArm == True):
-                a_HMIDataString[0] = "STOP"
-                a_HMIDataString[1] = "ARM"
-                self.fr_etiqueta_msg.set_text("ARM CCW limit alarm!")
-                depurador(1, "HMI", "****************************************")
-                depurador(1, "HMI", "- Límite anti-horario alcanzado en ARM")
-                depurador(1, "HMI", " ")
-
-                if self.b_beeps == True:
-                    zumbador.beep_alarm()
-
-                return
-            
             else:
                 # si no hay alarmas de software desde RTU se mueve lift
                 a_HMIDataString[0] = "FREE_RUN"
@@ -2496,19 +2438,6 @@ class hmi_SM13():
                 # Se limpia la bandera de on_condition
                 b_on_condition = False
                 self.actualizar_etiquetas_msg("The set speed is 0 for this movement...", "red")
-                return
-            
-            if(b_cwLimitPole == True):
-                a_HMIDataString[0] = "STOP"
-                a_HMIDataString[1] = "POLE"
-                self.fr_etiqueta_msg.set_text("POLE CW limit alarm!")
-                depurador(1, "HMI", "****************************************")
-                depurador(1, "HMI", "- Límite horario alcanzado en POLE")
-                depurador(1, "HMI", " ")
-
-                if self.b_beeps == True:
-                    zumbador.beep_alarm()
-
                 return
     
             else:
@@ -2536,18 +2465,6 @@ class hmi_SM13():
 
                 return
             
-            elif (b_ccwLimitPole == True):
-                a_HMIDataString[0] = "STOP"
-                a_HMIDataString[1] = "POLE"
-                self.fr_etiqueta_msg.set_text("POLE CCW limit alarm!")
-                depurador(1, "HMI", "****************************************")
-                depurador(1, "HMI", "- Límite anti-horario alcanzado en POLE")
-                depurador(1, "HMI", " ")
-
-                if self.b_beeps == True:
-                    zumbador.beep_alarm()
-
-                return
             else:
                 # si no hay alarmas de software desde RTU se mueve POLE
                 a_HMIDataString[0] = "FREE_RUN"
@@ -2593,18 +2510,6 @@ class hmi_SM13():
                         zumbador.beep_stop()
 
                     return True
-
-                if(b_cwLimitArm == True):
-                    a_HMIDataString[0] = "STOP"
-                    a_HMIDataString[1] = "ARM"
-                    self.fr_etiqueta_msg.set_text("ARM CW limit alarm!")
-
-                    depurador(1, "HMI", "****************************************")
-                    depurador(1, "HMI", "- Límite horario alcanzado en ARM")
-                    depurador(1, "HMI", " ")
-
-                    if self.b_beeps == True:
-                        zumbador.beep_alarm()
 
                     # Se desactiva botón toggle para que no quede coloreado
                     self.b_boton_toggle_arm_cw.set_active(False)
@@ -2655,21 +2560,6 @@ class hmi_SM13():
 
                     return True
                 
-                elif(b_ccwLimitArm == True):
-                    a_HMIDataString[0] = "STOP"
-                    a_HMIDataString[1] = "ARM"
-                    self.fr_etiqueta_msg.set_text("ARM CCW limit alarm!")
-                    depurador(1, "HMI", "****************************************")
-                    depurador(1, "HMI", "- Límite anti-horario alcanzado en ARM")
-                    depurador(1, "HMI", " ")
-
-                    if self.b_beeps == True:
-                        zumbador.beep_alarm()
-
-                    # Se desactiva botón toggle para que no quede coloreado
-                    self.b_boton_toggle_arm_ccw.set_active(False)
-
-                    return True
                 else:
                     # si no hay alarmas de límite por software desde RTU se mueve ARM CCW
                     a_HMIDataString[0] = "FREE_RUN"
@@ -2711,22 +2601,7 @@ class hmi_SM13():
                         zumbador.beep_stop()
 
                     return True
-                
-                elif(b_cwLimitPole == True):
-                    a_HMIDataString[0] = "STOP"
-                    a_HMIDataString[1] = "POLE"
-                    self.fr_etiqueta_msg.set_text("POLE CW limit alarm!")
-                    depurador(1, "HMI", "****************************************")
-                    depurador(1, "HMI", "- Límite horario alcanzado en POLE")
-                    depurador(1, "HMI", " ")
-
-                    if self.b_beeps == True:
-                        zumbador.beep_alarm()
-
-                    # Se desactiva botón toggle para que no quede coloreado
-                    self.b_boton_toggle_pole_cw.set_active(False)
-
-                    return True
+        
                 else:
                     # si no hay alarmas de límite por software desde RTU se mueve POLE CW
                     a_HMIDataString[0] = "FREE_RUN"
@@ -2770,17 +2645,6 @@ class hmi_SM13():
                         zumbador.beep_stop()
 
                     return True
-                
-                if(b_ccwLimitPole == True):
-                    a_HMIDataString[0] = "STOP"
-                    a_HMIDataString[1] = "POLE"
-                    self.fr_etiqueta_msg.set_text("POLE CCW limit alarm!")
-                    depurador(1, "HMI", "****************************************")
-                    depurador(1, "HMI", "- Límite anti-horario alcanzado en POLE")
-                    depurador(1, "HMI", " ")
-
-                    if self.b_beeps == True:
-                        zumbador.beep_alarm()
 
                     # Se desactiva botón toggle para que no quede coloreado
                     self.b_boton_toggle_pole_ccw.set_active(False)
@@ -3084,12 +2948,6 @@ def tm():
     global f_angActPole
     global f_angActArm
     global f_temperatura 
-    global b_cwLimitArm 
-    global b_ccwLimitArm 
-    global b_cwLimitPole 
-    global b_ccwLimitPole 
-    global b_limitUp 
-    global b_limitDown 
     global b_stallAlm 
     global b_onCondition 
     global ui_armRdcStatus 
@@ -3103,12 +2961,6 @@ def tm():
 #   f_resActArm     <--     a_RTUDataRx[0] *
 #   f_resActPole    <--     a_RTUDataRx[1] *
 #   f_temperatura   <--     a_RTUDataRx[2] *
-#   b_cwLimitArm    <--     a_RTUDataRx[4] *
-#   b_ccwLimitArm   <--     a_RTUDataRx[5] *
-#   b_cwLimitPole   <--     a_RTUDataRx[6] *
-#   b_ccwLimitPole  <--     a_RTUDataRx[7] *
-#   b_limitUp       <--     a_RTUDataRx[8] *
-#   b_limitDown     <---     a_RTUDataRx[9] *
 #   b_stallAlm      <--     a_RTUDataRx[10] *
 #   b_onCondition   <--     a_RTUDataRx[11] *
 #   rtu_b_armRdcStatus  <--     a_RTUDataRx[12] *
@@ -3137,12 +2989,6 @@ def tm():
 #   f_resActArm     <--     a_RTUDataRx[0] *
 #   f_resActPole    <--     a_RTUDataRx[1] *
 #   f_temperatura   <--     a_RTUDataRx[2] *
-#   b_cwLimitArm    <--     a_RTUDataRx[4] *
-#   b_ccwLimitArm   <--     a_RTUDataRx[5] *
-#   b_cwLimitPole   <--     a_RTUDataRx[6] *
-#   b_ccwLimitPole  <--     a_RTUDataRx[7] *
-#   b_limitUp       <--     a_RTUDataRx[8] *
-#   b_limitDown     <---     a_RTUDataRx[9] *
 #   b_stallAlm      <--     a_RTUDataRx[10] *
 #   b_onCondition   <--     a_RTUDataRx[11] *
 #   rtu_b_armRdcStatus  <--     a_RTUDataRx[12] *
@@ -3257,12 +3103,6 @@ def tm():
                 f_resActArm = a_RTUDataRx[0]  # Cuentas de Resolver
                 f_resActPole = a_RTUDataRx[1] # Cuentas de Resolver
                 f_temperatura = a_RTUDataRx[2]
-                b_cwLimitArm = a_RTUDataRx[4] # TODO Eliminar
-                b_ccwLimitArm = a_RTUDataRx[5]
-                b_cwLimitPole = a_RTUDataRx[6]
-                b_ccwLimitPole = a_RTUDataRx[7]
-                b_limitUp = a_RTUDataRx[8]
-                b_limitDown = a_RTUDataRx[9]
                 b_stallAlm  = a_RTUDataRx[10]
                 b_onCondition = a_RTUDataRx[11]
                 ui_armRdcStatus = a_RTUDataRx[12]
@@ -3342,7 +3182,7 @@ def tm():
                 ## Variable global contiene la lista de datos que llegan desde RTU:
                 # [f_angActArm, f_angActPole, f_temperatura, 
                 # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, ui_status]
-                a_RTUDataRx = [0, 0, 0, 0, False, False, False, False, False, False, False, False, 0, ui_armRdcStatus, ui_poleRdcStatus, 0]
+                a_RTUDataRx = [0, 0, 0,False, False, ui_armRdcStatus, ui_poleRdcStatus, 0]
                 pass  
         
                 

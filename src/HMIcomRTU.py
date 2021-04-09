@@ -337,77 +337,13 @@ def RTUTranslate(a_RTUDataRx):
         f_temperatura = int(a_RTUDataRx[2])
         
         # Se convierten lose datos de -Byte- a -String- mediante -decode()-.
-        b_cwLimitArm = a_RTUDataRx[4].decode()
-        b_ccwLimitArm = a_RTUDataRx[5].decode()
-        b_cwLimitPole = a_RTUDataRx[6].decode()
-        b_ccwLimitPole = a_RTUDataRx[7].decode()
-        b_limitUp = a_RTUDataRx[8].decode()
-        b_limitDown = a_RTUDataRx[9].decode()
         b_stallAlm = a_RTUDataRx[10].decode()
         b_onCondition = a_RTUDataRx[11].decode()
         ui_rtu_armRdcStatus = int(a_RTUDataRx[12])
         ui_rtu_poleRdcStatus = int(a_RTUDataRx[13])
         ui_status = int(a_RTUDataRx[14])
 
-        # Conversion de comandos. -Char- a -Bool-.
-        if b_cwLimitArm  == "ACW_RUN;":
-            b_cwLimitArm = False
-        elif b_cwLimitArm  == "ACW_LIM;":
-            b_cwLimitArm = True
-        else: 
-            depurador(2, "HMI", "****************************************")
-            depurador(2, "HMIcomRTU","error -b_cwLimitArm- RTUTranslate")
-            depurador(2, "HMI", " ")
-            # Conversion de comandos. -Char- a -Bool-.
-            # b_ccwLimitArm
-        if b_ccwLimitArm  == "ACC_RUN;":
-            b_ccwLimitArm = False
-        elif b_ccwLimitArm  == "ACC_LIM;":
-            b_ccwLimitArm = True
-        else: 
-            depurador(2, "HMI", "****************************************")
-            depurador(2, "HMIcomRTU","error -b_ccwLimitArm- RTUTranslate")
-            depurador(2, "HMI", " ")
-            # Conversion de comandos. -Char- a -Bool-.
-            # b_cwLimitPole
-        if b_cwLimitPole  == "PCW_RUN;":
-            b_cwLimitPole = False
-        elif b_cwLimitPole  == "PCW_LIM;":
-            b_cwLimitPole = True
-        else: 
-            depurador(2, "HMI", "****************************************")
-            depurador(2, "HMIcomRTU","error -b_cwLimitPole- RTUTranslate")
-            depurador(2, "HMI", " ")
-            # Conversion de comandos. -Char- a -Bool-.
-            # b_ccwLimitPole
-        if b_ccwLimitPole  == "PCC_RUN;":
-            b_ccwLimitPole = False
-        elif b_ccwLimitPole  == "PCC_LIM;":
-            b_ccwLimitPole = True
-        else: 
-            depurador(2, "HMI", "****************************************")
-            depurador(2, "HMIcomRTU","error -b_ccwLimitPole- RTUTranslate")
-            depurador(2, "HMI", " ")
-        # Conversion de comandos. -Char- a -Bool-.
-        # b_limitUp
-        if b_limitUp  == "LUP_RUN;":
-            b_limitUp = False
-        elif b_limitUp  == "LUP_LIM;":
-            b_limitUp = True
-        else: 
-            depurador(2, "HMI", "****************************************")
-            depurador(2, "HMIcomRTU","error -b_limitUp- RTUTranslate")
-            depurador(2, "HMI", " ")
-        # Conversion de comandos. -Char- a -Bool-.
-        # b_limitDown
-        if b_limitDown  == "LDW_RUN;":
-            b_limitDown = False
-        elif b_limitDown  == "LDW_LIM;":
-            b_limitDown = True
-        else: 
-            depurador(2, "HMI", "****************************************")
-            depurador(2, "HMIcomRTU","error -b_limitDown- RTUTranslate")
-            depurador(2, "HMI", " ")
+
             # Conversion de comandos. -Char- a -Bool-.
             # b_stallAlm
         if b_stallAlm  == "STL_RUN;":
@@ -441,7 +377,7 @@ def RTUTranslate(a_RTUDataRx):
             depurador(2, "HMI", " ")
         
         #a_RTUDataOutput = [f_resActArm, f_resActPole, f_velActArm, f_velActPole, b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, b_onCondition]
-        a_RTUDataOutput = [f_resActArm, f_resActPole, f_temperatura, b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, b_onCondition, ui_rtu_armRdcStatus, ui_rtu_poleRdcStatus ]
+        a_RTUDataOutput = [f_resActArm, f_resActPole, f_temperatura, b_stallAlm, b_onCondition, ui_rtu_armRdcStatus, ui_rtu_poleRdcStatus ]
         #depurador(3, "HMIcomRTU","- output :" + str(a_RTUDataOutput))
 
     except Exception as err:
