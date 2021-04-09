@@ -21,7 +21,6 @@
 #   f_resActArm         <--     a_RTUDataRx[0] *
 #   f_resActPole        <--     a_RTUDataRx[1] *
 #   f_temperatura       <--     a_RTUDataRx[2] *
-#   f_velActPole        <--     a_RTUDataRx[3] *
 #   b_cwLimitArm        <--     a_RTUDataRx[4] *
 #   b_ccwLimitArm       <--     a_RTUDataRx[5] *
 #   b_cwLimitPole       <--     a_RTUDataRx[6] *
@@ -158,7 +157,7 @@ class hmi_SM13():
         
         # Se inicializan variables globales comartidas por HMI y TM
         ## Variable global contiene la lista de datos que llegan desde RTU:
-        # [f_angActArm, f_angActPole, f_velActArm, f_velActPole, 
+        # [f_angActArm, f_angActPole, 
         # b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, b_onCondition, 
         # ui_armRdcStatus, ui_poleRdcStatus, ui_rtuStatus ]
         f_angActArm = 0;
@@ -170,7 +169,6 @@ class hmi_SM13():
         #   f_resActArm     <--     a_RTUDataRx[0] *
         #   f_resActPole    <--     a_RTUDataRx[1] *
         #   f_temperatura   <--     a_RTUDataRx[2] *
-        #   f_velActPole    <--     a_RTUDataRx[3] *
         #   b_cwLimitArm    <--     a_RTUDataRx[4] *
         #   b_ccwLimitArm   <--     a_RTUDataRx[5] *
         #   b_cwLimitPole   <--     a_RTUDataRx[6] *
@@ -3086,7 +3084,6 @@ def tm():
     global f_angActPole
     global f_angActArm
     global f_temperatura 
-    global f_velActPole 
     global b_cwLimitArm 
     global b_ccwLimitArm 
     global b_cwLimitPole 
@@ -3106,7 +3103,6 @@ def tm():
 #   f_resActArm     <--     a_RTUDataRx[0] *
 #   f_resActPole    <--     a_RTUDataRx[1] *
 #   f_temperatura   <--     a_RTUDataRx[2] *
-#   f_velActPole    <--     a_RTUDataRx[3] *
 #   b_cwLimitArm    <--     a_RTUDataRx[4] *
 #   b_ccwLimitArm   <--     a_RTUDataRx[5] *
 #   b_cwLimitPole   <--     a_RTUDataRx[6] *
@@ -3141,7 +3137,6 @@ def tm():
 #   f_resActArm     <--     a_RTUDataRx[0] *
 #   f_resActPole    <--     a_RTUDataRx[1] *
 #   f_temperatura   <--     a_RTUDataRx[2] *
-#   f_velActPole    <--     a_RTUDataRx[3] *
 #   b_cwLimitArm    <--     a_RTUDataRx[4] *
 #   b_ccwLimitArm   <--     a_RTUDataRx[5] *
 #   b_cwLimitPole   <--     a_RTUDataRx[6] *
@@ -3262,7 +3257,6 @@ def tm():
                 f_resActArm = a_RTUDataRx[0]  # Cuentas de Resolver
                 f_resActPole = a_RTUDataRx[1] # Cuentas de Resolver
                 f_temperatura = a_RTUDataRx[2]
-                f_velActPole = a_RTUDataRx[3] # TODO Eliminar
                 b_cwLimitArm = a_RTUDataRx[4] # TODO Eliminar
                 b_ccwLimitArm = a_RTUDataRx[5]
                 b_cwLimitPole = a_RTUDataRx[6]
