@@ -334,26 +334,26 @@ def RTUTranslate(a_RTUDataRx):
         f_temperatura = int(a_RTUDataRx[2])
 
         # Se convierten lose datos de -Byte- a -String- mediante -decode()-.
-        b_stallAlm = a_RTUDataRx[3].decode()
-        b_onCondition = a_RTUDataRx[4].decode()
+        s_stallAlm = a_RTUDataRx[3].decode()
+        s_onCondition = a_RTUDataRx[4].decode()
         ui_rtu_armRdcStatus = int(a_RTUDataRx[5])
         ui_rtu_poleRdcStatus = int(a_RTUDataRx[6])
         ui_status = int(a_RTUDataRx[7])
 
             # Conversion de comandos. -Char- a -Bool-.
             # b_stallAlm
-        if b_stallAlm == "STL_RUN;":
+        if s_stallAlm == "STL_RUN;":
             b_stallAlm = False
-        elif b_stallAlm == "STL_ALM;":
+        elif s_stallAlm == "STL_ALM;":
             b_stallAlm = True
         else:
             depurador(2, "HMI", "****************************************")
             depurador(2, "HMIcomRTU", "error -b_stallAlm- RTUTranslate")
             depurador(2, "HMI", " ")
             # b_onCondition
-        if b_onCondition == "NOT_POS;":
+        if s_onCondition == "NOT_POS;":
             b_onCondition = False
-        elif b_onCondition == "ON_COND;":
+        elif s_onCondition == "ON_COND;":
             b_onCondition = True
         else:
             depurador(2, "HMI", "****************************************")
@@ -373,7 +373,7 @@ def RTUTranslate(a_RTUDataRx):
             depurador(2, "HMI", " ")
 
         # a_RTUDataOutput = [f_resActArm, f_resActPole, f_velActArm, f_velActPole, b_cwLimitArm, b_ccwLimitArm, b_cwLimitPole, b_ccwLimitPole, b_limitUp, b_limitDown, b_stallAlm, b_onCondition]
-        a_RTUDataOutput = [f_resActArm, f_resActPole, f_temperatura, b_stallAlm, b_onCondition, ui_rtu_armRdcStatus, ui_rtu_poleRdcStatus ]
+        a_RTUDataOutput = [f_resActArm, f_resActPole, f_temperatura, b_stallAlm, b_onCondition, ui_rtu_armRdcStatus, ui_rtu_poleRdcStatus, ui_status ]
         # depurador(3, "HMIcomRTU","- output :" + str(a_RTUDataOutput))
 
     except Exception as err:
